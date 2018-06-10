@@ -18,7 +18,6 @@ class DeckRow extends React.Component {
 
   handleUpdateDeckChange(e) {
     const value = e.target.value;
-
     this.setState(() => ({
       updateDeckName: value
     }));
@@ -80,9 +79,17 @@ class DeckList extends React.Component {
   }
 
   doUpdateDeck(deckId, newDeckName) {
-    updateDeck(this.props.uid, deckId, newDeckName, () => {
+    updateDeck(this.props.uid, deckId, newDeckName).then(() => {
+      this.setState(() => ({
+        statusText: 'Deck successfully updated!'
+      }))
       this.props.getDecks();
-    });
+    }).catch((err) => {
+      console.log(err);
+      this.setState(() => ({
+        statusText: 'There was an error. Check the console and restart the app.'
+      }))
+    })
   }
 
   handleAddDeck(e) {
@@ -90,16 +97,15 @@ class DeckList extends React.Component {
 
     const deckName = this.state.addDeckName.trim();
     if (deckName) {
-      addDeck(deckName, this.props.uid, () => {
-        this.setState(() => ({
-          statusText: 'Deck successfully added!'
-        }))
+      addDeck(deckName, this.props.uid, this.props.name).then(() => {
         this.props.getDecks();
-      }, () => {
-        this.setState(() => ({
-          statusText: 'There was an error. See the console and refresh the page.'
-        }));
-      });
+          this.setState(() => ({statusText: 'Deck successfully added!'}));
+        }).catch((err) => {
+          console.log(err);
+          this.setState(() => ({
+            statusText: 'There was an error. See the console and refresh the page.'
+          }))
+        })
     } else {
       this.setState(() => ({
         statusText: 'Deck name cannot be empty.'
@@ -115,9 +121,15 @@ class DeckList extends React.Component {
   }
 
   handleDeleteDeck(deckId) {
-    deleteDeck(this.props.uid, deckId, () => {
+    deleteDeck(this.props.uid, deckId).then(() => {
+      this.setState(() => ({statusText: 'Deck successfully deleted.'}))
       this.props.getDecks();
-    });
+    }).catch((err) => {
+      console.log(err);
+      this.setState(() => ({
+        statusText: 'There was an error. See the console and refresh the page.'
+      }))
+    })
   }
 
   render() {
@@ -142,7 +154,8 @@ class DeckList extends React.Component {
             key={deck.id} 
             match={this.props.match}
             doUpdateDeck={this.doUpdateDeck}
-            handleDeleteDeck={this.handleDeleteDeck} />
+            handleDeleteDeck={this.handleDeleteDeck}
+            setStatusText={(text) => {this.setState(() => ({statusText: text}))}} />
         ))}
       </div>
       

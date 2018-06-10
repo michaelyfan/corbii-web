@@ -8,48 +8,53 @@ const db = firebase.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-export function addUser(uid, name, callbackFailure) {
-  db.collection('users').doc(uid).set({
+export function addUser(uid, name) {
+  return db.collection('users').doc(uid).set({
     name: name,
-  }).then(() => {
-    console.log("User document written with ID: ", uid);
-  }).catch((error) => {
-    console.error(error);
-    callbackFailure();
   });
 }
 
-export function addDeck(deckName, userId, callbackSuccess, callbackFailure) {
-  db.collection('decks').add({
-    name: deckName,
-  }).then((docRef) => {
-    console.log('Deck document written with ID: ', docRef.id);
-    db.collection('users').doc(userId).collection('decks').doc(docRef.id).set({
-      name: deckName
-    }).then(() => {
-      console.log('Deck within users document successfully committed!');
-      callbackSuccess();
+export function addDeck(deckName, userId, userName) {
+
+  return new Promise((resolve, reject) => {
+    db.collection('decks').add({
+      name: deckName,
+      creatorId: userId,
+      creatorName: userName,
+      count: 0
+    }).then((docRef) => {
+      db.collection('users').doc(userId).collection('decks').doc(docRef.id).set({
+        name: deckName
+      }).then(() => {
+        resolve('Success!');
+      }).catch((err) => {
+        reject(err);
+      });
     }).catch((err) => {
-      console.error(err);
-      callbackFailure();
-    });
-  }).catch((err) => {
-    console.error(err);
-    callbackFailure();
-  })
+      reject(err);
+    })
+  });
 }
 
-export function addCard(front, back, deckId, callbackSuccess, callbackFailure) {
-  db.collection('decks').doc(deckId).collection('cards').add({
+export function addCard(front, back, deckId) {
+  const deckRef = db.collection('decks').doc(deckId);
+  return deckRef.collection('cards').add({
     front: front,
-    back: back, 
+    back: back,
     internal: 0
-  }).then((docRef) => {
-    console.log("Card subdoc written with ID: ", docRef.id);
-    callbackSuccess();
-  }).catch((error) => {
-    console.error(error);
-    callbackFailure();
+  }).then(() => {
+    return db.runTransaction((t) => {
+      return t.get(deckRef).then((res) => {
+        if (!res.exists) {
+          throw new Error('deck does not exist.');
+        }
+
+        let newCount = res.data().count + 1;
+        t.update(deckRef, {
+          count: newCount
+        });
+      })
+    })
   });
 }
 
@@ -79,8 +84,7 @@ export async function getDeck(deckId) {
 }
 
 export function getDecks(userId, callbackSuccess, callbackFailure) {
-
-  db.collection('users').doc(userId).collection('decks').get()
+  return db.collection('users').doc(userId).collection('decks').get()
     .then((querySnapshot) => {
       let decksArr = [];
       querySnapshot.forEach((deck) => {
@@ -89,49 +93,66 @@ export function getDecks(userId, callbackSuccess, callbackFailure) {
           name: deck.data().name
         });
       });
-      callbackSuccess(decksArr);
-    }).catch((err) => {
-      console.log('Error getting documents', err);
-      callbackFailure();
-    })
+      return decksArr;
+    });
 }
 
 export function deleteCard(deckId, cardId) {
+  const deckRef = db.collection('decks').doc(deckId);
+  return deckRef.collection('cards').doc(cardId).delete().then(() => {
+    return db.runTransaction((t) => {
+      return t.get(deckRef).then((res) => {
+        if (!res.exists) {
+          throw new Error('deck does not exist.');
+        }
 
-  db.collection('decks').doc(deckId).collection('cards').doc(cardId).delete()
-    .catch((err) => {
-      console.log('Error deleting documents', err);
-    });
+        let newCount = res.data().count - 1;
+        t.update(deckRef, {
+          count: newCount
+        });
+      })
+    })
+  });
 
 }
 
-export function deleteDeck(userId, deckId, callback) {
+export function deleteDeck(userId, deckId) {
   const data = {
     userId: userId,
     deckId: deckId
   }
 
-  fetch('/api/deletedeck', {
+  return fetch('/api/deletedeck', {
     method: 'POST',
     body: JSON.stringify(data),
     headers:{
       'Content-Type': 'application/json'
     }
-  })
-    .then(res => {
-      callback();
-    }).catch((err) => {console.log(err)})
+  });
 }
 
-export function updateDeck(userId, deckId, deckName, callback) {
+export function updateDeck(userId, deckId, deckName) {
   const deckRef = `decks/${deckId}`
   const userDeckRef = `users/${userId}/decks/${deckId}`;
 
-  Promise.all([
+  return Promise.all([
     db.doc(deckRef).update({name: deckName}),
     db.doc(userDeckRef).update({name: deckName})
-  ]).then(() => {
-    callback();
-  })
+  ]);
 
+}
+
+export function updateCard(deckId, cardId, front, back) {
+  const cardRef = `decks/${deckId}/cards/${cardId}`;
+
+  return db.doc(cardRef).update({
+    front: front,
+    back: back
+  });
+}
+
+export function searchDecks(query) {
+  return new Promise((resolve, reject) => {
+    reject(new Error('Searching is going to be harder than I thought.'));
+  })
 }

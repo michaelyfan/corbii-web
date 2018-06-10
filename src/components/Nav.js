@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from '../utils/firebase';
-import { withRouter } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class Nav extends React.Component {
@@ -28,14 +28,36 @@ class Nav extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className='nav'>
         <h1>Corbii</h1>
-        <p>Logged in as: {this.props.signedIn ? this.props.name : 'not logged in'}</p>
-        {this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}
-        <br />
-        {this.props.signedIn
-          ? <button className='button' onClick={this.handleSignOut}>Sign Out</button>
-          : null }
+        <div>
+          <ul className='nav-ul'>
+            <li>
+              <NavLink activeClassName='navlink-active' to='/decks'>
+                Decks
+              </NavLink>
+            </li>
+            <li>
+              <NavLink activeClassName='navlink-active' to='/search'>
+                Search
+              </NavLink>
+            </li>
+            <li>
+              <NavLink activeClassName='navlink-active' to='/about'>
+                About
+              </NavLink>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p>{this.props.signedIn ? this.props.name : 'not logged in'}</p>
+          {this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}
+          <p>
+            {this.props.signedIn
+              ? <button className='button' onClick={this.handleSignOut}>Sign Out</button>
+              : null }
+          </p>
+        </div>
       </div>
     )
   }

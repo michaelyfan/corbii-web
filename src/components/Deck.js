@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDeck, addCard, deleteCard } from '../utils/api';
+import { getDeck, addCard, deleteCard, updateCard } from '../utils/api';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -9,14 +9,31 @@ class Card extends React.Component {
     super(props);
 
     this.state = {
-
+      isUpdate: false,
+      frontChangeValue: props.front.slice(0),
+      backChangeValue: props.back.slice(0)
     }
 
-    this.handleEditCard = this.handleEditCard.bind(this);
+    this.handleUpdateCard = this.handleUpdateCard.bind(this);
+    this.handleFrontChange = this.handleFrontChange.bind(this);
+    this.handleBackChange = this.handleBackChange.bind(this);
   }
 
-  handleEditCard() {
-    console.log('Edit card');
+  handleUpdateCard() {
+    const { doUpdateCard, id } = this.props;
+    const { frontChangeValue, backChangeValue } = this.state;
+    doUpdateCard(id, frontChangeValue, backChangeValue);
+    this.setState(() => ({isUpdate: false}))
+  }
+
+  handleFrontChange(e) {
+    const value = e.target.value;
+    this.setState(() => ({frontChangeValue: value}));
+  }
+
+  handleBackChange(e) {
+    const value = e.target.value;
+    this.setState(() => ({backChangeValue: value}));
   }
 
   render() {
@@ -27,14 +44,30 @@ class Card extends React.Component {
         <div className='card'>
           <div className='card-front'>
             <p className='low'>Front</p>
-            <p>{front}</p>
+            {
+              this.state.isUpdate
+                ? <input type='text' value={this.state.frontChangeValue} onChange={this.handleFrontChange} />
+                : <p>{front}</p>
+            }
           </div>
           <div>
             <p className='low'>Back</p>
-            <p>{back}</p>
+            {
+              this.state.isUpdate
+                ? <input type='text' value={this.state.backChangeValue} onChange={this.handleBackChange} />
+                : <p>{back}</p>
+            }
           </div>
         </div>
-        <button onClick={this.handleEditCard}>Edit</button>
+
+        {
+          this.state.isUpdate
+            ? <span>
+                <button onClick={this.handleUpdateCard}>Update</button>
+                <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
+              </span>            
+            : <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Edit</button>
+        }
         <button onClick={() => {handleDeleteCard(id)}}>Delete</button>
       </div>
       
@@ -45,7 +78,8 @@ class Card extends React.Component {
 Card.propTypes = {
   id: PropTypes.string.isRequired,
   front: PropTypes.string.isRequired,
-  back: PropTypes.string.isRequired
+  back: PropTypes.string.isRequired,
+  doUpdateCard: PropTypes.func.isRequired
 }
 
 
@@ -67,9 +101,10 @@ class Deck extends React.Component {
     this.handleDeleteCard = this.handleDeleteCard.bind(this);
     this.handleChangeAddCardFront = this.handleChangeAddCardFront.bind(this);
     this.handleChangeAddCardBack = this.handleChangeAddCardBack.bind(this);
+    this.doUpdateCard = this.doUpdateCard.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.updateDeck();
   }
 
@@ -85,7 +120,12 @@ class Deck extends React.Component {
   }
 
   async handleDeleteCard(cardId) {
-    await deleteCard(this.state.id, cardId);
+    try {
+      await deleteCard(this.state.id, cardId);
+    } catch(err) {
+      console.log(err);
+    }
+    
     this.updateDeck();
   }
 
@@ -95,17 +135,19 @@ class Deck extends React.Component {
     const cardBack = this.state.addCardBackName.trim();
 
     if (cardFront && cardBack) {
-
-      addCard(cardFront, cardBack, this.state.id, () => {
-        this.updateDeck();
-        this.setState(() => ({
-          statusText: 'Card successfully added!'
-        }));
-      }, () => {
-        this.setState(() => ({
-          statusText: 'There was an error. See the console and refresh the page.'
-        }));
-      });
+      addCard(cardFront, cardBack, this.state.id)
+        .then(() => {
+          this.updateDeck();
+          this.setState(() => ({
+            statusText: 'Card successfully added!'
+          }))
+        })
+        .catch((err) => {
+          console.log(err);
+          this.setState(() => {
+            statusText: 'There was an error. Check the console and refresh the app.'
+          })
+        })
 
     } else {
       this.setState(() => ({
@@ -126,6 +168,20 @@ class Deck extends React.Component {
     this.setState(() => ({
       addCardBackName: e.target.value
     }));
+  }
+
+  doUpdateCard(cardId, front, back) {
+    updateCard(this.state.id, cardId, front, back).then(() => {
+      this.setState(() => ({
+        statusText: 'Card successfully updated!',
+      }));
+      this.updateDeck();
+    }).catch((err) => {
+      console.log(err);
+      this.setState(() => ({
+        statusText: 'There was an error. Check the console and refresh the app.'
+      }))
+    })
   }
 
   render() {
@@ -153,11 +209,15 @@ class Deck extends React.Component {
             onChange={this.handleChangeAddCardBack} />
           <button type='submit'>Add</button>
         </form>
+        <button onClick={() => {alert('Coming soon!')}}>
+          Study
+        </button>
         {this.state.cards.map((card) => 
           <Card 
             id={card.id} 
             front={card.front} 
             back={card.back} 
+            doUpdateCard={this.doUpdateCard}
             handleDeleteCard={this.handleDeleteCard} 
             key={card.id} />
         )}

@@ -28,16 +28,14 @@ class Auth extends React.Component {
       callbacks: {
         signInSuccessWithAuthResult: (authResult)  => {
           const { isNewUser, uid, name } = parser.parseAuth(authResult);
+          if (isNewUser) {
+            addUser(uid, name).catch((err) => {
+              console.log(err);
+            })
+          } 
           this.setState(() => ({
             statusText: 'Successfully logged in!'
           }));
-          if (isNewUser) {
-            addUser(uid, name, () => {
-              this.setState(() => ({
-                statusText: 'There was an error. View the console and refresh the page.'
-              }))
-            })
-          } 
         }
       }
     }
