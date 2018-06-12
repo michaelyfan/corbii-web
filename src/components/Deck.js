@@ -122,6 +122,9 @@ class Deck extends React.Component {
   async handleDeleteCard(cardId) {
     try {
       await deleteCard(this.state.id, cardId);
+      this.setState(() => ({
+        statusText: 'Card successfully deleted.'
+      }))
     } catch(err) {
       console.log(err);
     }

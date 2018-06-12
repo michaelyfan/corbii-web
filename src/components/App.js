@@ -27,8 +27,10 @@ class App extends React.Component {
     }
 
   componentDidMount() {
+    console.log(firebase.auth().currentUser);
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        console.log(firebase.auth().currentUser);
         const {name, uid, pic} = parser.parseFirebaseUser(user);
         this.setState(() => ({
           name: name,
@@ -55,7 +57,7 @@ class App extends React.Component {
         deckArr: decks
       }))
     }).catch((err) => {
-      console.log('See error :(');
+      console.error(err);
     })
   }
 
@@ -71,7 +73,11 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <Nav signedIn={this.state.signedIn} uid={this.state.uid} name={this.state.name} profilePic={this.state.profilePic} />
+          <Nav 
+            signedIn={this.state.signedIn} 
+            uid={this.state.uid} 
+            name={this.state.name} 
+            profilePic={this.state.profilePic} />
           <Switch>
             <Route 
               exact path='/' 
@@ -79,17 +85,13 @@ class App extends React.Component {
                 <Auth {...props} 
                   uid={this.state.uid}
                   name={this.state.name}
-                  signedIn={this.state.signedIn}
-                  profilePic={this.state.profilePic} />} />
+                  signedIn={this.state.signedIn} />} />
             <Route
               path='/about'
               component={About} />
             <Route
               path='/search'
-              render={(props) =>
-                <Search {...props}
-                  uid={this.state.uid}
-                  signedIn={this.state.signedIn} /> } />
+              component={Search} />
             <Route 
               exact path='/decks'
               render={(props) => this.state.signedIn ? (
@@ -115,7 +117,7 @@ class App extends React.Component {
             <Route render={() => {
               return (
                 <div>
-                  <p>You've discovered a 404 page.</p>
+                  <h1>You've discovered a 404 page.</h1>
                   <Link to='/'>Return home</Link>
                 </div>
               )

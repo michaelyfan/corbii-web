@@ -17,9 +17,7 @@ class Nav extends React.Component {
   handleSignOut() {
     const user = firebase.auth().currentUser;
     if (user) {
-      firebase.auth().signOut().then(() => {
-        
-      }).catch((err) => {
+      firebase.auth().signOut().catch((err) => {
         console.log(err);
       })
     }
@@ -65,7 +63,6 @@ class Nav extends React.Component {
 
 Nav.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  profilePic: PropTypes.string.isRequired,
   uid: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
 }

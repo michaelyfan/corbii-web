@@ -1,8 +1,15 @@
 import firebase from './firebase';
 import 'firebase/firestore';
+import alg from './algconfig';
+import algoliasearch from 'algoliasearch';
 
 // tool initializations
 const db = firebase.firestore();
+const client = algoliasearch(alg.id, alg.key);
+
+// variable declarations
+const ALGOLIA_INDEX_NAME_1 = 'decks';
+const ALGOLIA_INDEX_NAME_2 = 'users';
 
 // For suppressing a console error
 const settings = {timestampsInSnapshots: true};
@@ -15,24 +22,30 @@ export function addUser(uid, name) {
 }
 
 export function addDeck(deckName, userId, userName) {
+  
+  const data = {
+    name: deckName,
+    creatorId: userId,
+    creatorName: userName,
+    count: 0
+  }
 
-  return new Promise((resolve, reject) => {
-    db.collection('decks').add({
-      name: deckName,
-      creatorId: userId,
-      creatorName: userName,
-      count: 0
-    }).then((docRef) => {
-      db.collection('users').doc(userId).collection('decks').doc(docRef.id).set({
-        name: deckName
-      }).then(() => {
-        resolve('Success!');
-      }).catch((err) => {
-        reject(err);
-      });
-    }).catch((err) => {
-      reject(err);
-    })
+  return db.collection('decks').add(data).then((docRef) => {
+
+    data.deckId = docRef.id;
+
+    // very temporary algolia index solution
+    fetch('/api/addalgolia', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return db.collection('users').doc(userId).collection('decks').doc(docRef.id).set({
+      name: deckName
+    });
   });
 }
 
@@ -53,6 +66,19 @@ export function addCard(front, back, deckId) {
         t.update(deckRef, {
           count: newCount
         });
+
+        // very temporary algolia index solution
+        fetch('/api/updatealgolia', {
+          method: 'POST',
+          body: JSON.stringify({
+            count: newCount,
+            deckId: deckId
+          }),
+          headers:{
+            'Content-Type': 'application/json'
+          }
+        });
+
       })
     })
   });
@@ -110,6 +136,19 @@ export function deleteCard(deckId, cardId) {
         t.update(deckRef, {
           count: newCount
         });
+
+        // very temporary algolia index solution
+        fetch('/api/updatealgolia', {
+          method: 'POST',
+          body: JSON.stringify({
+            count: newCount,
+            deckId: deckId
+          }),
+          headers:{
+            'Content-Type': 'application/json'
+          }
+        });
+
       })
     })
   });
@@ -121,6 +160,8 @@ export function deleteDeck(userId, deckId) {
     userId: userId,
     deckId: deckId
   }
+
+
 
   return fetch('/api/deletedeck', {
     method: 'POST',
@@ -134,6 +175,18 @@ export function deleteDeck(userId, deckId) {
 export function updateDeck(userId, deckId, deckName) {
   const deckRef = `decks/${deckId}`
   const userDeckRef = `users/${userId}/decks/${deckId}`;
+
+  // very temporary algolia index solution
+  fetch('/api/updatealgolianame', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: deckName,
+      deckId: deckId
+    }),
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  });
 
   return Promise.all([
     db.doc(deckRef).update({name: deckName}),
@@ -153,6 +206,19 @@ export function updateCard(deckId, cardId, front, back) {
 
 export function searchDecks(query) {
   return new Promise((resolve, reject) => {
-    reject(new Error('Searching is going to be harder than I thought.'));
+    const index = client.initIndex('decks');
+    index.search(
+      {
+        query: query,
+        hitsPerPage: 50,
+      },
+      (err, content) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(content.hits);
+      }
+    );  
   })
+  
 }

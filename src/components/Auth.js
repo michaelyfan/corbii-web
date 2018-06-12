@@ -55,7 +55,6 @@ class Auth extends React.Component {
 
 Auth.propTypes = {
   uid: PropTypes.string.isRequired,
-  profilePic: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   signedIn: PropTypes.bool.isRequired
 }

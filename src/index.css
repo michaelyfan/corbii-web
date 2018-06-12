@@ -84,11 +84,5 @@ a {
 }
 
 .deck-search-result {
-  display: flex;
-  justify-content: space-between;
-}
-
-.search-card {
-  display: flex;
-  justify-content: space-around;
+  margin: 10px;
 }
