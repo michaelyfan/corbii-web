@@ -1,5 +1,5 @@
 import React from 'react';
-import { addDeck, deleteDeck, updateDeck } from '../utils/api';
+import { getDecks, addDeck, deleteDeck, updateDeck } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 
@@ -14,6 +14,7 @@ class DeckRow extends React.Component {
 
     this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
     this.handleUpdateDeckChange = this.handleUpdateDeckChange.bind(this);
+    this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
   }
 
   handleUpdateDeckChange(e) {
@@ -24,12 +25,34 @@ class DeckRow extends React.Component {
   }
 
   handleUpdateDeck() {
-    this.props.doUpdateDeck(this.props.id, this.state.updateDeckName);
+    updateDeck(this.props.id, this.state.updateDeckName).then(() => {
+      this.setState(() => ({
+        statusText: 'Deck successfully updated!'
+      }))
+      this.props.getDecks();
+    }).catch((err) => {
+      console.log(err);
+      this.setState(() => ({
+        statusText: 'There was an error. Check the console and restart the app.'
+      }))
+    })
     this.setState(() => ({isUpdate: false}));
   }
 
+  handleDeleteDeck(deckId) {
+    deleteDeck(deckId).then(() => {
+      this.setState(() => ({statusText: 'Deck successfully deleted.'}))
+      this.props.getDecks();
+    }).catch((err) => {
+      console.log(err);
+      this.setState(() => ({
+        statusText: 'There was an error. See the console and refresh the page.'
+      }))
+    })
+  }
+
   render() {
-    const { name, id, match, handleDeleteDeck } = this.props;
+    const { name, id, match } = this.props;
 
     return (
       <div className='deck-row'>
@@ -54,7 +77,7 @@ class DeckRow extends React.Component {
           </button>
         </Link>
         <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Change name</button>
-        <button onClick={() => {handleDeleteDeck(id)}}>Delete</button>
+        <button onClick={() => {this.handleDeleteDeck(id)}}>Delete</button>
       </div>
     )
   }
@@ -71,27 +94,33 @@ class DeckList extends React.Component {
 
     this.state = {
       addDeckName: '',
-      statusText: ''
+      statusText: '',
+      deckArr: []
     };
 
-    this.doUpdateDeck = this.doUpdateDeck.bind(this);
+    this.getDecks = this.getDecks.bind(this);
     this.handleAddDeck = this.handleAddDeck.bind(this);
     this.handleChangeAddDeck = this.handleChangeAddDeck.bind(this);
-    this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
   }
 
-  doUpdateDeck(deckId, newDeckName) {
-    updateDeck(this.props.uid, deckId, newDeckName).then(() => {
+  componentDidMount() {
+    this.getDecks();
+  }
+
+  getDecks() {
+    getDecks().then((decks) => {
       this.setState(() => ({
-        statusText: 'Deck successfully updated!'
+        deckArr: decks
       }))
-      this.props.getDecks();
     }).catch((err) => {
-      console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and restart the app.'
-      }))
+      console.error(err);
     })
+  }
+
+  clearDecks() {
+    this.setState(() => ({
+      deckArr: []
+    }))
   }
 
   handleAddDeck(e) {
@@ -99,8 +128,8 @@ class DeckList extends React.Component {
 
     const deckName = this.state.addDeckName.trim();
     if (deckName) {
-      addDeck(deckName, this.props.uid, this.props.name).then(() => {
-        this.props.getDecks();
+      addDeck(deckName).then(() => {
+        this.getDecks();
           this.setState(() => ({statusText: 'Deck successfully added!'}));
         }).catch((err) => {
           console.log(err);
@@ -122,17 +151,6 @@ class DeckList extends React.Component {
     }));
   }
 
-  handleDeleteDeck(deckId) {
-    deleteDeck(this.props.uid, deckId).then(() => {
-      this.setState(() => ({statusText: 'Deck successfully deleted.'}))
-      this.props.getDecks();
-    }).catch((err) => {
-      console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. See the console and refresh the page.'
-      }))
-    })
-  }
 
   render() {
 
@@ -149,26 +167,18 @@ class DeckList extends React.Component {
           <button type='submit'>Add Deck</button>
         </form>
         <p>Your decks:</p>
-        {this.props.deckArr.map((deck) => (
+        {this.state.deckArr.map((deck) => (
           <DeckRow 
             name={deck.name} 
             id={deck.id} 
             key={deck.id} 
             match={this.props.match}
-            doUpdateDeck={this.doUpdateDeck}
-            handleDeleteDeck={this.handleDeleteDeck}
-            setStatusText={(text) => {this.setState(() => ({statusText: text}))}} />
+            getDecks={this.getDecks} />
         ))}
       </div>
       
     )
   }
-}
-
-DeckList.propTypes = {
-  uid: PropTypes.string.isRequired,
-  deckArr: PropTypes.array.isRequired,
-  getDecks: PropTypes.func.isRequired
 }
 
 export default DeckList;

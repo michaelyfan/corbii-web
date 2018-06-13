@@ -5,7 +5,7 @@ import algoliasearch from 'algoliasearch';
 
 // tool initializations
 const db = firebase.firestore();
-const client = algoliasearch(alg.id, alg.key);
+const algoliaclient = algoliasearch(alg.id, alg.key);
 
 // variable declarations
 const ALGOLIA_INDEX_NAME_1 = 'decks';
@@ -21,12 +21,14 @@ export function addUser(uid, name) {
   });
 }
 
-export function addDeck(deckName, userId, userName) {
-  
+export function addDeck(deckName) {
+  const { uid, displayName } = firebase.auth().currentUser;
+
+
   const data = {
     name: deckName,
-    creatorId: userId,
-    creatorName: userName,
+    creatorId: uid,
+    creatorName: displayName,
     count: 0
   }
 
@@ -43,7 +45,7 @@ export function addDeck(deckName, userId, userName) {
       }
     });
 
-    return db.collection('users').doc(userId).collection('decks').doc(docRef.id).set({
+    return db.collection('users').doc(uid).collection('decks').doc(docRef.id).set({
       name: deckName
     });
   });
@@ -104,12 +106,14 @@ export async function getDeck(deckId) {
 
   return {
     deckName: deck.data().name,
+    creatorId: deck.data().creatorId,
     cards: cardsArr
   }
 
 }
 
-export function getDecks(userId, callbackSuccess, callbackFailure) {
+export function getDecks() {
+  const userId = firebase.auth().currentUser.uid;
   return db.collection('users').doc(userId).collection('decks').get()
     .then((querySnapshot) => {
       let decksArr = [];
@@ -155,24 +159,25 @@ export function deleteCard(deckId, cardId) {
 
 }
 
-export function deleteDeck(userId, deckId) {
-  const data = {
-    userId: userId,
-    deckId: deckId
-  }
-
-
-
-  return fetch('/api/deletedeck', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers:{
-      'Content-Type': 'application/json'
+export function deleteDeck(deckId) {
+  return firebase.auth().currentUser.getIdToken(true).then((token) => {
+    const data = {
+      token: token,
+      uid: firebase.auth().currentUser.uid, 
+      deckId: deckId
     }
-  });
+    return fetch('/api/deletedeck', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    });
+  })
 }
 
-export function updateDeck(userId, deckId, deckName) {
+export function updateDeck(deckId, deckName) {
+  const userId = firebase.auth().currentUser.uid;
   const deckRef = `decks/${deckId}`
   const userDeckRef = `users/${userId}/decks/${deckId}`;
 
@@ -198,7 +203,7 @@ export function updateDeck(userId, deckId, deckName) {
 export function updateCard(deckId, cardId, front, back) {
   const cardRef = `decks/${deckId}/cards/${cardId}`;
 
-  return db.doc(cardRef).update({
+  return db.doc(cardRef).update({ 
     front: front,
     back: back
   });
@@ -206,7 +211,7 @@ export function updateCard(deckId, cardId, front, back) {
 
 export function searchDecks(query) {
   return new Promise((resolve, reject) => {
-    const index = client.initIndex('decks');
+    const index = algoliaclient.initIndex('decks');
     index.search(
       {
         query: query,

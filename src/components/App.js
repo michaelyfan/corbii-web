@@ -1,6 +1,5 @@
 import React from 'react';
 import firebase from '../utils/firebase';
-import { getDecks } from '../utils/api';
 import parser from '../utils/parser';
 import { BrowserRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
 import Nav from './Nav';
@@ -15,76 +14,31 @@ class App extends React.Component {
     super(props);
 
       this.state = {
-        name: '',
-        uid: '',
-        profilePic: '',
-        signedIn: false,
-        deckArr: []
+        signedIn: false
       };
-
-      this.getDecks = this.getDecks.bind(this);
-      this.clearDecks = this.clearDecks.bind(this);
     }
 
   componentDidMount() {
-    console.log(firebase.auth().currentUser);
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log(firebase.auth().currentUser);
-        const {name, uid, pic} = parser.parseFirebaseUser(user);
-        this.setState(() => ({
-          name: name,
-          uid: uid,
-          profilePic: pic,
-          signedIn: true
-        }))
-        this.getDecks();
+        this.setState(() => ({signedIn: true}))
       } else {
-        this.setState(() => ({
-          name: '',
-          uid: '',
-          profilePic: '',
-          signedIn: false,
-        }))
-        this.clearDecks();
+        this.setState(() => ({signedIn: false}))
       }
     });
   }
-
-  getDecks() {
-    getDecks(this.state.uid).then((decks) => {
-      this.setState(() => ({
-        deckArr: decks
-      }))
-    }).catch((err) => {
-      console.error(err);
-    })
-  }
-
-  clearDecks() {
-    this.setState(() => ({
-      deckArr: []
-    }))
-  }
-
 
   render() {
 
     return (
       <Router>
         <div>
-          <Nav 
-            signedIn={this.state.signedIn} 
-            uid={this.state.uid} 
-            name={this.state.name} 
-            profilePic={this.state.profilePic} />
+          <Nav />
           <Switch>
             <Route 
               exact path='/' 
               render={(props) => 
                 <Auth {...props} 
-                  uid={this.state.uid}
-                  name={this.state.name}
                   signedIn={this.state.signedIn} />} />
             <Route
               path='/about'
@@ -95,11 +49,7 @@ class App extends React.Component {
             <Route 
               exact path='/decks'
               render={(props) => this.state.signedIn ? (
-                  <DeckList {...props} 
-                    name={this.state.name}
-                    uid={this.state.uid}
-                    deckArr={this.state.deckArr}
-                    getDecks={this.getDecks} />
+                    <DeckList {...props} />
                   ) : (
                     <Redirect to='/' />
                   )
@@ -107,9 +57,7 @@ class App extends React.Component {
             <Route
               path='/decks/view'
               render={(props) => this.state.signedIn ? (
-                <Deck {...props} 
-                  uid={this.state.uid}
-                />
+                <Deck {...props} />
                 ) : (
                   <Redirect to='/' />
                 )

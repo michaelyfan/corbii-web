@@ -80,20 +80,33 @@ function deletealgolia(deckId) {
 }
 
 app.post('/api/deletedeck', (req, res) => {
-  const cardsPath = `decks/${req.body.deckId}/cards`;
-  const deckPath = `decks/${req.body.deckId}`;
-  const userDeckPath = `users/${req.body.userId}/decks/${req.body.deckId}`;
 
-  Promise.all([
-    deleteCollection(cardsPath, 100),
-    deleteDocument(deckPath),
-    deleteDocument(userDeckPath)
-  ]).then((results) => {
-    deletealgolia(req.body.deckId);
-    res.sendStatus(200);
-  }).catch((err) => {
-    res.sendStatus(500);
-  });
+  admin.auth().verifyIdToken(req.body.token)
+    .then((decodedToken) => {
+      var userId = decodedToken.uid;
+      if (req.body.uid != userId) {
+        res.sendStatus(403);
+      } else {
+        const cardsPath = `decks/${req.body.deckId}/cards`;
+        const deckPath = `decks/${req.body.deckId}`;
+        const userDeckPath = `users/${userId}/decks/${req.body.deckId}`;
+        Promise.all([
+          deleteCollection(cardsPath, 100),
+          deleteDocument(deckPath),
+          deleteDocument(userDeckPath)
+        ]).then((results) => {
+          deletealgolia(req.body.deckId);
+          res.sendStatus(200);
+        }).catch((err) => {
+          res.sendStatus(500);
+        });
+      }
+    }).catch(function(error) {
+      res.sendStatus(500);
+    });
+
+
+  
 });
 
 app.listen(3000, () => console.log("Listening on port 3000!"));

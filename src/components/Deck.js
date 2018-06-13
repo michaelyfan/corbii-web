@@ -1,5 +1,6 @@
 import React from 'react';
 import { getDeck, addCard, deleteCard, updateCard } from '../utils/api';
+import firebase from '../utils/firebase';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -45,7 +46,7 @@ class Card extends React.Component {
           <div className='card-front'>
             <p className='low'>Front</p>
             {
-              this.state.isUpdate
+              this.state.isUpdate && this.props.userIsOwner
                 ? <input type='text' value={this.state.frontChangeValue} onChange={this.handleFrontChange} />
                 : <p>{front}</p>
             }
@@ -53,22 +54,24 @@ class Card extends React.Component {
           <div>
             <p className='low'>Back</p>
             {
-              this.state.isUpdate
+              this.state.isUpdate && this.props.userIsOwner
                 ? <input type='text' value={this.state.backChangeValue} onChange={this.handleBackChange} />
                 : <p>{back}</p>
             }
           </div>
         </div>
 
-        {
-          this.state.isUpdate
-            ? <span>
-                <button onClick={this.handleUpdateCard}>Update</button>
-                <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
-              </span>            
-            : <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Edit</button>
+        { 
+          this.props.userIsOwner
+            ? this.state.isUpdate
+                ? <span>
+                    <button onClick={this.handleUpdateCard}>Update</button>
+                    <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
+                  </span>            
+                : <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Edit</button>
+            : null
         }
-        <button onClick={() => {handleDeleteCard(id)}}>Delete</button>
+        { this.props.userIsOwner && <button onClick={() => {handleDeleteCard(id)}}>Delete</button>}
       </div>
       
     )
@@ -76,12 +79,12 @@ class Card extends React.Component {
 }
 
 Card.propTypes = {
+  userIsOwner: PropTypes.bool.isRequired,
   id: PropTypes.string.isRequired,
   front: PropTypes.string.isRequired,
   back: PropTypes.string.isRequired,
   doUpdateCard: PropTypes.func.isRequired
 }
-
 
 class Deck extends React.Component {
 
@@ -92,6 +95,7 @@ class Deck extends React.Component {
       deckName: '',
       cards: [],
       id: '',
+      userIsOwner: false,
       addCardFrontName: '',
       addCardBackName: '',
       statusText: ''
@@ -110,11 +114,11 @@ class Deck extends React.Component {
 
   async updateDeck() {
     const { d } = queryString.parse(this.props.location.search);
-
     const deck = await getDeck(d);
     this.setState(() => ({
       deckName: deck.deckName,
       id: d,
+      userIsOwner: deck.creatorId === firebase.auth().currentUser.uid,
       cards: deck.cards
     }));
   }
@@ -146,10 +150,10 @@ class Deck extends React.Component {
           }))
         })
         .catch((err) => {
-          console.log(err);
-          this.setState(() => {
+          this.setState(() => ({
             statusText: 'There was an error. Check the console and refresh the app.'
-          })
+          }))
+          console.error(err);
         })
 
     } else {
@@ -183,7 +187,7 @@ class Deck extends React.Component {
       console.log(err);
       this.setState(() => ({
         statusText: 'There was an error. Check the console and refresh the app.'
-      }))
+      }));
     })
   }
 
@@ -194,29 +198,36 @@ class Deck extends React.Component {
         {this.state.statusText}
         <br />
         <Link to='/decks'>
-          <button>Back to decks</button>
+          <button>Your decks</button>
         </Link>
-        <form onSubmit={this.handleAddCard}>
-          <span>Add a card:</span>
-          <input
-            placeholder='Front...'
-            type='text'
-            autoComplete='off'
-            value={this.state.addCardFrontName}
-            onChange={this.handleChangeAddCardFront} />
-          <input
-            placeholder='Back...'
-            type='text'
-            autoComplete='off'
-            value={this.state.addCardBackName}
-            onChange={this.handleChangeAddCardBack} />
-          <button type='submit'>Add</button>
-        </form>
-        <button onClick={() => {alert('Coming soon!')}}>
-          Study
-        </button>
+        {
+          this.state.userIsOwner
+            ? <form onSubmit={this.handleAddCard}>
+                <span>Add a card:</span>
+                <input
+                  placeholder='Front...'
+                  type='text'
+                  autoComplete='off'
+                  value={this.state.addCardFrontName}
+                  onChange={this.handleChangeAddCardFront} />
+                <input
+                  placeholder='Back...'
+                  type='text'
+                  autoComplete='off'
+                  value={this.state.addCardBackName}
+                  onChange={this.handleChangeAddCardBack} />
+                <button type='submit'>Add</button>
+              </form>
+            : null
+        }
+        <div>
+          <button onClick={() => {alert('Coming soon!')}}>
+            Study
+          </button>
+        </div>
         {this.state.cards.map((card) => 
           <Card 
+            userIsOwner={this.state.userIsOwner}
             id={card.id} 
             front={card.front} 
             back={card.back} 
@@ -227,10 +238,6 @@ class Deck extends React.Component {
       </div>
     )
   }
-}
-
-Deck.propTypes = {
-  uid: PropTypes.string.isRequired
 }
 
 export default Deck;

@@ -8,14 +8,6 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 
 class Auth extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      statusText: '',
-    }
-
-  }
 
   render() {
     const firebaseUiConfig = {
@@ -32,10 +24,7 @@ class Auth extends React.Component {
             addUser(uid, name).catch((err) => {
               console.log(err);
             })
-          } 
-          this.setState(() => ({
-            statusText: 'Successfully logged in!'
-          }));
+          }
         }
       }
     }
@@ -47,15 +36,12 @@ class Auth extends React.Component {
     return (
       <div>
         {!this.props.signedIn && <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
-        <p>{this.state.statusText}</p>
       </div>
     )
   }
 }
 
 Auth.propTypes = {
-  uid: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
   signedIn: PropTypes.bool.isRequired
 }
 

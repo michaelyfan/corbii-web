@@ -1,6 +1,7 @@
 import React from 'react';
 import firebase from '../utils/firebase';
 import { NavLink, withRouter } from 'react-router-dom';
+import { testSecurity } from '../utils/api';
 import PropTypes from 'prop-types';
 
 class Nav extends React.Component {
@@ -9,9 +10,31 @@ class Nav extends React.Component {
     super(props);
 
     this.state = {
+      profilePic: null,
+      name: 'not logged in',
+      signedIn: false
     }
 
+    this.handleTest = this.handleTest.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
+  }
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState(() => ({
+          profilePic: user.photoURL,
+          name: user.displayName,
+          signedIn: true
+        }))
+      } else {
+        this.setState(() => ({
+          profilePic: null,
+          name: 'not logged in',
+          signedIn: false
+        }))
+      }
+    });
   }
 
   handleSignOut() {
@@ -23,11 +46,20 @@ class Nav extends React.Component {
     }
   }
 
+  handleTest() {
+    testSecurity().then(() => {console.log('Success')}).catch((err) => {console.error(err)});
+  }
+
 
   render() {
+
     return (
       <div className='nav'>
-        <h1>Corbii</h1>
+        <div>
+          <h1>Corbii</h1>
+          <button onClick={this.handleTest}>Test</button>
+        </div>
+        
         <div>
           <ul className='nav-ul'>
             <li>
@@ -48,10 +80,14 @@ class Nav extends React.Component {
           </ul>
         </div>
         <div>
-          <p>{this.props.signedIn ? this.props.name : 'not logged in'}</p>
-          {this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}
           <p>
-            {this.props.signedIn
+            {this.state.signedIn
+              ? this.state.name
+              : 'not logged in'}
+          </p>
+          {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} />}
+          <p>
+            {this.state.signedIn
               ? <button className='button' onClick={this.handleSignOut}>Sign Out</button>
               : null }
           </p>
@@ -59,12 +95,6 @@ class Nav extends React.Component {
       </div>
     )
   }
-}
-
-Nav.propTypes = {
-  signedIn: PropTypes.bool.isRequired,
-  uid: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
 }
 
 export default withRouter(Nav);
