@@ -39,14 +39,23 @@ class Search extends React.Component {
     return (
       <div>
         <form onSubmit={this.enterActivator}>
-          <input type='text' onChange={this.handleChangeSearch} value={this.state.searchQuery} />
-          <Link
-            to={{
-              pathname: `${match.url}/${this.state.searchMode}`,
-              search: `?q=${this.state.searchQuery}`
-            }}>
-            <button type='submit'>Search</button>
-          </Link>
+          <div>
+            <input type='text' onChange={this.handleChangeSearch} value={this.state.searchQuery} />
+            <Link
+              to={{
+                pathname: `${match.url}/decks`,
+                search: `?q=${this.state.searchQuery}`
+              }}>
+              <button type='submit'>Search Decks</button>
+            </Link>
+            <Link
+              to={{
+                pathname: `${match.url}/users`,
+                search: `?q=${this.state.searchQuery}`
+              }}>
+              <button>Search Users</button>
+            </Link>
+          </div>
         </form>
         <Route path={`${match.url}/decks`} component={SearchDeck} />
         <Route path={`${match.url}/users`} component={SearchUser} />

@@ -12,10 +12,10 @@ function SearchResult(props) {
       <p>{props.count} {props.count === 1 ? 'card' : 'cards'}</p>
       <Link 
         to={{
-          pathname: `/decks/view`,
+          pathname: `/dashboard/view`,
           search: `?d=${props.id}`
         }}>
-        <button onClick={props.unsubscribeListener}>
+        <button>
           View
         </button>
       </Link>
@@ -29,7 +29,7 @@ SearchResult.propTypes = {
   count: PropTypes.number.isRequired,
 }
 
-class DeckSearch extends React.Component {
+class SearchDeck extends React.Component {
   constructor(props) {
     super(props);
 
@@ -37,23 +37,22 @@ class DeckSearch extends React.Component {
       statusText: '',
       results: []
     };
-
-    this.unsubscribeListener = this.unsubscribeListener.bind(this); 
-  }
-
-  componentWillMount() {
-    const { q } = queryString.parse(this.props.location.search);
-    this.updateResults(q);
   }
 
   componentDidMount() {
+    const { q } = queryString.parse(this.props.location.search);
+    this.updateResults(q);
+
+
     this.unlisten = this.props.history.listen((location, action) => {
-      const { q } = queryString.parse(location.search)
-      this.updateResults(q);
+      if (location.pathname === '/search/decks') {
+        const { q } = queryString.parse(location.search);
+        this.updateResults(q);
+      }
     });
   }
 
-  unsubscribeListener() {
+  componentWillUnmount() {
     this.unlisten();
   }
 
@@ -69,7 +68,7 @@ class DeckSearch extends React.Component {
         statusText: 'There was an error. Check the console and refresh the app.' 
       }));
     }
-    
+
   }
 
   render() {
@@ -85,7 +84,6 @@ class DeckSearch extends React.Component {
                   id={result.objectID}
                   name={result.name}
                   creator={result.creatorName}
-                  unsubscribeListener={this.unsubscribeListener}
                   count={result.count} />
               )
             })
@@ -96,4 +94,4 @@ class DeckSearch extends React.Component {
 
 }
 
-export default DeckSearch;
+export default SearchDeck;

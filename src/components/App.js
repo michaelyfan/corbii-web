@@ -2,30 +2,49 @@ import React from 'react';
 import firebase from '../utils/firebase';
 import parser from '../utils/parser';
 import { BrowserRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
+import { getProfilePicSelf } from '../utils/api';
 import Nav from './Nav';
-import About from './About';
+import FAQ from './FAQ';
 import Search from './Search';
 import Auth from './Auth';
 import DeckList from './DeckList';
 import Deck from './Deck';
+import Footer from './Footer';
+import Homepage from './Homepage';
+import User from './User';
+import NotFound from './NotFound';
+import Profile from './Profile';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
       this.state = {
+        profilePic: null,
         signedIn: false
       };
+
+      this.doGetProfilePic = this.doGetProfilePic.bind(this);
     }
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState(() => ({signedIn: true}))
+        this.setState(() => ({signedIn: true}));
+        this.doGetProfilePic();
       } else {
-        this.setState(() => ({signedIn: false}))
+        this.setState(() => ({
+          signedIn: false,
+          profilePic: null
+        }))
       }
     });
+  }
+
+  doGetProfilePic() {
+    return getProfilePicSelf().then((url) => {
+      this.setState(() => ({profilePic: url}))
+    })
   }
 
   render() {
@@ -33,45 +52,45 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <Nav />
+          <Nav profilePic={this.state.profilePic} />
           <Switch>
             <Route 
               exact path='/' 
               render={(props) => 
-                <Auth {...props} 
+                <Homepage {...props} 
                   signedIn={this.state.signedIn} />} />
             <Route
-              path='/about'
-              component={About} />
+              path='/FAQ'
+              component={FAQ} />
             <Route
               path='/search'
               component={Search} />
             <Route 
-              exact path='/decks'
-              render={(props) => this.state.signedIn ? (
-                    <DeckList {...props} />
-                  ) : (
-                    <Redirect to='/' />
-                  )
-              } />
+              exact path='/signin'
+              render={(props) => 
+                <Auth {...props} 
+                  signedIn={this.state.signedIn} />} />
+            <Route 
+              exact path='/profile'
+              render={(props) => 
+                <Profile {...props} 
+                  doGetProfilePic={this.doGetProfilePic}
+                  profilePic={this.state.profilePic}
+                  signedIn={this.state.signedIn} />} />
+            <Route 
+              exact path='/dashboard'
+              render={(props) => 
+                <DeckList {...props} 
+                  signedIn={this.state.signedIn} />} />
             <Route
-              path='/decks/view'
-              render={(props) => this.state.signedIn ? (
-                <Deck {...props} />
-                ) : (
-                  <Redirect to='/' />
-                )
-            } />
-            <Route render={() => {
-              return (
-                <div>
-                  <h1>You've discovered a 404 page.</h1>
-                  <Link to='/'>Return home</Link>
-                </div>
-              )
-            }} />
+              path='/dashboard/view'
+              component={Deck} />
+            <Route
+              path='/user'
+              component={User} />
+            <Route component={NotFound} />
           </Switch>
-          
+          <Footer />
         </div>
       </Router>
     )

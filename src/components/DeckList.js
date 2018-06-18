@@ -104,7 +104,9 @@ class DeckList extends React.Component {
   }
 
   componentDidMount() {
-    this.getDecks();
+    if (this.props.signedIn) {
+      this.getDecks();
+    }
   }
 
   getDecks() {
@@ -157,24 +159,36 @@ class DeckList extends React.Component {
     return (
       <div>
         {this.state.statusText}
-        <form onSubmit={this.handleAddDeck}>
-          <input 
-            placeholder='Add a deck...'
-            type='text' 
-            autoComplete='off' 
-            value={this.state.addDeckName}
-            onChange={this.handleChangeAddDeck} />
-          <button type='submit'>Add Deck</button>
-        </form>
-        <p>Your decks:</p>
-        {this.state.deckArr.map((deck) => (
-          <DeckRow 
-            name={deck.name} 
-            id={deck.id} 
-            key={deck.id} 
-            match={this.props.match}
-            getDecks={this.getDecks} />
-        ))}
+        {
+          this.props.signedIn
+            ? <div>
+                <form onSubmit={this.handleAddDeck}>
+                  <input 
+                    placeholder='Add a deck...'
+                    type='text' 
+                    autoComplete='off' 
+                    value={this.state.addDeckName}
+                    onChange={this.handleChangeAddDeck} />
+                  <button type='submit'>Add Deck</button>
+                </form>
+                <p>Your decks:</p>
+                {this.state.deckArr.map((deck) => (
+                  <DeckRow 
+                    name={deck.name} 
+                    id={deck.id} 
+                    key={deck.id} 
+                    match={this.props.match}
+                    getDecks={this.getDecks} />
+                ))}
+              </div>
+            : <div>
+                <h3>Sign in to view your decks.</h3>
+                <Link to='/signin'>Sign in</Link>
+              </div>
+            
+        }
+        
+        
       </div>
       
     )

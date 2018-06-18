@@ -5,7 +5,9 @@ import algoliasearch from 'algoliasearch';
 
 // tool initializations
 const db = firebase.firestore();
-const algoliaclient = algoliasearch(alg.id, alg.key);
+const storage = firebase.storage();
+const storageRef = storage.ref();
+const algoliaclient = algoliasearch(alg.id, alg.publicKey);
 
 // variable declarations
 const ALGOLIA_INDEX_NAME_1 = 'decks';
@@ -15,15 +17,34 @@ const ALGOLIA_INDEX_NAME_2 = 'users';
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-export function addUser(uid, name) {
-  return db.collection('users').doc(uid).set({
-    name: name,
+
+
+export function addUser() {
+  const { displayName, email, uid } = firebase.auth().currentUser;
+  fetch('/api/addalgoliauser', {
+    method: 'POST',
+    body: JSON.stringify({
+      uid: uid,
+      name: displayName,
+      email: email
+    }),
+    headers:{
+      'Content-Type': 'application/json'
+    }
   });
+  return Promise.all([
+    db.collection('users').doc(uid).set({
+      name: displayName,
+      email: email
+    }),
+    fetch('https://i.imgur.com/nYDMVCK.jpg').then((res) => res.blob()).then((res) => {
+      updateProfilePic(res);
+    })
+  ]);
 }
 
 export function addDeck(deckName) {
   const { uid, displayName } = firebase.auth().currentUser;
-
 
   const data = {
     name: deckName,
@@ -211,7 +232,7 @@ export function updateCard(deckId, cardId, front, back) {
 
 export function searchDecks(query) {
   return new Promise((resolve, reject) => {
-    const index = algoliaclient.initIndex('decks');
+    const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_1);
     index.search(
       {
         query: query,
@@ -225,5 +246,68 @@ export function searchDecks(query) {
       }
     );  
   })
-  
+}
+
+export function searchUsers(query) {
+  return new Promise((resolve, reject) => {
+    const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_2);
+    index.search(
+      {
+        query: query,
+        hitsPerPage: 50,
+      },
+      (err, content) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(content.hits);
+      }
+    );  
+  })
+}
+
+
+export function getUserSelf() {
+  const uid = firebase.auth().currentUser.uid;
+  return getUser(uid);
+}
+
+export function getUser(uid) {
+  let userRef = db.collection('users').doc(uid);
+
+  return Promise.all([
+    userRef.get(),
+    userRef.collection('decks').get(),
+    getProfilePic(uid)
+  ]).then((results) => {
+    const [ user, decks, url ] = results;
+    let decksArr = [];
+    decks.forEach((deck) => {
+      decksArr.push({
+        id: deck.id,
+        name: deck.data().name,
+      })
+    });
+    return {
+      name: user.data().name,
+      email: user.data().email,
+      id: user.id,
+      decks: decksArr,
+      photoURL: url
+    }
+  });
+}
+
+export function getProfilePicSelf() {
+  const uid = firebase.auth().currentUser.uid;
+  return getProfilePic(uid);
+}
+
+export function getProfilePic(uid) {
+  return storageRef.child(`profilePics/${uid}`).getDownloadURL();
+}
+
+export function updateProfilePic(file) {
+  const uid = firebase.auth().currentUser.uid;
+  return storageRef.child(`profilePics/${uid}`).put(file);
 }

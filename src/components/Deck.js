@@ -115,10 +115,11 @@ class Deck extends React.Component {
   async updateDeck() {
     const { d } = queryString.parse(this.props.location.search);
     const deck = await getDeck(d);
+    const currentUser = firebase.auth().currentUser;
     this.setState(() => ({
       deckName: deck.deckName,
       id: d,
-      userIsOwner: deck.creatorId === firebase.auth().currentUser.uid,
+      userIsOwner: currentUser != null && deck.creatorId === firebase.auth().currentUser.uid,
       cards: deck.cards
     }));
   }
@@ -197,7 +198,7 @@ class Deck extends React.Component {
         <h1>{this.state.deckName}</h1>
         {this.state.statusText}
         <br />
-        <Link to='/decks'>
+        <Link to='/dashboard'>
           <button>Your decks</button>
         </Link>
         {

@@ -20,6 +20,17 @@ a {
   align-items: center;
 }
 
+.nav-logo {
+  height: 75px;
+  cursor: pointer;
+}
+
+.nav-profile-img {
+  border-radius: 50%;
+  height: 50px;
+}
+
+/*
 .nav-ul {
   display: flex;
   justify-content: space-between;
@@ -34,16 +45,20 @@ a {
 
 .navlink-active {
   font-weight: bold;
+}*/
+
+.homepage-buttons {
+  margin: 25px;
 }
 
-.about p {
+.faq p {
   width: 500px;
   margin: 0 auto;
 }
 
 .profile-img {
+  height: 200px;
   border-radius: 50%;
-  height: 50px;
 }
 
 .deck-row {
@@ -85,4 +100,37 @@ a {
 
 .deck-search-result {
   margin: 10px;
+}
+
+.user-search-result {
+  margin: 50px;
+}
+
+.user-search-result img {
+  height: 100px;
+  border-radius: 50%;
+}
+
+.deck-mini-view {
+  margin: 10px;
+}
+
+.footer {
+  padding: 20px;
+}
+
+.footer-ul {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.footer-ul li {
+  list-style-type: none;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.page-404 img {
+  height: 200px;
 }

@@ -1,17 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-export default function About() {
+export default function FAQ() {
   return (
-    <div className='about'>
+    <div className='faq'>
+      <h2>What are we?</h2>
       <p>
         Corbii is a learning webapp that uses research-backed techniques to make your learning more effective and more efficient.
       </p>
-      <div>
-        <Link to='/'>
-          Get started
-        </Link>
-      </div>
+      <h2>Is this FAQ page finished?</h2>
+      <p>No.</p>
     </div>
   )
 }

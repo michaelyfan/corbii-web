@@ -19,9 +19,10 @@ class Auth extends React.Component {
       ],
       callbacks: {
         signInSuccessWithAuthResult: (authResult)  => {
-          const { isNewUser, uid, name } = parser.parseAuth(authResult);
+          const { isNewUser } = parser.parseAuth(authResult);
+          console.log(isNewUser);
           if (isNewUser) {
-            addUser(uid, name).catch((err) => {
+            addUser().catch((err) => {
               console.log(err);
             })
           }
@@ -30,11 +31,12 @@ class Auth extends React.Component {
     }
 
     if (this.props.signedIn) {
-      return <Redirect to='/decks' />
+      return <Redirect to='/dashboard' />
     }
 
     return (
       <div>
+        <h5>This will be either a separate page or a modal on the '/' path. Modals in React might be harder to animate.</h5>
         {!this.props.signedIn && <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
       </div>
     )

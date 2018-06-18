@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from '../utils/firebase';
-import { NavLink, withRouter } from 'react-router-dom';
+import { Link, NavLink, withRouter } from 'react-router-dom';
 import { testSecurity } from '../utils/api';
 import PropTypes from 'prop-types';
 
@@ -10,11 +10,14 @@ class Nav extends React.Component {
     super(props);
 
     this.state = {
-      profilePic: null,
       name: 'not logged in',
-      signedIn: false
+      signedIn: false,
+      searchQuery: ''
     }
 
+
+    this.enterActivator = this.enterActivator.bind(this);
+    this.handleChangeSearch = this.handleChangeSearch.bind(this);
     this.handleTest = this.handleTest.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
   }
@@ -23,13 +26,12 @@ class Nav extends React.Component {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState(() => ({
-          profilePic: user.photoURL,
           name: user.displayName,
           signedIn: true
-        }))
+        }), () => {
+        })
       } else {
         this.setState(() => ({
-          profilePic: null,
           name: 'not logged in',
           signedIn: false
         }))
@@ -50,45 +52,60 @@ class Nav extends React.Component {
     testSecurity().then(() => {console.log('Success')}).catch((err) => {console.error(err)});
   }
 
+  handleChangeSearch(e) {
+    e.persist();
+    this.setState(() => ({
+      searchQuery: e.target.value
+    }))
+  }
+
+  enterActivator(e) {
+    e.preventDefault();
+  }
 
   render() {
 
     return (
       <div className='nav'>
         <div>
-          <h1>Corbii</h1>
-          <button onClick={this.handleTest}>Test</button>
+          <Link to='/'>
+            <img src='../src/resources/corbii_transparent.png' className='nav-logo' />
+          </Link>
+          {/*<button onClick={this.handleTest}>Test</button>*/}
         </div>
         
         <div>
-          <ul className='nav-ul'>
-            <li>
-              <NavLink activeClassName='navlink-active' to='/decks'>
-                Decks
-              </NavLink>
-            </li>
-            <li>
-              <NavLink activeClassName='navlink-active' to='/search'>
-                Search
-              </NavLink>
-            </li>
-            <li>
-              <NavLink activeClassName='navlink-active' to='/about'>
-                About
-              </NavLink>
-            </li>
-          </ul>
+          <form onSubmit={this.enterActivator}>
+            <input placeholder='Search decks...' type='text' onChange={this.handleChangeSearch} value={this.state.searchQuery} />
+            <Link
+              to={{
+                pathname: '/search/decks',
+                search: `?q=${this.state.searchQuery}`
+              }}>
+              <button type='submit'>Search</button>
+            </Link>
+          </form>
         </div>
+
         <div>
           <p>
             {this.state.signedIn
               ? this.state.name
               : 'not logged in'}
           </p>
-          {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} />}
+          {this.props.profilePic && <img className='nav-profile-img' src={this.props.profilePic} />}
           <p>
             {this.state.signedIn
-              ? <button className='button' onClick={this.handleSignOut}>Sign Out</button>
+              ? <Link to='/profile'>
+                  <button>
+                    My Profile
+                  </button>
+                </Link>
+              : null }
+          </p>
+          <p>
+            {this.state.signedIn
+              ? <button onClick={this.handleSignOut}>Sign Out</button>
               : null }
           </p>
         </div>

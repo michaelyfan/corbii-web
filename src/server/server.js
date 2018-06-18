@@ -18,14 +18,31 @@ const db = admin.firestore();
 
 const ALGOLIA_ID = process.env.ALGOLIA_ID;
 const ALGOLIA_ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY;
-const ALGOLIA_INDEX_NAME_1 = 'decks';
-const ALGOLIA_INDEX_NAME_2 = 'users';
+const ALGOLIA_INDEX_1 = 'decks';
+const ALGOLIA_INDEX_2 = 'users';
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 app.use(express.static("dist"));
 
+app.post('/api/addalgoliauser', (req, res) => {
+  const index = algoliaClient.initIndex(ALGOLIA_INDEX_2);
+  index.addObject({
+    objectID: req.body.uid,
+    name: req.body.name,
+    photoURL: req.body.photoURL,
+    email: req.body.email
+  }, function(err, content) {
+    if (err) {
+      console.log(err);
+      res.sendStatus(500);
+    } else {
+      res.sendStatus(200);
+    }
+  });
+}); 
+
 app.post('/api/addalgolia', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
+  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
   index.addObject({
     objectID: req.body.deckId,
     name: req.body.name,
@@ -43,7 +60,7 @@ app.post('/api/addalgolia', (req, res) => {
 });
 
 app.post('/api/updatealgolia', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
+  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
   index.partialUpdateObject({
     objectID: req.body.deckId,
     count: req.body.count
@@ -57,7 +74,7 @@ app.post('/api/updatealgolia', (req, res) => {
 });
 
 app.post('/api/updatealgolianame', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
+  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
   index.partialUpdateObject({
     objectID: req.body.deckId,
     name: req.body.name
@@ -71,7 +88,7 @@ app.post('/api/updatealgolianame', (req, res) => {
 });
 
 function deletealgolia(deckId) {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
+  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
   index.deleteObject(deckId, function(err, content) {
     if (err) {
       console.log(err);
