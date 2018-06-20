@@ -7,17 +7,40 @@ const ALGOLIA_INDEX_NAME_1 = 'decks';
 const ALGOLIA_INDEX_NAME_2 = 'users';
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
-exports.onDeckCreated = functions.firestore.document('decks/{deckId}').onCreate((snap, context) => {
-  // Get the deck document
-  const deck = snap.data();
+// exports.onDeckCreate = functions.firestore.document('decks/{deckId}').onCreate((snap, context) => {
+//   // Get the deck document
+//   const deck = snap.data();
 
-  // Add an 'objectID' field which Algolia requires
-  deck.objectID = context.params.deckId;
+//   // Add an 'objectID' field which Algolia requires
+//   deck.objectID = context.params.deckId;
 
-  // Write to the algolia index
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
-  return index.saveObject(deck);
-});
+//   // Write to the algolia index
+//   const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
+//   return index.addObject(deck);
+// });
+
+// exports.onDeckUpdate = functions.firestore.document('decks/{deckId}').onUpdate((snap, context) => {
+//   const deck = snap.data();
+//   deck.objectID = context.params.deckId;
+//   return index.saveObject(deck);
+// });
+
+// exports.onDeckDelete = functions.firestore.document('decks/{deckId}').onDelete((snap, context) => {
+//   const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
+//   return index.deleteObject(context.params.deckId);
+// });
+
+// exports.onUserCreate = functions.firestore.document('users/{userId}').onCreate((snap, context) => {
+//   const user = snap.data();
+//   user.objectID = context.params.userId;
+//   const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_2);
+//   return index.addObject(user);
+// });
+
+// exports.onUserDelete = functions.firestore.document('users/{userId}').onDelete((snap, context) => {
+//   const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_2);
+//   return index.deleteObject(context.params.userId);
+// });
 
 exports.helloWorld = functions.https.onRequest((request, response) => {
  response.send("Hello from Firebase!");
