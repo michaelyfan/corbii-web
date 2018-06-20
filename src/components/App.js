@@ -1,8 +1,7 @@
 import React from 'react';
 import firebase from '../utils/firebase';
-import parser from '../utils/parser';
 import { BrowserRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
-import { getProfilePicSelf } from '../utils/api';
+import { getCurrentUserProfilePic } from '../utils/api';
 import Nav from './Nav';
 import FAQ from './FAQ';
 import Search from './Search';
@@ -42,7 +41,7 @@ class App extends React.Component {
   }
 
   doGetProfilePic() {
-    return getProfilePicSelf().then((url) => {
+    return getCurrentUserProfilePic().then((url) => {
       this.setState(() => ({profilePic: url}))
     })
   }

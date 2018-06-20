@@ -17,10 +17,91 @@ const ALGOLIA_INDEX_NAME_2 = 'users';
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
+export function getProfilePic(uid) {
+  return storageRef.child(`profilePics/${uid}`).getDownloadURL();
+}
+
+export async function getDeck(deckId) {
+  let deckRef = db.collection('decks').doc(deckId);
+
+  const [ deck, cards ] = await Promise.all([deckRef.get(), deckRef.collection('cards').get()])
+    .catch((err) => {
+      console.warn(err);
+      return null;
+    })
+
+  let cardsArr = [];
+  cards.forEach((card) => {
+    cardsArr.push({
+      id: card.id,
+      front: card.data().front,
+      back: card.data().back
+    })
+  });
+
+  return {
+    deckName: deck.data().name,
+    creatorId: deck.data().creatorId,
+    cards: cardsArr
+  }
+}
+
+export function getUser(uid) {
+  let userRef = db.collection('users').doc(uid);
+
+  return Promise.all([
+    userRef.get(),
+    userRef.collection('decks').get(),
+    getProfilePic(uid)
+  ]).then((results) => {
+    const [ user, decks, url ] = results;
+    let decksArr = [];
+    decks.forEach((deck) => {
+      decksArr.push({
+        id: deck.id,
+        name: deck.data().name,
+      })
+    });
+    return {
+      name: user.data().name,
+      email: user.data().email,
+      id: user.id,
+      decks: decksArr,
+      photoURL: url
+    }
+  });
+}
+
+export function getCurrentUserDecks() {
+  const userId = firebase.auth().currentUser.uid;
+  return db.collection('users').doc(userId).collection('decks').get()
+    .then((querySnapshot) => {
+      let decksArr = [];
+      querySnapshot.forEach((deck) => {
+        decksArr.push({
+          id: deck.id,
+          name: deck.data().name
+        });
+      });
+      return decksArr;
+    });
+}
+
+export function getCurrentUser() {
+  const uid = firebase.auth().currentUser.uid;
+  return getUser(uid);
+}
+
+export function getCurrentUserProfilePic() {
+  const uid = firebase.auth().currentUser.uid;
+  return getProfilePic(uid);
+}
 
 
-export function addUser() {
+export function createNewDbUser() {
   const { displayName, email, uid } = firebase.auth().currentUser;
+
+  // temporary algolia indexing soln
   fetch('/api/addalgoliauser', {
     method: 'POST',
     body: JSON.stringify({
@@ -32,6 +113,7 @@ export function addUser() {
       'Content-Type': 'application/json'
     }
   });
+  
   return Promise.all([
     db.collection('users').doc(uid).set({
       name: displayName,
@@ -43,7 +125,7 @@ export function addUser() {
   ]);
 }
 
-export function addDeck(deckName) {
+export function createDeckCUrrentUser(deckName) {
   const { uid, displayName } = firebase.auth().currentUser;
 
   const data = {
@@ -72,132 +154,58 @@ export function addDeck(deckName) {
   });
 }
 
-export function addCard(front, back, deckId) {
+export function createCard(front, back, deckId) {
   const deckRef = db.collection('decks').doc(deckId);
   return deckRef.collection('cards').add({
     front: front,
     back: back,
     internal: 0
   }).then(() => {
-    return db.runTransaction((t) => {
-      return t.get(deckRef).then((res) => {
-        if (!res.exists) {
-          throw new Error('deck does not exist.');
-        }
-
-        let newCount = res.data().count + 1;
-        t.update(deckRef, {
-          count: newCount
-        });
-
-        // very temporary algolia index solution
-        fetch('/api/updatealgolia', {
-          method: 'POST',
-          body: JSON.stringify({
-            count: newCount,
-            deckId: deckId
-          }),
-          headers:{
-            'Content-Type': 'application/json'
-          }
-        });
-
-      })
-    })
+    return updateDeckCountByOne(deckId, true);
   });
 }
 
-export async function getDeck(deckId) {
-  let deckRef = db.collection('decks').doc(deckId);
+export function updateCard(deckId, cardId, front, back) {
+  const cardRef = `decks/${deckId}/cards/${cardId}`;
 
-  const [ deck, cards ] = await Promise.all([deckRef.get(), deckRef.collection('cards').get()])
-    .catch((err) => {
-      console.warn(err);
-      return null;
-    })
-
-  let cardsArr = [];
-  cards.forEach((card) => {
-    cardsArr.push({
-      id: card.id,
-      front: card.data().front,
-      back: card.data().back
-    })
+  return db.doc(cardRef).update({ 
+    front: front,
+    back: back
   });
-
-  return {
-    deckName: deck.data().name,
-    creatorId: deck.data().creatorId,
-    cards: cardsArr
-  }
-
 }
 
-export function getDecks() {
-  const userId = firebase.auth().currentUser.uid;
-  return db.collection('users').doc(userId).collection('decks').get()
-    .then((querySnapshot) => {
-      let decksArr = [];
-      querySnapshot.forEach((deck) => {
-        decksArr.push({
-          id: deck.id,
-          name: deck.data().name
-        });
-      });
-      return decksArr;
-    });
-}
-
-export function deleteCard(deckId, cardId) {
+function updateDeckCountByOne(deckId, isIncrement) {
   const deckRef = db.collection('decks').doc(deckId);
-  return deckRef.collection('cards').doc(cardId).delete().then(() => {
-    return db.runTransaction((t) => {
-      return t.get(deckRef).then((res) => {
-        if (!res.exists) {
-          throw new Error('deck does not exist.');
-        }
+  const modifier = isIncrement ? 1 : -1;
 
-        let newCount = res.data().count - 1;
-        t.update(deckRef, {
-          count: newCount
-        });
-
-        // very temporary algolia index solution
-        fetch('/api/updatealgolia', {
-          method: 'POST',
-          body: JSON.stringify({
-            count: newCount,
-            deckId: deckId
-          }),
-          headers:{
-            'Content-Type': 'application/json'
-          }
-        });
-
-      })
-    })
-  });
-
-}
-
-export function deleteDeck(deckId) {
-  return firebase.auth().currentUser.getIdToken(true).then((token) => {
-    const data = {
-      token: token,
-      uid: firebase.auth().currentUser.uid, 
-      deckId: deckId
-    }
-    return fetch('/api/deletedeck', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers:{
-        'Content-Type': 'application/json'
+  return db.runTransaction((t) => {
+    return t.get(deckRef).then((res) => {
+      if (!res.exists) {
+        throw new Error('deck does not exist.');
       }
-    });
+
+      let newCount = res.data().count + modifier;
+      t.update(deckRef, {
+        count: newCount
+      });
+
+      // very temporary algolia index solution
+      fetch('/api/updatealgolia', {
+        method: 'POST',
+        body: JSON.stringify({
+          count: newCount,
+          deckId: deckId
+        }),
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      });
+
+    })
   })
 }
 
-export function updateDeck(deckId, deckName) {
+export function updateCurrentUserDeck(deckId, deckName) {
   const userId = firebase.auth().currentUser.uid;
   const deckRef = `decks/${deckId}`
   const userDeckRef = `users/${userId}/decks/${deckId}`;
@@ -218,16 +226,36 @@ export function updateDeck(deckId, deckName) {
     db.doc(deckRef).update({name: deckName}),
     db.doc(userDeckRef).update({name: deckName})
   ]);
-
 }
 
-export function updateCard(deckId, cardId, front, back) {
-  const cardRef = `decks/${deckId}/cards/${cardId}`;
+export function updateCurrentUserProfilePic(file) {
+  const uid = firebase.auth().currentUser.uid;
+  return storageRef.child(`profilePics/${uid}`).put(file);
+}
 
-  return db.doc(cardRef).update({ 
-    front: front,
-    back: back
+
+export function deleteCard(deckId, cardId) {
+  const deckRef = db.collection('decks').doc(deckId);
+  return deckRef.collection('cards').doc(cardId).delete().then(() => {
+    updateDeckCountByOne(deckId, false);
   });
+}
+
+export function deleteDeckFromCurrentUser(deckId) {
+  return firebase.auth().currentUser.getIdToken(true).then((token) => {
+    const data = {
+      token: token,
+      uid: firebase.auth().currentUser.uid, 
+      deckId: deckId
+    }
+    return fetch('/api/deletedeck', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    });
+  })
 }
 
 export function searchDecks(query) {
@@ -266,48 +294,3 @@ export function searchUsers(query) {
   })
 }
 
-
-export function getUserSelf() {
-  const uid = firebase.auth().currentUser.uid;
-  return getUser(uid);
-}
-
-export function getUser(uid) {
-  let userRef = db.collection('users').doc(uid);
-
-  return Promise.all([
-    userRef.get(),
-    userRef.collection('decks').get(),
-    getProfilePic(uid)
-  ]).then((results) => {
-    const [ user, decks, url ] = results;
-    let decksArr = [];
-    decks.forEach((deck) => {
-      decksArr.push({
-        id: deck.id,
-        name: deck.data().name,
-      })
-    });
-    return {
-      name: user.data().name,
-      email: user.data().email,
-      id: user.id,
-      decks: decksArr,
-      photoURL: url
-    }
-  });
-}
-
-export function getProfilePicSelf() {
-  const uid = firebase.auth().currentUser.uid;
-  return getProfilePic(uid);
-}
-
-export function getProfilePic(uid) {
-  return storageRef.child(`profilePics/${uid}`).getDownloadURL();
-}
-
-export function updateProfilePic(file) {
-  const uid = firebase.auth().currentUser.uid;
-  return storageRef.child(`profilePics/${uid}`).put(file);
-}

@@ -43,20 +43,20 @@ app.post('/api/addalgoliauser', (req, res) => {
 
 app.post('/api/addalgolia', (req, res) => {
   const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
+
   index.addObject({
     objectID: req.body.deckId,
     name: req.body.name,
     creatorId: req.body.creatorId,
     creatorName: req.body.creatorName,
     count: req.body.count
-  }, function(err, content) {
-    if (err) {
-      console.log(err);
-      res.sendStatus(500);
-    } else {
-      res.sendStatus(200);
-    }
-  });
+  }).then((content) => {
+    res.sendStatus(200);
+  }).catch((err) => {
+    console.log(err);
+    res.sendStatus(500);
+  }); 
+
 });
 
 app.post('/api/updatealgolia', (req, res) => {

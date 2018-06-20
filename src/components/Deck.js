@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDeck, addCard, deleteCard, updateCard } from '../utils/api';
+import { getDeck, createCard, deleteCard, updateCard } from '../utils/api';
 import firebase from '../utils/firebase';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
@@ -143,7 +143,7 @@ class Deck extends React.Component {
     const cardBack = this.state.addCardBackName.trim();
 
     if (cardFront && cardBack) {
-      addCard(cardFront, cardBack, this.state.id)
+      createCard(cardFront, cardBack, this.state.id)
         .then(() => {
           this.updateDeck();
           this.setState(() => ({

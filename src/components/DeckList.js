@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDecks, addDeck, deleteDeck, updateDeck } from '../utils/api';
+import { getCurrentUserDecks, createDeckCurrentUser, deleteDeckFromCurrentUser, updateCurrentUserDeck } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 
@@ -9,23 +9,23 @@ class DeckRow extends React.Component {
 
     this.state = {
       isUpdate: false,
-      updateDeckName: props.name.slice(0)
+      newDeckName: props.name.slice(0)
     };
 
     this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
-    this.handleUpdateDeckChange = this.handleUpdateDeckChange.bind(this);
+    this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
     this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
   }
 
-  handleUpdateDeckChange(e) {
+  handleChangeNewDeckName(e) {
     const value = e.target.value;
     this.setState(() => ({
-      updateDeckName: value
+      newDeckName: value
     }));
   }
 
   handleUpdateDeck() {
-    updateDeck(this.props.id, this.state.updateDeckName).then(() => {
+    updateCurrentUserDeck(this.props.id, this.state.newDeckName).then(() => {
       this.setState(() => ({
         statusText: 'Deck successfully updated!'
       }))
@@ -40,7 +40,7 @@ class DeckRow extends React.Component {
   }
 
   handleDeleteDeck(deckId) {
-    deleteDeck(deckId).then(() => {
+    deleteDeckFromCurrentUser(deckId).then(() => {
       this.setState(() => ({statusText: 'Deck successfully deleted.'}))
       this.props.getDecks();
     }).catch((err) => {
@@ -60,7 +60,7 @@ class DeckRow extends React.Component {
           this.state.isUpdate
             ? <div>
                 <form onSubmit={this.handleUpdateDeck}>
-                  <input type='text' value={this.state.updateDeckName} onChange={this.handleUpdateDeckChange} />
+                  <input type='text' value={this.state.newDeckName} onChange={this.handleChangeNewDeckName} />
                   <button type='submit'>Update</button>
                 </form>
                 <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
@@ -93,14 +93,14 @@ class DeckList extends React.Component {
     super(props);
 
     this.state = {
-      addDeckName: '',
+      newDeckName: '',
       statusText: '',
       deckArr: []
     };
 
     this.getDecks = this.getDecks.bind(this);
     this.handleAddDeck = this.handleAddDeck.bind(this);
-    this.handleChangeAddDeck = this.handleChangeAddDeck.bind(this);
+    this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
   }
 
   componentDidMount() {
@@ -110,7 +110,7 @@ class DeckList extends React.Component {
   }
 
   getDecks() {
-    getDecks().then((decks) => {
+    getCurrentUserDecks().then((decks) => {
       this.setState(() => ({
         deckArr: decks
       }))
@@ -128,9 +128,9 @@ class DeckList extends React.Component {
   handleAddDeck(e) {
     e.preventDefault();
 
-    const deckName = this.state.addDeckName.trim();
+    const deckName = this.state.newDeckName.trim();
     if (deckName) {
-      addDeck(deckName).then(() => {
+      createDeckCurrentUser(deckName).then(() => {
         this.getDecks();
           this.setState(() => ({statusText: 'Deck successfully added!'}));
         }).catch((err) => {
@@ -146,10 +146,10 @@ class DeckList extends React.Component {
     }
   }
 
-  handleChangeAddDeck(e) {
+  handleChangeNewDeckName(e) {
     e.persist();
     this.setState(() => ({
-      addDeckName: e.target.value
+      newDeckName: e.target.value
     }));
   }
 
@@ -167,8 +167,8 @@ class DeckList extends React.Component {
                     placeholder='Add a deck...'
                     type='text' 
                     autoComplete='off' 
-                    value={this.state.addDeckName}
-                    onChange={this.handleChangeAddDeck} />
+                    value={this.state.newDeckName}
+                    onChange={this.handleChangeNewDeckName} />
                   <button type='submit'>Add Deck</button>
                 </form>
                 <p>Your decks:</p>

@@ -1,8 +1,7 @@
 // imports
 import firebase from '../utils/firebase';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import parser from '../utils/parser';
-import { addUser } from '../utils/api';
+import { createNewDbUser } from '../utils/api';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
@@ -19,10 +18,8 @@ class Auth extends React.Component {
       ],
       callbacks: {
         signInSuccessWithAuthResult: (authResult)  => {
-          const { isNewUser } = parser.parseAuth(authResult);
-          console.log(isNewUser);
-          if (isNewUser) {
-            addUser().catch((err) => {
+          if (authResult.additionalUserInfo.isNewUser) {
+            createNewDbUser().catch((err) => {
               console.log(err);
             })
           }

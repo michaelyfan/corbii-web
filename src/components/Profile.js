@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getUserSelf, updateProfilePic } from '../utils/api';
+import { getCurrentUser, updateCurrentUserProfilePic } from '../utils/api';
 
 class Profile extends React.Component {
 
@@ -29,7 +29,7 @@ class Profile extends React.Component {
   }
 
   getUser() {
-    getUserSelf().then((result) => {
+    getCurrentUser().then((result) => {
       this.setState(() => ({
         name: result.name,
         email: result.email,
@@ -46,7 +46,7 @@ class Profile extends React.Component {
     if (files == null || files.length <= 0) {
       this.setState(() => ({statusText: 'You haven\'t uploaded any files!'}))
     } else {
-      updateProfilePic(files[0]).then(() => {
+      updateCurrentUserProfilePic(files[0]).then(() => {
         this.setState(() => ({statusText: 'Successfully uploaded!'}));
         this.props.doGetProfilePic().catch((err) => {
           this.setState(() => ({statusText:'There was an error. Check the console and refresh the app.'}))    
