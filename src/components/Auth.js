@@ -10,7 +10,7 @@ class Auth extends React.Component {
 
   render() {
     const firebaseUiConfig = {
-      signInFlow: 'popup',
+      signInFlow: 'redirect',
       signInOptions: [
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.FacebookAuthProvider.PROVIDER_ID,

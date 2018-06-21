@@ -66,28 +66,33 @@ class Nav extends React.Component {
   render() {
 
     return (
-      <div className='nav'>
+      <div className = "header"> 
         <div>
           <Link to='/'>
-            <img src='../src/resources/corbii_transparent.png' className='nav-logo' />
+             <img id = 'header-logo' src='/src/resources/header-logo.png' />
           </Link>
           {/*<button onClick={this.handleTest}>Test</button>*/}
         </div>
         
+
         <div>
           <form onSubmit={this.enterActivator}>
-            <input placeholder='Search decks...' type='text' onChange={this.handleChangeSearch} value={this.state.searchQuery} />
+            <input id = "searchbar" 
+              type = "text" 
+              placeholder = "search. . ." 
+              onChange={this.handleChangeSearch} 
+              value={this.state.searchQuery} />
             <Link
               to={{
                 pathname: '/search/decks',
                 search: `?q=${this.state.searchQuery}`
               }}>
-              <button type='submit'>Search</button>
+              <button style={{display: 'none'}} type='submit'>Search</button>
             </Link>
           </form>
         </div>
 
-        <div>
+        <div id= 'navbar-usercard'>
           <p>
             {this.state.signedIn
               ? this.state.name

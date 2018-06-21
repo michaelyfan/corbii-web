@@ -38,25 +38,31 @@ class Search extends React.Component {
 
     return (
       <div>
-        <form onSubmit={this.enterActivator}>
-          <div>
-            <input type='text' onChange={this.handleChangeSearch} value={this.state.searchQuery} />
-            <Link
-              to={{
-                pathname: `${match.url}/decks`,
-                search: `?q=${this.state.searchQuery}`
-              }}>
-              <button type='submit'>Search Decks</button>
-            </Link>
-            <Link
-              to={{
-                pathname: `${match.url}/users`,
-                search: `?q=${this.state.searchQuery}`
-              }}>
-              <button>Search Users</button>
-            </Link>
-          </div>
-        </form>
+        <div class = 'main-searchbar'>
+          <form onSubmit={this.enterActivator}>
+            <div>
+              <input id = "big-search" type = "text" placeholder = "search. . ."
+                  onChange={this.handleChangeSearch} value={this.state.searchQuery} />
+              <Link
+                to={{
+                  pathname: `${match.url}/decks`,
+                  search: `?q=${this.state.searchQuery}`
+                }}>
+                <button type='submit' class = 'filter-button' id = 'show-decks'> show decks </button>
+              </Link>
+              <Link
+                to={{
+                  pathname: `${match.url}/users`,
+                  search: `?q=${this.state.searchQuery}`
+                }}>
+                <button class = 'filter-button' id = 'show-users'> show user </button>
+              </Link>
+            </div>
+          </form>
+
+          
+          
+        </div>
         <Route path={`${match.url}/decks`} component={SearchDeck} />
         <Route path={`${match.url}/users`} component={SearchUser} />
       </div>

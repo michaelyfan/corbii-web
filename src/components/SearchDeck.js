@@ -6,19 +6,17 @@ import PropTypes from 'prop-types';
 
 function SearchResult(props) {
   return (
-    <div className='deck-search-result'>
-      <h3>{props.name}</h3>
-      <p>Created by: {props.creator}</p>
-      <p>{props.count} {props.count === 1 ? 'card' : 'cards'}</p>
+    <div className='result-box'>
       <Link 
         to={{
           pathname: `/dashboard/view`,
           search: `?d=${props.id}`
         }}>
-        <button>
-          View
-        </button>
+        <p className = 'deck-text' id = 'deck-name'>{props.name}</p>
       </Link>
+      <p className = 'deck-text' id = 'deck-owner'>{props.creator}</p>
+      <p className = 'deck-text' id = 'num-of-terms'>{props.count} {props.count === 1 ? 'card' : 'cards'}</p>
+      
     </div>
   )
 }
