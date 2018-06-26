@@ -260,7 +260,7 @@ export function createConcept(question, answer, listId) {
   const deckRef = db.collection('lists').doc(listId);
   return deckRef.collection('concepts').add({
     question: question,
-    answer: answer
+    answer: answer ? answer : ''
   }).then(() => {
     return updateListCountByOne(listId, true);
   });

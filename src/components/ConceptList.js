@@ -52,7 +52,7 @@ class Concept extends React.Component {
             }
           </div>
           <div>
-            <p className='low'>Answer</p>
+            <p className='low'>Your provided answer</p>
             {
               this.state.isUpdate && this.props.userIsOwner
                 ? <input type='text' value={this.state.answerChangeValue} onChange={this.handleAnswerChange} />
@@ -97,14 +97,12 @@ class ConceptList extends React.Component {
       id: '',
       userIsOwner: false,
       addConceptQuestionName: '',
-      addConceptAnswerName: '',
       statusText: ''
     }
 
     this.handleAddConcept = this.handleAddConcept.bind(this);
     this.handleDeleteConcept = this.handleDeleteConcept.bind(this);
     this.handleChangeAddConceptQuestion = this.handleChangeAddConceptQuestion.bind(this);
-    this.handleChangeAddConceptAnswer = this.handleChangeAddConceptAnswer.bind(this);
     this.doUpdateConcept = this.doUpdateConcept.bind(this);
   }
 
@@ -140,10 +138,9 @@ class ConceptList extends React.Component {
   handleAddConcept(e) {
     e.preventDefault();
     const question = this.state.addConceptQuestionName.trim();
-    const answer = this.state.addConceptAnswerName.trim();
 
-    if (question && answer) {
-      createConcept(question, answer, this.state.id)
+    if (question) {
+      createConcept(question, '', this.state.id)
         .then(() => {
           this.updateConceptList();
           this.setState(() => ({
@@ -168,13 +165,6 @@ class ConceptList extends React.Component {
     e.persist();
     this.setState(() => ({
         addConceptQuestionName: e.target.value
-    }));
-  }
-
-  handleChangeAddConceptAnswer(e) {
-    e.persist();
-    this.setState(() => ({
-      addConceptAnswerName: e.target.value
     }));
   }
 
@@ -211,12 +201,6 @@ class ConceptList extends React.Component {
                   autoComplete='off'
                   value={this.state.addConceptQuestionName}
                   onChange={this.handleChangeAddConceptQuestion} />
-                <input
-                  placeholder='Answer...'
-                  type='text'
-                  autoComplete='off'
-                  value={this.state.addConceptAnswerName}
-                  onChange={this.handleChangeAddConceptAnswer} />
                 <button type='submit'>Add</button>
               </form>
             : null
