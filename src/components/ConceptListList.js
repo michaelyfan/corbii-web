@@ -1,35 +1,35 @@
 import React from 'react';
-import { getCurrentUserDecks, deleteDeckFromCurrentUser, updateCurrentUserDeck } from '../utils/api';
+import { getCurrentUserConceptLists, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 
-class DeckRow extends React.Component {
+class ConceptListRow extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       isUpdate: false,
-      newDeckName: props.name.slice(0)
+      newConceptListName: props.name.slice(0)
     };
 
-    this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
-    this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
-    this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
+    this.handleUpdateConceptList = this.handleUpdateConceptList.bind(this);
+    this.handleChangeNewConceptListName = this.handleChangeNewConceptListName.bind(this);
+    this.handleDeleteConceptList = this.handleDeleteConceptList.bind(this);
   }
 
-  handleChangeNewDeckName(e) {
+  handleChangeNewConceptListName(e) {
     const value = e.target.value;
     this.setState(() => ({
-      newDeckName: value
+      newConceptListName: value
     }));
   }
 
-  handleUpdateDeck() {
-    updateCurrentUserDeck(this.props.id, this.state.newDeckName).then(() => {
+  handleUpdateConceptList() {
+    updateCurrentUserList(this.props.id, this.state.newConceptListName).then(() => {
       this.setState(() => ({
-        statusText: 'Deck successfully updated!'
+        statusText: 'Concept list successfully updated!'
       }))
-      this.props.getDecks();
+      this.props.getConceptLists();
     }).catch((err) => {
       console.log(err);
       this.setState(() => ({
@@ -39,10 +39,10 @@ class DeckRow extends React.Component {
     this.setState(() => ({isUpdate: false}));
   }
 
-  handleDeleteDeck(deckId) {
-    deleteDeckFromCurrentUser(deckId).then(() => {
-      this.setState(() => ({statusText: 'Deck successfully deleted.'}))
-      this.props.getDecks();
+  handleDeleteConceptList(listId) {
+    deleteListFromCurrentUser(listId).then(() => {
+      this.setState(() => ({statusText: 'Concept list successfully deleted.'}))
+      this.props.getConceptLists();
     }).catch((err) => {
       console.log(err);
       this.setState(() => ({
@@ -59,8 +59,8 @@ class DeckRow extends React.Component {
         {
           this.state.isUpdate
             ? <div>
-                <form onSubmit={this.handleUpdateDeck}>
-                  <input type='text' value={this.state.newDeckName} onChange={this.handleChangeNewDeckName} />
+                <form onSubmit={this.handleUpdateConceptList}>
+                  <input type='text' value={this.state.newConceptListName} onChange={this.handleChangeNewConceptListName} />
                   <button type='submit'>Update</button>
                 </form>
                 <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
@@ -69,7 +69,7 @@ class DeckRow extends React.Component {
         }
         <Link 
           to={{
-            pathname: `/decks`,
+            pathname: `/conceptlists`,
             search: `?d=${id}`
           }}>
           <button>
@@ -77,50 +77,51 @@ class DeckRow extends React.Component {
           </button>
         </Link>
         <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Change name</button>
-        <button onClick={() => {this.handleDeleteDeck(id)}}>Delete</button>
+        <button onClick={() => {this.handleDeleteConceptList(id)}}>Delete</button>
       </div>
     )
   }
 }
 
-DeckRow.propTypes = {
+ConceptListRow.propTypes = {
   name: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired
 }
 
-class DeckList extends React.Component {
+class ConceptListList extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       statusText: '',
-      deckArr: []
+      conceptListArr: []
     };
 
-    this.getDecks = this.getDecks.bind(this);
+    this.getConceptLists = this.getConceptLists.bind(this);
   }
 
   componentDidMount() {
     if (this.props.signedIn) {
-      this.getDecks();
+      this.getConceptLists();
     }
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.getDecks();
+      this.getConceptLists();
     }
   }
 
-  getDecks() {
-    getCurrentUserDecks().then((decks) => {
+  getConceptLists() {
+    getCurrentUserConceptLists().then((lists) => {
       this.setState(() => ({
-        deckArr: decks
+        conceptListArr: lists
       }))
     }).catch((err) => {
       console.error(err);
     })
   }
+
 
   render() {
 
@@ -130,18 +131,18 @@ class DeckList extends React.Component {
         {
           this.props.signedIn
             ? <div>
-                <h3>Your decks:</h3>
-                {this.state.deckArr.map((deck) => (
-                  <DeckRow 
-                    name={deck.name} 
-                    id={deck.id} 
-                    key={deck.id} 
+                <h3>Your concept lists:</h3>
+                {this.state.conceptListArr.map((list) => (
+                  <ConceptListRow 
+                    name={list.name} 
+                    id={list.id} 
+                    key={list.id} 
                     match={this.props.match}
-                    getDecks={this.getDecks} />
+                    getConceptLists={this.getConceptLists} />
                 ))}
               </div>
             : <div>
-                <h3>Sign in to view your decks.</h3>
+                <h3>Sign in to view your concept lists.</h3>
                 <Link to='/signin'>Sign in</Link>
               </div>
             
@@ -154,8 +155,8 @@ class DeckList extends React.Component {
   }
 }
 
-DeckList.propTypes = {
+ConceptListList.propTypes = {
   signedIn: PropTypes.bool.isRequired
 }
 
-export default DeckList;
+export default ConceptListList;

@@ -38,7 +38,7 @@ class Search extends React.Component {
 
     return (
       <div>
-        <div class = 'main-searchbar'>
+        <div className = 'main-searchbar'>
           <form onSubmit={this.enterActivator}>
             <div>
               <input id = "big-search" type = "text" placeholder = "search. . ."
@@ -48,14 +48,14 @@ class Search extends React.Component {
                   pathname: `${match.url}/decks`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
-                <button type='submit' class = 'filter-button' id = 'show-decks'> show decks </button>
+                <button type='submit' className = 'filter-button' id = 'show-decks'> show decks </button>
               </Link>
               <Link
                 to={{
                   pathname: `${match.url}/users`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
-                <button class = 'filter-button' id = 'show-users'> show user </button>
+                <button className = 'filter-button' id = 'show-users'> show user </button>
               </Link>
             </div>
           </form>

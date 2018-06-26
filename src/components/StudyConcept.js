@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Boilerplate extends React.Component {
+class StudyConcept extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-
+      
     }
   }
 
@@ -19,8 +19,8 @@ class Boilerplate extends React.Component {
   }
 }
 
-Boilerplate.propTypes = {
+StudyConcept.propTypes = {
   
 }
 
-export default Boilerplate;
+export default StudyConcept;

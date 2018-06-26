@@ -89,12 +89,22 @@ hr {
   color: white;
 }
 
-#navbar-usercard button {
-  padding: 2px;
+#navbar-usercard {
+  text-align: center;
 }
 
-#navbar-usedcard img {
-  height: 100px;
+#navbar-usercard p {
+  margin: 2px;
+}
+
+#navbar-usercard button {
+  padding: 5px;
+  font-size: 16px;
+}
+
+#navbar-usercard img {
+  border-radius: 50%;
+  height: 75px;
   width: auto;
 }
 /* End navbar header */

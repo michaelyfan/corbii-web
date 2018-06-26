@@ -10,7 +10,7 @@ function DeckMiniView(props) {
       <h3>{name}</h3>
       <Link 
         to={{
-          pathname: 'dashboard/view',
+          pathname: 'decks',
           search: `?d=${id}`
         }}>
         <button>View</button>

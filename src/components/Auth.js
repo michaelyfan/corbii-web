@@ -33,7 +33,7 @@ class Auth extends React.Component {
 
     return (
       <div>
-        <h5>This will be either a separate page or a modal on the '/' path. Modals in React might be harder to animate.</h5>
+        {/*Below will be either a separate page or a modal on the '/' path. Modals in React might be harder to animate.*/}
         {!this.props.signedIn && <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
       </div>
     )

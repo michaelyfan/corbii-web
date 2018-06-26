@@ -6,13 +6,16 @@ import Nav from './Nav';
 import FAQ from './FAQ';
 import Search from './Search';
 import Auth from './Auth';
-import DeckList from './DeckList';
 import Deck from './Deck';
+import ConceptList from './ConceptList';
 import Footer from './Footer';
 import Homepage from './Homepage';
 import User from './User';
 import NotFound from './NotFound';
 import Profile from './Profile';
+import StudyConcept from './StudyConcept';
+import Dashboard from './Dashboard';
+import Create from './Create';
 
 class App extends React.Component {
   constructor(props) {
@@ -79,11 +82,22 @@ class App extends React.Component {
             <Route 
               exact path='/dashboard'
               render={(props) => 
-                <DeckList {...props} 
+                <Dashboard {...props} 
                   signedIn={this.state.signedIn} />} />
             <Route
-              path='/dashboard/view'
+              path='/create'
+              render={(props) => 
+                <Create {...props}
+                  signedIn={this.state.signedIn} />} />
+            <Route
+              path='/decks'
               component={Deck} />
+            <Route
+              path='/conceptlists'
+              component={ConceptList} />
+            <Route
+              path='/study/conceptlist'
+              component={StudyConcept} />
             <Route
               path='/user'
               component={User} />

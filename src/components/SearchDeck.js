@@ -9,7 +9,7 @@ function SearchResult(props) {
     <div className='result-box'>
       <Link 
         to={{
-          pathname: `/dashboard/view`,
+          pathname: `/decks`,
           search: `?d=${props.id}`
         }}>
         <p className = 'deck-text' id = 'deck-name'>{props.name}</p>

@@ -121,9 +121,32 @@ app.post('/api/deletedeck', (req, res) => {
     }).catch(function(error) {
       res.sendStatus(500);
     });
+});
 
-
-  
+app.post('/api/deletelist', (req, res) => {
+  admin.auth().verifyIdToken(req.body.token)
+    .then((decodedToken) => {
+      var userId = decodedToken.uid;
+      if (req.body.uid != userId) {
+        res.sendStatus(403);
+      } else {
+        const conceptsPath = `lists/${req.body.listId}/concepts`;
+        const listPath = `lists/${req.body.listId}`;
+        const userListPath = `users/${userId}/lists/${req.body.listId}`;
+        Promise.all([
+          deleteCollection(conceptsPath, 100),
+          deleteDocument(listPath),
+          deleteDocument(userListPath)
+        ]).then((results) => {
+          // deletealgolia(req.body.listId);
+          res.sendStatus(200);
+        }).catch((err) => {
+          res.sendStatus(500);
+        });
+      }
+    }).catch(function(error) {
+      res.sendStatus(500);
+    });
 });
 
 app.listen(3000, () => console.log("Listening on port 3000!"));

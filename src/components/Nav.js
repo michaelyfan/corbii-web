@@ -93,21 +93,11 @@ class Nav extends React.Component {
         </div>
 
         <div id= 'navbar-usercard'>
-          <p>
-            {this.state.signedIn
-              ? this.state.name
-              : 'not logged in'}
-          </p>
-          {this.props.profilePic && <img className='nav-profile-img' src={this.props.profilePic} />}
-          <p>
-            {this.state.signedIn
-              ? <Link to='/profile'>
-                  <button>
-                    My Profile
-                  </button>
-                </Link>
-              : null }
-          </p>
+          {this.props.profilePic 
+            && <Link to='/profile'>
+                  <img className='nav-profile-img' src={this.props.profilePic} />
+               </Link>}
+
           <p>
             {this.state.signedIn
               ? <button onClick={this.handleSignOut}>Sign Out</button>
