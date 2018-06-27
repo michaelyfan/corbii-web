@@ -6,8 +6,8 @@ class Homepage extends React.Component {
     return (
       <div>
         <div className = "account-block">
-          <h1 className = "header-title" id = "slogan">learning as smart as
-            <span className = "emphasized-words" id = "you"> you </span> 
+          <h1 className = "header-title" id = "slogan">learning as smart as&nbsp;
+            <span className = "emphasized-words" id = "you">you</span> 
           </h1>
           <br />
           <Link to='/signin'>

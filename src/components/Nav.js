@@ -67,29 +67,30 @@ class Nav extends React.Component {
 
     return (
       <div className = "header"> 
-        <div>
-          <Link to='/'>
-             <img id = 'header-logo' src='/src/resources/header-logo.png' />
-          </Link>
-          {/*<button onClick={this.handleTest}>Test</button>*/}
-        </div>
-        
-
-        <div>
-          <form onSubmit={this.enterActivator}>
-            <input id = "searchbar" 
-              type = "text" 
-              placeholder = "search. . ." 
-              onChange={this.handleChangeSearch} 
-              value={this.state.searchQuery} />
-            <Link
-              to={{
-                pathname: '/search/decks',
-                search: `?q=${this.state.searchQuery}`
-              }}>
-              <button style={{display: 'none'}} type='submit'>Search</button>
+        <div className = 'flex-header'>
+          <div>
+            <Link to='/'>
+               <img id = 'header-logo' src='/src/resources/header-logo.png' />
             </Link>
-          </form>
+            {/*<button onClick={this.handleTest}>Test</button>*/}
+          </div>
+
+          <div>
+            <form onSubmit={this.enterActivator}>
+              <input id = "searchbar" 
+                type = "text" 
+                placeholder = "search . . ." 
+                onChange={this.handleChangeSearch} 
+                value={this.state.searchQuery} />
+              <Link
+                to={{
+                  pathname: '/search/decks',
+                  search: `?q=${this.state.searchQuery}`
+                }}>
+                <button style={{display: 'none'}} type='submit'>Search</button>
+              </Link>
+            </form>
+          </div>
         </div>
 
         <div id= 'navbar-usercard'>
