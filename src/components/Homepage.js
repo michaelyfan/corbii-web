@@ -1,6 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Login from './Login';
+import { Carousel } from 'react-responsive-carousel';
+
+class Slideshow extends React.Component {
+  render() {
+    return (
+      <Carousel 
+        showThumbs = {false}
+        showIndicators = {false}
+        className = 'slideshow-carousel'
+        autoPlay = {true}
+        infiniteLoop = {true}
+        interval = {7000}
+      >
+        <div><img src = "/src/resources/slideshow-img/spaced-rep.jpg" /></div>
+        <div><img src = "/src/resources/slideshow-img/self-exp.jpg" /></div>
+      </Carousel>
+     );
+  }
+}
 
 class Homepage extends React.Component {
   render() {
@@ -26,27 +45,6 @@ class Homepage extends React.Component {
           <br /><br />
         </div>
 
-        {/*
-          This is the modal markup from corbii_site
-
-        <div class = 'modal' id = 'login-modal'>
-          <div class = 'modal-content'>
-            <span class = 'close'>&times;</span>
-            <h3 class= 'header-title' id = 'log-in-header'>log in</h3>
-            <input class = 'login-text' id = "email-login" type = "text" placeholder = "email" />
-            <input class = 'login-text' id = "password-login" type = "text" placeholder = "password" />
-            <button class = 'primary-button'>
-              log in with google
-            </button>
-            <br /><br />
-            <button class = 'secondary-button'>
-              log in with facebook
-            </button>
-            <br /><br />
-          </div>
-        </div>
-      */}
-
         <div className = "home-info">
           <h1 className = "header-title">who are 
             <span className = "emphasized-words"> we?</span>
@@ -63,12 +61,7 @@ class Homepage extends React.Component {
 
         <div className = 'cogsci-techniques'>
           <h2 className = 'header-title' id = 'our-techniques'>our techniques</h2>
-          <div id='slider'>
-            <div className='slide'></div>
-            <div className='slide'></div>
-            <div className='slide'></div>
-            <div className='slide'></div>
-          </div>
+          <Slideshow />
         </div>
         
         <div className = 'learn-button'>
