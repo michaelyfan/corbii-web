@@ -6,6 +6,16 @@ service cloud.firestore {
 
       allow create: if request.auth.uid == userId;
 
+        match /studiedDecks/{deckId} {
+          allow read: if true;
+          allow create, update: if request.auth.uid == userId;
+
+          match /cards/{cardId} {
+            allow read: if true;
+            allow create, update: if request.auth.uid == userId;          
+          }
+        }
+
         match /decks/{deckId} {
           allow read: if true;
           allow create, update: if request.auth.uid == userId;

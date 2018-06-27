@@ -373,6 +373,15 @@ hr {
   margin: 10px;
 }
 
+.study-card {
+  font-size: 30px;
+  background-color: #d8e4f1;
+}
+
+.study-card p {
+  margin: 40px;
+}
+
 /* Footer */
 .footer {
   background-color: #C0CEDE;

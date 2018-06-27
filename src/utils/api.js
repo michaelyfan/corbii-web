@@ -1,3 +1,8 @@
+/*
+  read: get, list
+  write: create, update, delete
+*/
+
 import firebase from './firebase';
 import 'firebase/firestore';
 import alg from './algconfig';
@@ -18,6 +23,7 @@ const ALGOLIA_INDEX_NAME_3 = 'conceptlists';
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
+// Begin get functions
 export function getProfilePic(uid) {
   return storageRef.child(`profilePics/${uid}`).getDownloadURL();
 }
@@ -25,8 +31,10 @@ export function getProfilePic(uid) {
 export async function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
 
-  const [ deck, cards ] = await Promise.all([deckRef.get(), deckRef.collection('cards').get()])
-    .catch((err) => {
+  const [ deck, cards ] = await Promise.all([
+    deckRef.get(), 
+    deckRef.collection('cards').get(),
+  ]).catch((err) => {
       console.warn(err);
       return null;
     })
@@ -45,6 +53,30 @@ export async function getDeck(deckId) {
     creatorId: deck.data().creatorId,
     cards: cardsArr
   }
+}
+
+export function getDeckForStudy(deckId) {
+  const uid = firebase.auth().currentUser.uid;
+  const userCardsStudiedRef = db.collection('users').doc(uid)
+                                .collection('studiedDecks').doc(deckId)
+                                .collection('cards');
+  
+  return getDeck(deckId).then((result) => {
+    return userCardsStudiedRef.get().then((cardsSnapshot) => {
+      if (cardsSnapshot.exists) {
+        let studiedCards = {};
+        cardsSnapshot.forEach((card) => {
+          // something that gets most overdue cards
+          studiedCards[card.id] = cards.data();
+        })
+        result.studiedCards = studiedCards;
+      } else {
+        result.studiedCards = {};
+      }
+      console.log('here', result);
+      return result;
+    })
+  });
 }
 
 export async function getConceptList(listId) {
@@ -137,8 +169,9 @@ export function getCurrentUserProfilePic() {
   const uid = firebase.auth().currentUser.uid;
   return getProfilePic(uid);
 }
+// end get functions
 
-
+// begin create functions
 export function createNewDbUser() {
   const { displayName, email, uid } = firebase.auth().currentUser;
 
@@ -265,7 +298,9 @@ export function createConcept(question, answer, listId) {
     return updateListCountByOne(listId, true);
   });
 }
+// end create functions
 
+// begin update functions
 export function updateCard(deckId, cardId, front, back) {
   const cardRef = `decks/${deckId}/cards/${cardId}`;
 
@@ -396,8 +431,9 @@ export function updateCurrentUserProfilePic(file) {
   const uid = firebase.auth().currentUser.uid;
   return storageRef.child(`profilePics/${uid}`).put(file);
 }
+// end update functions
 
-
+// begin delete functions
 export function deleteCard(deckId, cardId) {
   const deckRef = db.collection('decks').doc(deckId);
   return deckRef.collection('cards').doc(cardId).delete().then(() => {
@@ -445,7 +481,9 @@ export function deleteListFromCurrentUser(listId) {
     });
   })
 }
+// end delete functions
 
+// begin search functions
 export function searchDecks(query) {
   return new Promise((resolve, reject) => {
     const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_1);
@@ -481,4 +519,4 @@ export function searchUsers(query) {
     );  
   })
 }
-
+// end search functions

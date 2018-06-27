@@ -14,6 +14,7 @@ import User from './User';
 import NotFound from './NotFound';
 import Profile from './Profile';
 import StudyConcept from './StudyConcept';
+import StudyDeck from './StudyDeck';
 import Dashboard from './Dashboard';
 import Create from './Create';
 
@@ -96,8 +97,10 @@ class App extends React.Component {
               path='/conceptlists'
               component={ConceptList} />
             <Route
-              path='/study/conceptlist'
-              component={StudyConcept} />
+              path='/study/deck'
+              render={(props) =>
+                <StudyDeck {...props}
+                  signedIn={this.state.signedIn} />} />
             <Route
               path='/user'
               component={User} />
