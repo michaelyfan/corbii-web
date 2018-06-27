@@ -19,9 +19,9 @@ class Homepage extends React.Component {
           <button className = "secondary-button" type = "button" onClick={() => {alert('Teacher functionality coming soon!')}}>
             i am an educator
           </button>
-          <h3 id = 'log-in-subheader'> Already have an account?
+          <h3 id = 'log-in-subheader'> Already have an account?&nbsp;
             <Link to='/signin'>
-              <button id = 'log-in'>Log in</button>
+              <button id = 'log-in'>Log in.</button>
             </Link>
           </h3>
           <br /><br />
@@ -52,11 +52,11 @@ class Homepage extends React.Component {
           <h1 className = "header-title">who are 
             <span className = "emphasized-words"> we?</span>
           </h1>
-          <p className = "answer-text">Corbii is an education technology startup founded by five students from the Georgia Institute of Technology in 2018. We aim to create a user-friendly, intelligent platform to make learning better and more efficient for everyone. </p>
+          <p className = "answer-text" id = 'answer-text-right'>Corbii is an education technology startup founded by five students from the Georgia Institute of Technology in 2018. We aim to create a user-friendly, intelligent platform to make learning better and more efficient for everyone. </p>
         </div>
 
         <div className = 'home-info' id = 'info2'>
-          <p className = "answer-text">Corbii is an online learning platform that uses cognitive science research to make your learning more efficient and improve your long term memory. With our site, you'll be able to truly learn the material you want to know, not just memorize it.</p>
+          <p className = "answer-text" id = 'answer-text-left'>Corbii is an online learning platform that uses cognitive science research to make your learning more efficient and improve your long term memory. With our site, you'll be able to truly learn the material you want to know, not just memorize it.</p>
           <h1 className = "header-title">what do we 
             <span className = "emphasized-words"> do?</span>
           </h1>

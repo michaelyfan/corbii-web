@@ -20,6 +20,7 @@ const ALGOLIA_ID = process.env.ALGOLIA_ID;
 const ALGOLIA_ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY;
 const ALGOLIA_INDEX_1 = 'decks';
 const ALGOLIA_INDEX_2 = 'users';
+const ALGOLIA_INDEX_3 = 'argh';
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 app.use(express.static("dist"));

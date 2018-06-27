@@ -30,7 +30,7 @@ button {
   font-family: Print Clearly;
   border: none;
   text-decoration: none;
-  font-size: 33px;
+  font-size: 38px;
   padding-top: 12px;
   padding-bottom: 15px;
   border-radius: 8px;
@@ -74,7 +74,6 @@ hr {
   width: 200px;
   height: auto;
 }
-
 
 #searchbar {
   font-family: 'Print Clearly';
@@ -131,13 +130,13 @@ hr {
 
 .header-title {
   color: #A8B4C2;
-  font-size: 60px;
+  font-size: 67px;
 }
 
 .emphasized-words {
   font-family: Nunito;
   color: #003466;
-  font-size: 45px;
+  font-size: 48px;
 }
 
 .primary-button {
@@ -154,9 +153,8 @@ hr {
 .secondary-button {
   background-color: #E0E9F5;
   color: #003466;
-  font-size: 33px;
-  padding-right:30px;
-  padding-left: 30px;
+  padding-right:29px;
+  padding-left: 29px;
 }
 
 .secondary-button:hover {
@@ -164,13 +162,13 @@ hr {
 }
 
 #log-in-subheader {
-  font-size-adjust: 15px;
+  font-size: 22px;
   color: #003466;
 }
 
 #log-in {
-  font-family: Nunito, bold;
-  font-size: 15px;
+  font-family: Nunito Bold;
+  font-size: 17px;
   cursor: pointer;
   padding-bottom: 25px;
   background: none;
@@ -217,10 +215,18 @@ hr {
 }
 
 .answer-text {
-  font-size: 25px;
+  font-size: 28px;
   color: #003466;
-  padding-left: 50px;
   width: 50%;
+  text-align: justify;
+}
+
+#answer-text-right {
+  padding-left: 50px;
+}
+
+#answer-text-left {
+  padding-right: 50px;
 }
 
 #info2 {
@@ -229,7 +235,7 @@ hr {
 
 #our-techniques {
   color: #C0CEDE;
-  font-size: 75px;
+  font-size: 85px;
   margin: 27px;
 }
 
@@ -363,13 +369,15 @@ hr {
   padding-top: 40px;
   padding-bottom: 40px;
   color: #003466;
+  display: flex;
+  justify-content: center;
 }
 
 .footer-link {
-  font-family: Nunito;
-  font-size: 20px;
+  font-family: Nunito Bold;
+  font-size: 25px;
   text-align: center;
-  font-color: #003466;
+  color: #003466;
   padding-left: 17px;
   padding-right: 17px;
 }
@@ -381,6 +389,8 @@ hr {
 .footer-social img {
   width: 30px;
   height: 30px;
+  padding-right: 3px;
+  padding-left: 3px;
 }
 /*End footer*/
 
