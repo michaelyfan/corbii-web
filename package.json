@@ -32,7 +32,7 @@
     "react-modal": "^3.4.5",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-responsive-carousel": "^3.1.41",
+    "react-responsive-carousel": "^3.1.41"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

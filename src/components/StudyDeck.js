@@ -13,8 +13,13 @@ class StudyDeck extends React.Component {
       cards: [],
       studiedCards: null,
       index: 0,
+      front: '',
+      back: '',
       isFlipped: false
     }
+
+    this.flip = this.flip.bind(this);
+    this.changeCard = this.changeCard.bind(this);
   }
 
   componentDidMount() {
@@ -29,12 +34,23 @@ class StudyDeck extends React.Component {
     }
   }
 
-  changeIndex(isDecrement) {
+  changeCard(isDecrement) {
     if (isDecrement) {
-      this.setState((prevProps) => ({index: prevProps.index - 1}));
+      this.setState((prevProps) => ({index: prevProps.index - 1}), this.updateContent);
     } else {
-      this.setState((prevProps) => ({index: prevProps.index + 1}));
+      this.setState((prevProps) => ({index: prevProps.index + 1}), this.updateContent);
     }
+  }
+
+  updateContent() {
+    console.log('here1', this.state.index);
+
+    const front = this.state.cards[this.state.index].front;
+    const back = this.state.cards[this.state.index].back;
+    this.setState(() => ({
+      front: front,
+      back: back
+    }));
   }
 
   getDeck() {
@@ -45,7 +61,7 @@ class StudyDeck extends React.Component {
         name: result.deckName,
         cards: result.cards,
         studiedCards: result.studiedCards
-      }))
+      }), this.updateContent);
     }).catch((err) => {
       console.error(err);
     });
@@ -61,12 +77,30 @@ class StudyDeck extends React.Component {
         <h1>{this.state.name}</h1>
         <div className='study-card'>
           <p>
-            {this.state.content}
+            { this.state.isFlipped
+                ? this.state.back
+                : this.state.front
+            }
           </p>
-          <button onClick={this.flip}></button>
-
-          <button onClick={() => {this.changeIndex(true)}}>Next card</button>
         </div>
+        <button onClick={this.flip}>Flip card</button>
+        { this.state.isFlipped 
+          ? <div>
+              <button onClick={() => {this.submitCard(0)}}>Cuddly</button>
+              <button onClick={() => {this.submitCard(1)}}>Soft</button>
+              <button onClick={() => {this.submitCard(2)}}>Uncomfortable</button>
+              <button onClick={() => {this.submitCard(3)}}>Painful</button>
+              <button onClick={() => {this.submitCard(4)}}>Excrutiating</button>
+              <button onClick={() => {this.submitCard(5)}}>Deadly</button>
+            </div>
+          : null}
+        <div>
+          {this.state.index >= this.state.cards.length - 1
+            ? null
+            : <button onClick={() => {this.changeCard(false)}}>Next card</button>}
+        </div>
+        
+
       </div>
     )
   }
