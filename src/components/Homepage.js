@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Login from './Login';
 
 class Homepage extends React.Component {
   render() {
@@ -20,9 +21,7 @@ class Homepage extends React.Component {
             i am an educator
           </button>
           <h3 id = 'log-in-subheader'> Already have an account?&nbsp;
-            <Link to='/signin'>
-              <button id = 'log-in'>Log in.</button>
-            </Link>
+              <button id = 'log-in'><Login /></button>
           </h3>
           <br /><br />
         </div>

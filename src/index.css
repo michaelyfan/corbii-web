@@ -180,21 +180,31 @@ hr {
 #log-in-header {
   margin-top: 30px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 #email-login, #password-login {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  margin: 0 auto;
+  padding-top: 15px;
+  padding-bottom: 15px;
   margin-bottom: 20px;
-  padding-left: 5px; 
+  padding-left: 10px; 
+  display: flex;
+  text-decoration: none;
+  border: 2px solid #C0CEDE;
+  width: 75%;
 }
 
 .login-text::placeholder {
   color: #C0CEDE;
+  font-family: Print Clearly;
+  font-size: 25px;
 }
 
 .login-text, select, textarea {
   color: #A8B4C2;
+  font-family: Print Clearly;
+  font-size: 25px;
 }
 
 @keyframes animatetop {
