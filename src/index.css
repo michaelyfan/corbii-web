@@ -185,7 +185,7 @@ hr {
 
 #email-login, #password-login {
   margin: 0 auto;
-  padding-top: 15px;
+  padding-top: 14px;
   padding-bottom: 15px;
   margin-bottom: 20px;
   padding-left: 10px; 
@@ -225,7 +225,7 @@ hr {
 }
 
 .answer-text {
-  font-size: 28px;
+  font-size: 27px;
   color: #003466;
   width: 50%;
   text-align: justify;
@@ -233,10 +233,12 @@ hr {
 
 #answer-text-right {
   padding-left: 50px;
+  padding-right: 5px;
 }
 
 #answer-text-left {
   padding-right: 50px;
+  padding-left: 5px;
 }
 
 #info2 {
@@ -246,7 +248,14 @@ hr {
 #our-techniques {
   color: #C0CEDE;
   font-size: 85px;
-  margin: 27px;
+  margin-top: 27px;
+  margin-bottom: 0;
+}
+
+.slideshow-carousel {
+  width: 85%;
+  height: 85%;
+  margin: 0 auto;
 }
 
 .cogsci-techniques {
@@ -255,7 +264,6 @@ hr {
 
 
 .learn-button { 
-  padding-top: 515px;
   padding-bottom: 40px;
   text-align: center;
 }
