@@ -1,0 +1,124 @@
+.account-block {
+  text-align: center;
+  background-image: url('/src/resources/triangle.png');
+  background-position: center;
+  background-size: cover;
+}
+
+#slogan {
+  font-size: 100px;
+  color: #C0CEDE;
+  padding-top: 20px;
+}
+
+#you {
+  font-size: 70px;
+}
+
+.header-title {
+  color: #A8B4C2;
+  font-size: 67px;
+}
+
+.emphasized-words {
+  font-family: Nunito;
+  color: #003466;
+  font-size: 50px;
+}
+
+.primary-button {
+  background-color: #003466;
+  color: #E0E9F5;
+  padding-right: 45px;
+  padding-left: 45px;
+}
+
+.primary-button:hover {
+  background-color: #002140;
+}
+
+.secondary-button {
+  background-color: #E0E9F5;
+  color: #003466;
+  padding-right:29px;
+  padding-left: 29px;
+}
+
+.secondary-button:hover {
+  background-color: #E8EEF8;
+}
+
+#log-in-subheader {
+  font-size: 22px;
+  color: #003466;
+}
+
+#log-in {
+  font-family: Nunito Bold;
+  font-size: 17px;
+  cursor: pointer;
+  padding-bottom: 25px;
+  background: none;
+  border: none;
+  padding-left: 0;
+  color: #003466; 
+}
+
+.home-info {
+  display: flex;
+  justify-content: center;
+  background-color: #E9F2FF;
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+
+.answer-text {
+  font-size: 27px;
+  color: #003466;
+  width: 50%;
+  text-align: justify;
+}
+
+#answer-text-right {
+  padding-left: 50px;
+  padding-right: 5px;
+}
+
+#answer-text-left {
+  padding-right: 50px;
+  padding-left: 5px;
+}
+
+#info2 {
+  padding-top: 0px;
+}
+
+#our-techniques {
+  color: #C0CEDE;
+  font-size: 85px;
+  margin-top: 27px;
+  margin-bottom: 0;
+}
+
+.slideshow-carousel {
+  width: 85%;
+  height: 85%;
+  margin: 0 auto;
+}
+
+.cogsci-techniques {
+  text-align: center;
+}
+
+
+.learn-button { 
+  padding-bottom: 40px;
+  text-align: center;
+}
+
+#start-learning {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  padding-left: 80px;
+  padding-right: 80px;
+}

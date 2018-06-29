@@ -65,19 +65,20 @@ class ConceptListRow extends React.Component {
                 </form>
                 <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
               </div>
-            : <p>{name} -- {id}</p>
+            : <Link 
+                to={{
+                  pathname: `/conceptlists`,
+                  search: `?d=${id}`
+                }}>
+                <button className = 'stuff-title'>{name}</button>
+              </Link>
         }
-        <Link 
-          to={{
-            pathname: `/conceptlists`,
-            search: `?d=${id}`
-          }}>
-          <button>
-            View
-          </button>
-        </Link>
-        <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Change name</button>
-        <button onClick={() => {this.handleDeleteConceptList(id)}}>Delete</button>
+
+        <div className = 'stuff-menu'>
+          <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
+          <span className = 'modify-stuff'>&nbsp; | </span>
+          <button className = 'modify-stuff' onClick={() => {this.handleDeleteConceptList(id)}}>&nbsp; delete</button>
+        </div>
       </div>
     )
   }
@@ -131,7 +132,9 @@ class ConceptListList extends React.Component {
         {
           this.props.signedIn
             ? <div>
-                <h3>Your concept lists:</h3>
+                <div className = 'hr'><hr /></div>
+                <h3 className = 'your-stuff'>your concept lists</h3>
+                <div className = 'hr'><hr /></div>
                 {this.state.conceptListArr.map((list) => (
                   <ConceptListRow 
                     name={list.name} 

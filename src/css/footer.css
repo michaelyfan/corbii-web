@@ -1,0 +1,27 @@
+.footer {
+  background-color: #003466;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-link {
+  font-family: Nunito Bold;
+  font-size: 25px;
+  text-align: center;
+  color: #FFFFFF;
+  padding-left: 17px;
+  padding-right: 17px;
+}
+
+#footer-search {
+  padding-right: 24px;
+}
+
+.footer-social img {
+  width: 30px;
+  height: 30px;
+  padding-right: 3px;
+  padding-left: 3px;
+}

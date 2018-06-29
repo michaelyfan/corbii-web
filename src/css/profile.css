@@ -1,0 +1,61 @@
+.username {
+	text-align: center;
+	font-family: Print Clearly;
+	color: #003466;
+	font-size: 70px;
+	margin-bottom: 0px;
+	margin-top: 30px;
+}
+
+.email {
+	text-align: center;
+	font-family: Nunito;
+	color: #A8B4C2;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	font-size: 18px;
+}
+
+.profile-img {
+	padding-top: 20px;
+	display: block;
+	margin: 0 auto;
+}
+
+.profile-pic {
+	background: #E9F2FF;
+}
+
+#change-pic {
+	font-size: 30px;
+	color: #003466;
+	text-align: center;
+	padding-left: 25px;	
+}
+
+.upload-photo {
+	text-align: center;
+	padding-top: 25px;
+	padding-bottom: 15px;
+}
+
+#upload-button {
+	font-size: 25px;
+	padding: 10px;
+	margin-top: 15px;
+}
+
+.dashboard-link {
+	display: flex;
+	justify-content: center;
+}
+
+.dashboard-button {
+	background: #E9F2FF;
+	font-family: Nunito;
+	color: #003466;
+}
+
+.dashboard-button:hover {
+	color: #A8B4C2;
+}

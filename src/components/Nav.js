@@ -101,7 +101,7 @@ class Nav extends React.Component {
 
           <p>
             {this.state.signedIn
-              ? <button onClick={this.handleSignOut}>Sign Out</button>
+              ? <button className = 'nav-signin' onClick={this.handleSignOut}>sign out</button>
               : null }
           </p>
         </div>

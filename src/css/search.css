@@ -1,0 +1,50 @@
+#big-search {
+  font-size: 60px;
+  color: #003466;
+  text-decoration: none;
+  border: none;
+  font-family: Print Clearly;
+  padding-left: 25px;
+  padding-top: 25px;
+  padding-right: 350px;
+}
+
+#big-search::placeholder {
+  color: #003466;
+}
+
+.filter-button {
+  background-color: #E0E9F5;
+  color: #003466;
+  border-radius: 0;
+  font-size: 24px;
+  padding-right: 8px;
+  padding-left: 8px;  
+}
+
+.result-box {
+  border-bottom: 5px solid #C0CEDE;
+  font-family: Print Clearly;
+  font-size: 28px;
+  color: #003466;
+  padding-left: 25px;
+  padding-bottom: 30px;
+  padding-top: 30px;
+}
+
+.deck-text {
+  margin: 4px;
+}
+
+#deck-name {
+  font-family: Nunito Bold;
+}
+
+.user-search-result {
+  margin: 50px;
+}
+
+.user-search-result img {
+  height: 100px;
+  border-radius: 50%;
+}

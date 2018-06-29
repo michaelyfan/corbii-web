@@ -1,0 +1,61 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #003466;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: white;
+}
+
+.flex-header {
+  display: flex;}
+
+#header-logo {
+  width: 200px;
+  height: auto;
+}
+
+#searchbar {
+  font-family: 'Print Clearly';
+  font-size: 30pt;
+  width: 200px;
+  border: none;
+  background-color: #003466;
+  caret-color: white;
+  color: white;
+  padding-top: 13px;
+}
+
+#searchbar::placeholder {
+  color: white;
+}
+
+#navbar-usercard {
+  text-align: center;
+  padding-right: 10px;
+}
+
+#navbar-usercard p {
+  margin: 2px;
+}
+
+#navbar-usercard button {
+  padding: 5px;
+  font-size: 16px;
+}
+
+#navbar-usercard img {
+  border-radius: 50%;
+  height: 75px;
+  width: auto;
+}
+
+.nav-signin {
+  font-family: Nunito Bold;
+  color: #FFFFFF;
+  font-size: 10px;
+  background: #033466;
+}

@@ -30,17 +30,23 @@ class Homepage extends React.Component {
             <span className = "emphasized-words" id = "you">you</span> 
           </h1>
           <br />
-          <Link to='/signin'>
             <button className = "primary-button" type = "button"> 
-              i am a student
+              <Login 
+                header = 'sign up'
+                text = 'i am a student'
+              />
             </button>
-          </Link>
           <br /><br />
           <button className = "secondary-button" type = "button" onClick={() => {alert('Teacher functionality coming soon!')}}>
             i am an educator
           </button>
-          <h3 id = 'log-in-subheader'> Already have an account?&nbsp;
-              <button id = 'log-in'><Login /></button>
+          <h3 id = 'log-in-subheader'> Already have an account?&nbsp; 
+          <button id = 'log-in'> 
+            <Login 
+              header = "log in"
+              text = 'Log in.'
+            /> 
+          </button>
           </h3>
           <br /><br />
         </div>
