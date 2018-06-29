@@ -112,14 +112,19 @@ class ConceptList extends React.Component {
 
   async updateConceptList() {
     const { d } = queryString.parse(this.props.location.search);
-    const list = await getConceptList(d);
-    const currentUser = firebase.auth().currentUser;
-    this.setState(() => ({
-      listName: list.listName,
-      id: d,
-      userIsOwner: currentUser != null && list.creatorId === firebase.auth().currentUser.uid,
-      concepts: list.concepts
-    }));
+    let list;
+    try {
+      const list = await getConceptList(d);
+      const currentUser = firebase.auth().currentUser;
+      this.setState(() => ({
+        listName: list.listName,
+        id: d,
+        userIsOwner: currentUser != null && list.creatorId === firebase.auth().currentUser.uid,
+        concepts: list.concepts
+      }));
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async handleDeleteConcept(conceptId) {

@@ -7,6 +7,7 @@ import firebase from './firebase';
 import 'firebase/firestore';
 import alg from './algconfig';
 import algoliasearch from 'algoliasearch';
+import moment from 'moment';
 
 // tool initializations
 const db = firebase.firestore();
@@ -28,31 +29,28 @@ export function getProfilePic(uid) {
   return storageRef.child(`profilePics/${uid}`).getDownloadURL();
 }
 
-export async function getDeck(deckId) {
+export function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
 
-  const [ deck, cards ] = await Promise.all([
-    deckRef.get(), 
+  return Promise.all([
+    deckRef.get(),
     deckRef.collection('cards').get(),
-  ]).catch((err) => {
-      console.warn(err);
-      return null;
-    })
-
-  let cardsArr = [];
-  cards.forEach((card) => {
-    cardsArr.push({
-      id: card.id,
-      front: card.data().front,
-      back: card.data().back
-    })
+  ]).then(([ deck, cards ]) => {
+    let cardsArr = [];
+    cards.forEach((card) => {
+      cardsArr.push({
+        id: card.id,
+        front: card.data().front,
+        back: card.data().back
+      })
+    });
+    return {
+      deckName: deck.data().name,
+      creatorId: deck.data().creatorId,
+      cards: cardsArr
+    }
   });
 
-  return {
-    deckName: deck.data().name,
-    creatorId: deck.data().creatorId,
-    cards: cardsArr
-  }
 }
 
 export function getDeckForStudy(deckId) {
@@ -60,48 +58,107 @@ export function getDeckForStudy(deckId) {
   const userCardsStudiedRef = db.collection('users').doc(uid)
                                 .collection('studiedDecks').doc(deckId)
                                 .collection('cards');
-  
-  return getDeck(deckId).then((result) => {
-    return userCardsStudiedRef.get().then((cardsSnapshot) => {
-      if (cardsSnapshot.exists) {
-        let studiedCards = {};
-        cardsSnapshot.forEach((card) => {
-          // something that gets most overdue cards
-          studiedCards[card.id] = cards.data();
-        })
-        result.studiedCards = studiedCards;
+
+  return Promise.all([
+    getDeck(deckId),
+    userCardsStudiedRef.get()
+  ]).then(([ deck, cardsStudiedSnapshot ]) => {
+    // deck is content. all cards, and updated.
+    // cardsStudiedSnapshot is personal data. might not exist, and if so might not exist for all content.
+
+    // turn collection of cards in cardsStudiedSnapshot into an object for easier checking.
+    let cardsToBeDeleted;
+    let cardsToBeKept = {};
+    if (cardsStudiedSnapshot.exists) {
+      cardsStudiedSnapshot.forEach((card) => {
+        cardsToBeDeleted[card.id] = card.data();
+      });
+    } else {
+      cardsToBeDeleted = {}; 
+    }
+
+    // loop through content cards.
+    let arrayDue = [];
+    let arrayNew = [];
+    let arrayLeft = [];
+    deck.cards.forEach((card) => {
+      if (cardsToBeDeleted[card.id]) { // card is not new.
+        const { interval, nextReviewed } = cardsToBeDeleted[card.id];
+        const now = new Date();
+        const percentOverdue = getPercentOverdue(interval, nextReviewed.toDate(), now);
+        if (percentOverdue >= 1) { // card is due.
+          cardsToBeDeleted[card.id].isDue = true;
+          cardsToBeDeleted[card.id].percentOverdue = percentOverdue;
+          card.percentOverdue = percentOverdue;
+          arrayDue.push(card); // this pushes CONTENT card with an overdue property
+          cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
+          delete cardsToBeDeleted[card.id];
+        }
       } else {
-        result.studiedCards = {};
+        if (arrayNew.length < 20) {
+          arrayNew.push(card);
+          cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
+          delete cardsToBeDeleted[card.id];
+        } else {
+          arrayLeft.push(card);
+          cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
+          delete cardsToBeDeleted[card.id];
+        }
       }
-      console.log('here', result);
-      return result;
-    })
-  });
+    });
+
+    // order cards in arrayDue by percent overdue.
+    arrayDue.sort((item1, item2) => {
+      return item1.percentOverdue - item2.percentOverdue;
+    });
+
+    // delete cards in cardsToBeDeleted, they weren't in content.
+    let batch = db.batch();
+    Object.keys(cardsToBeDeleted).forEach((id) => {
+      let badCardRef = db.collection('users').doc(uid)
+                         .collection('studiedDecks').doc(deckId)
+                         .collection('cards').doc(id);
+      batch.delete(badCardRef);                         
+    });
+
+    return batch.commit().then(() => {
+      return [
+        arrayDue, arrayNew, arrayLeft, cardsToBeKept
+      ];
+    });
+  })
 }
 
-export async function getConceptList(listId) {
+function getPercentOverdue(interval, due_date, current_date) {
+  const dueMoment = moment(due_date);
+  const currentMoment = moment(current_date);
+  const percentOverdue = currentMoment.diff(dueMoment, 'days') / interval;
+  if (percentOverdue >= 2) {
+    return 2;
+  } else {
+    return percentOverdue;
+  }
+}
+
+export function getConceptList(listId) {
   let listRef = db.collection('lists').doc(listId);
 
-  const [ list, concepts ] = await Promise.all([listRef.get(), listRef.collection('concepts').get()])
-    .catch((err) => {
-      console.warn(err);
-      return null;
-    })
-
-  let conceptArr = [];
-  concepts.forEach((concept) => {
-    conceptArr.push({
-      id: concept.id,
-      question: concept.data().question,
-      answer: concept.data().answer
-    })
+  return Promise.all([listRef.get(), listRef.collection('concepts').get()]).then(([ list, concepts ]) => {
+    let conceptArr = [];
+    concepts.forEach((concept) => {
+      conceptArr.push({
+        id: concept.id,
+        question: concept.data().question,
+        answer: concept.data().answer
+      })
+    });
+    return {
+      listName: list.data().name,
+      creatorId: list.data().creatorId,
+      concepts: conceptArr
+    }
   });
 
-  return {
-    listName: list.data().name,
-    creatorId: list.data().creatorId,
-    concepts: conceptArr
-  }
 }
 
 export function getUser(uid) {

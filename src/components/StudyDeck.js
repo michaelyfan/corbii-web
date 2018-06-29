@@ -3,6 +3,45 @@ import PropTypes from 'prop-types';
 import { getDeckForStudy } from '../utils/api';
 import queryString from 'query-string';
 
+class StudyCard extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      front: '',
+      back: '',
+      isFlipped: false
+    }
+  }
+
+  render() {
+    return (
+      <div className='study-card'>
+        <p>
+          { this.state.isFlipped
+              ? this.state.back
+              : this.state.front
+          }
+        </p>
+      </div>
+      <button onClick={this.flip}>Flip card</button>
+      { this.state.isFlipped 
+        ? <div>
+            <button onClick={() => {this.submitCard(0)}}>1</button>
+            <button onClick={() => {this.submitCard(1)}}>2</button>
+            <button onClick={() => {this.submitCard(2)}}>3</button>
+            <button onClick={() => {this.submitCard(3)}}>4</button>
+            <button onClick={() => {this.submitCard(4)}}>5</button>
+            <button onClick={() => {this.submitCard(5)}}>6</button>
+          </div>
+        : null}
+    )
+  }
+
+}
+
+
+
 class StudyDeck extends React.Component {
 
   constructor(props) {
@@ -10,16 +49,16 @@ class StudyDeck extends React.Component {
 
     this.state = {
       name: '',
-      cards: [],
-      studiedCards: null,
       index: 0,
-      front: '',
-      back: '',
-      isFlipped: false
+      isFlipped: false,
+      arrayTodo: [],
+      arrayLeft: []
+      personalData: null,
     }
 
     this.flip = this.flip.bind(this);
-    this.changeCard = this.changeCard.bind(this);
+    this.changeIndex = this.changeIndex.bind(this);
+    this.submitCard = this.submitCard.bind(this);
   }
 
   componentDidMount() {
@@ -34,37 +73,31 @@ class StudyDeck extends React.Component {
     }
   }
 
-  changeCard(isDecrement) {
+  changeIndex(isDecrement) {
     if (isDecrement) {
-      this.setState((prevProps) => ({index: prevProps.index - 1}), this.updateContent);
+      this.setState((prevProps) => ({index: prevProps.index - 1}));
     } else {
-      this.setState((prevProps) => ({index: prevProps.index + 1}), this.updateContent);
+      this.setState((prevProps) => ({index: prevProps.index + 1}));
     }
-  }
-
-  updateContent() {
-    console.log('here1', this.state.index);
-
-    const front = this.state.cards[this.state.index].front;
-    const back = this.state.cards[this.state.index].back;
-    this.setState(() => ({
-      front: front,
-      back: back
-    }));
   }
 
   getDeck() {
     const { d } = queryString.parse(this.props.location.search);
     getDeckForStudy(d).then((result) => {
       console.log(result);
+      const [ arrayDue, arrayNew, arrayLeft, personalData ] = result;
       this.setState(() => ({
-        name: result.deckName,
-        cards: result.cards,
-        studiedCards: result.studiedCards
+        arrayTodo: arrayDue.concat(arrayNew)
+        arrayLeft: arrayLeft,
+        personalData: personalData
       }), this.updateContent);
     }).catch((err) => {
       console.error(err);
     });
+  }
+
+  submitCard() {
+    
   }
 
   flip() {
@@ -75,29 +108,12 @@ class StudyDeck extends React.Component {
     return (
       <div>
         <h1>{this.state.name}</h1>
-        <div className='study-card'>
-          <p>
-            { this.state.isFlipped
-                ? this.state.back
-                : this.state.front
-            }
-          </p>
-        </div>
-        <button onClick={this.flip}>Flip card</button>
-        { this.state.isFlipped 
-          ? <div>
-              <button onClick={() => {this.submitCard(0)}}>Cuddly</button>
-              <button onClick={() => {this.submitCard(1)}}>Soft</button>
-              <button onClick={() => {this.submitCard(2)}}>Uncomfortable</button>
-              <button onClick={() => {this.submitCard(3)}}>Painful</button>
-              <button onClick={() => {this.submitCard(4)}}>Excrutiating</button>
-              <button onClick={() => {this.submitCard(5)}}>Deadly</button>
-            </div>
-          : null}
+        <StudyCard card={this.state.arrayTodo[index]} />
+        
         <div>
           {this.state.index >= this.state.cards.length - 1
             ? null
-            : <button onClick={() => {this.changeCard(false)}}>Next card</button>}
+            : <button onClick={() => {this.changeIndex(false)}}>Next card</button>}
         </div>
         
 
