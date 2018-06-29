@@ -64,19 +64,22 @@ class Profile extends React.Component {
         {this.props.signedIn
           ? <div>
               <p>{this.state.statusText}</p>
-              <h1>{this.state.name}</h1>
-              <h3>{this.state.email}</h3>
-              <div>{this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}</div>
-              <form onSubmit={this.handleChangeProfilePic}>
-                <span>Change profile pic:</span>
-                <input ref={this.inputFile} type='file' text='Change profile pic' /><br />
-                <button type='submit'>Upload</button>
-              </form>
-              
-
-              <Link to='/dashboard'>
-                <button>Your decks</button>
-              </Link>
+              <h1 className = 'username'>{this.state.name}</h1>
+              <h3 className = 'email'>{this.state.email}</h3>
+              <div className = 'hr'><hr /></div>
+              <div className = 'profile-pic'>
+                <div>{this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}</div>
+                <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
+                  <span id = 'change-pic'>change profile pic: &nbsp;</span>
+                  <input ref={this.inputFile} type='file' text='Change profile pic' /><br />
+                  <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
+                </form>
+                <div className = 'dashboard-link'>
+                  <Link to='/dashboard'>
+                    <button className = 'dashboard-button'>go to dashboard</button>
+                  </Link>
+                </div>
+              </div>
             </div>
           : <h2>Sign in to view your profile.</h2>}
         

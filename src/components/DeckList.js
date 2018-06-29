@@ -65,19 +65,20 @@ class DeckRow extends React.Component {
                 </form>
                 <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
               </div>
-            : <p>{name} -- {id}</p>
+            : <Link 
+                to={{
+                  pathname: `/decks`,
+                  search: `?d=${id}`
+                }}>
+                <button className = 'stuff-title'>{name}</button>
+              </Link>
         }
-        <Link 
-          to={{
-            pathname: `/decks`,
-            search: `?d=${id}`
-          }}>
-          <button>
-            View
-          </button>
-        </Link>
-        <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Change name</button>
-        <button onClick={() => {this.handleDeleteDeck(id)}}>Delete</button>
+
+        <div class = 'stuff-menu'>
+          <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>&nbsp; change name</button>
+          <span className = 'modify-stuff'>&nbsp; | </span>
+          <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
+        </div>
       </div>
     )
   }
@@ -130,7 +131,9 @@ class DeckList extends React.Component {
         {
           this.props.signedIn
             ? <div>
-                <h3>Your decks:</h3>
+                <div className = 'hr'><hr /></div>
+                <h3 className = 'your-stuff'>your decks</h3>
+                <div className = 'hr'><hr /></div>
                 {this.state.deckArr.map((deck) => (
                   <DeckRow 
                     name={deck.name} 

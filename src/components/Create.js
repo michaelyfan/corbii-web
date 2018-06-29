@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
+import Profile from './Profile.js';
 
 class CreateDeckCard extends React.Component {
 
@@ -29,20 +30,28 @@ class CreateDeckCard extends React.Component {
 
   render() {
     return (
-      <div>
-        <input type='text' 
+      <div className = 'flashcard'>
+        <textarea type='text'
+          className = 'flashcard-text'
           key='front'
           value={this.state.front}
           onChange={(e) => {this.handleChange('front', e)}}
           onBlur={this.handleSave}
-          placeholder='card front' />
-        <input type='text' 
+          placeholder='front information' />
+        <img class = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+        <textarea type='text'
+          className = 'flashcard-text' 
           key='back'
           value={this.state.back}
           onChange={(e) => {this.handleChange('back', e)}}
           onBlur={this.handleSave}
-          placeholder='card back' />
+          placeholder='back information' />
 
+        <div class = 'side-menu'>
+          <img class = 'side-options' src = '../src/resources/flashcard-img/up-arrow.png' />
+          <img class = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+          <img class = 'side-options' src = '../src/resources/flashcard-img/down-arrow.png' />
+        </div>
       </div>
     )
   }
@@ -110,6 +119,14 @@ class CreateDeck extends React.Component {
         front: '',
         back: '',
         id: 0
+      },{
+        front: '',
+        back: '',
+        id: 0
+      },{
+        front: '',
+        back: '',
+        id: 0
       }]
     }
 
@@ -162,8 +179,22 @@ class CreateDeck extends React.Component {
               key={card.id}
               save={this.save} />
           )};
-          <button onClick={this.handleAddCard}>Add a card</button>
-          <button onClick={() => {this.props.handleCreateDeck(this.state.cards)}}>Create Deck</button>
+          <div className = 'add-more-card'>
+            <button 
+              className = 'secondary-button'
+              id = 'more-flashcard'
+              onClick={this.handleAddCard}>
+                add a card
+            </button>
+          </div>
+          <div className = 'add-more-card'>
+            <button
+              onClick={() => {this.props.handleCreateDeck(this.state.cards)}}
+              className = 'primary-button'
+              id = 'finalize-deck'>
+                create deck
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -244,7 +275,7 @@ class Create extends React.Component {
     super(props);
     this.state = {
       isList: false,
-      title: ''
+      title: '',
     }
 
     this.handleChangeTitle = this.handleChangeTitle.bind(this);
@@ -278,17 +309,37 @@ class Create extends React.Component {
   render() {
     return (
       <div>
-        <input type='text'
-               onChange={this.handleChangeTitle}
-               value={this.state.title}
-               placeholder='Deck/conceptlist title...' 
-        />
-        <button onClick={() => {this.setState(() => ({isList: false}))}}>I'm creating a deck</button>
-        <button onClick={() => {this.setState(() => ({isList: true}))}}>I'm creating a concept list</button>
-        { this.state.isList 
-          ? <CreateList handleCreateList={this.handleCreateList} />
-          : <CreateDeck handleCreateDeck={this.handleCreateDeck} />
+        <div className = 'create-deck'>
+          <input type='text'
+            id = 'deck-title'
+            onChange={this.handleChangeTitle}
+            value={this.state.title}
+            placeholder =
+            { this.state.isList 
+              ? 'title your list here'
+              : 'title your deck here'
            }
+          />
+
+          <p className = 'small-caption' id = 'deck-subtitle'>
+          { this.state.isList 
+              ? 'concept list title'
+              : 'deck title'
+           } 
+          </p>
+          <div class = 'hr'><hr /></div>
+        </div>
+
+        <div className = 'button-wrapper'>
+          <div className = 'create-buttons'>
+            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: false}))}}>create a study deck</button>
+            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: true}))}}>create a concept list</button>
+            { this.state.isList 
+              ? <CreateList handleCreateList={this.handleCreateList} />
+              : <CreateDeck handleCreateDeck={this.handleCreateDeck} />
+            }
+          </div>
+        </div>
       </div>
     )
   }

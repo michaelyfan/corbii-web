@@ -1,0 +1,67 @@
+.dashboard-header {
+  background-image: url('/src/resources/triangle.png');
+  background-position: center;
+  background-size: cover;
+}
+
+#dashboard-welcome {
+  text-align: center; 
+  padding-top: 50px;
+  padding-bottom: 50px;
+  margin: 0;
+}
+
+#create-button {
+  margin-top: 30px;
+  font-size: 30px;
+  margin-bottom: 30px;
+}
+
+.create-a-deck {
+  display: flex;
+  justify-content: center;
+}
+
+.your-stuff {
+  font-family: Print Clearly;
+  font-size: 60px;
+  color: #003466;
+  padding-left: 35px;
+  margin: 5px 0 5px 0;
+}
+
+.stuff-title {
+  font-size: 40px;
+  color: #003466;
+  font-family: Nunito;
+  padding-top: 10px;
+  margin: 0;
+  background: #E9F2FF;
+  padding-bottom: 0;
+}
+
+.stuff-title:hover {
+  color: #A8B4C2;
+}
+
+.deck-row {
+  background-color: #E9F2FF;
+  padding: 10px 30px 10px 30px;
+  margin: 0px;
+}
+
+.modify-stuff {
+  font-family: Nunito Bold;
+  font-size: 18px;
+  color: #A8B4C2;
+  background-color: #E9F2FF;
+  padding: 0;
+}
+
+button.modify-stuff:hover {
+  color: #003466;
+}
+
+.stuff-menu {
+  display: flex;
+};

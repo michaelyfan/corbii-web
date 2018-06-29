@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
+import Auth from './Auth.js';
  
 const customStyles = {
   content : {
@@ -40,7 +41,7 @@ class Login extends React.Component {
   render() {
     return (
       <div>
-        <button id = 'log-in' onClick={this.openModal}>Log in.</button>
+        <div onClick={this.openModal}>{this.props.text}</div>
         <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
@@ -49,17 +50,12 @@ class Login extends React.Component {
           contentLabel="log in"
         >
           <div className = 'modal-content'>
-            <h3 className= 'header-title' id = 'log-in-header'>log in</h3>
-            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
-            <input className = 'login-text' id = "password-login" type = "text" placeholder = "password" />
-            <button className = 'primary-button'>
-              log in with google
-            </button>
-            <br /><br />
-            <button className = 'secondary-button'>
-              log in with facebook
-            </button>
-            <br /><br />
+            <h3 className= 'header-title' id = 'log-in-header'>{this.props.header}</h3>
+{/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
+            <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
+            <button className = 'primary-button' id = 'submit-email'>{this.props.header}</button>     
+*/}
+            <Auth />
           </div>
         </Modal>
       </div>
