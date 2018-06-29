@@ -222,9 +222,14 @@ class Deck extends React.Component {
             : null
         }
         <div>
-          <button onClick={() => {alert('Coming soon!')}}>
-            Study
-          </button>
+          <Link to={{
+            pathname: `/study/deck`,
+            search: `?d=${this.state.id}`
+          }}>
+            <button>
+              Study
+            </button>
+          </Link>
         </div>
         {this.state.cards.map((card) => 
           <Card 
