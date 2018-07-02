@@ -7,6 +7,7 @@ import firebase from './firebase';
 import 'firebase/firestore';
 import alg from './algconfig';
 import algoliasearch from 'algoliasearch';
+import { smAlgorithm } from './algorithms';
 import moment from 'moment';
 
 // tool initializations
@@ -63,24 +64,20 @@ export function getDeckForStudy(deckId) {
     getDeck(deckId),
     userCardsStudiedRef.get()
   ]).then(([ deck, cardsStudiedSnapshot ]) => {
-    // deck is content. all cards, and updated.
+    // deck is content, fully updated.
     // cardsStudiedSnapshot is personal data. might not exist, and if so might not exist for all content.
 
     // turn collection of cards in cardsStudiedSnapshot into an object for easier checking.
-    let cardsToBeDeleted;
-    let cardsToBeKept = {};
-    if (cardsStudiedSnapshot.exists) {
-      cardsStudiedSnapshot.forEach((card) => {
-        cardsToBeDeleted[card.id] = card.data();
-      });
-    } else {
-      cardsToBeDeleted = {}; 
-    }
+    let cardsToBeDeleted = {};
+    cardsStudiedSnapshot.forEach((card) => {
+      cardsToBeDeleted[card.id] = card.data();
+    });
 
     // loop through content cards.
     let arrayDue = [];
     let arrayNew = [];
     let arrayLeft = [];
+    let cardsToBeKept = {};
     deck.cards.forEach((card) => {
       if (cardsToBeDeleted[card.id]) { // card is not new.
         const { interval, nextReviewed } = cardsToBeDeleted[card.id];
@@ -92,19 +89,17 @@ export function getDeckForStudy(deckId) {
           card.percentOverdue = percentOverdue;
           arrayDue.push(card); // this pushes CONTENT card with an overdue property
           cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
-          delete cardsToBeDeleted[card.id];
-        }
+        } 
       } else {
         if (arrayNew.length < 20) {
           arrayNew.push(card);
-          cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
-          delete cardsToBeDeleted[card.id];
         } else {
           arrayLeft.push(card);
-          cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
-          delete cardsToBeDeleted[card.id];
         }
+        cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
       }
+      delete cardsToBeDeleted[card.id];
+
     });
 
     // order cards in arrayDue by percent overdue.
@@ -122,9 +117,14 @@ export function getDeckForStudy(deckId) {
     });
 
     return batch.commit().then(() => {
-      return [
-        arrayDue, arrayNew, arrayLeft, cardsToBeKept
-      ];
+      return {
+        name: deck.deckName,
+        creator: deck.creatorId,
+        arrayDue: arrayDue,
+        arrayNew: arrayNew,
+        arrayLeft: arrayLeft,
+        personalData: cardsToBeKept
+      };
     });
   })
 }
@@ -309,26 +309,17 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
     //     'Content-Type': 'application/json'
     //   }
     // });
-    console.log('here 1');
     return db.collection('users').doc(uid).collection('lists').doc(listRef.id).set(data).then(() => {
-      console.log('here 2');
       if (concepts) {
         // consider mixing this batch with the deck creation call
-        console.log('here 3');
         const batch = db.batch();
         concepts.forEach((concept) => {
-          console.log('here 4');
           const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
-          console.log('here 5');
           if (!concept.answer) {
             concept.answer = '';
           }
-          console.log(concepts);
-          console.log(concept);
           batch.set(newCardRef, {question: concept.question, answer: concept.answer});
-          console.log('here 6');
         });
-        console.log('here 7');
         return batch.commit();
       }
     })
@@ -358,6 +349,27 @@ export function createConcept(question, answer, listId) {
 // end create functions
 
 // begin update functions
+export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInterval, quality) {
+  const uid = firebase.auth().currentUser.uid;
+  const cardRef = db.collection('users').doc(uid)
+                    .collection('studiedDecks').doc(deckId)
+                    .collection('cards').doc(cardId);
+
+  console.log(oldInterval);
+  const  [ newEasinessFactor, newInterval ] = smAlgorithm(oldEasinessFactor, oldInterval, quality);
+  const newNextReviewed = new Date();
+  newNextReviewed.setDate(newNextReviewed.getDate()  + newInterval);
+
+  cardRef.set({
+    easinessFactor: newEasinessFactor,
+    interval: newInterval,
+    nextReviewed: newNextReviewed,
+    isDue: false,
+    percentOverdue: 0
+  }, { merge: true });
+  
+}
+
 export function updateCard(deckId, cardId, front, back) {
   const cardRef = `decks/${deckId}/cards/${cardId}`;
 
@@ -577,3 +589,4 @@ export function searchUsers(query) {
   })
 }
 // end search functions
+
