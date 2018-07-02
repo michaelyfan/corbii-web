@@ -29,11 +29,15 @@
   background-color: #E9F2FF;
 }
 
-.flashcard-number {
-  font-size: 40px;
-  padding-top: 50px;
-  margin-right: 10px;
-  color: #003466;
+#concept-card {
+  height: 75px;
+  text-align: left;
+  width: 700px;
+  padding-left: 20px;
+}
+
+#concept-card::placeholder {
+  text-align: left;
 }
 
 .flashcard-text {
@@ -94,8 +98,8 @@
   margin-bottom: 40px;
 }
 
-#deck-title {
-  font-family: 'Print Clearly';
+.deck-title {
+  font-family: Print Clearly;
   font-size: 60pt;
   width: 100%;
   border: none;
@@ -105,13 +109,23 @@
   text-align: center;
   text-decoration: underline;
   padding-top: 20px;
+  color: #003466;
 }
 
-#deck-title::placeholder {
+.deck-title::placeholder {
    color: #C0CEDE; 
 }
 
-#deck-title, select, textarea {
+#edit-title {
+  margin-top: -50px;
+  margin-bottom: 15px;
+}
+
+.deck-title, select, textarea {
+  color: #003466;
+}
+
+#concept-title, select, textarea {
   color: #003466;
 }
 
@@ -122,4 +136,54 @@
   font-size: 14px;
   margin: 0;
   padding-bottom: 5px;
+}
+
+.edit-card {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#back-to-deck {
+  font-size: 28px;
+  background: #FFFFFF;
+  color: #003466;
+  padding-left: 25px;
+  padding-top: 15px;
+  font-family: Print Clearly;
+}
+
+#back-to-deck:hover {
+  color: #A8B4C2;
+}
+
+#add-a-card {
+  text-align: center;
+  font-family: Print Clearly;
+  font-size: 35px;
+  background: #E9F2FF;
+  padding-top: 15px;
+  color: #003466;
+  width: 100%;
+  margin: 0;
+}
+
+#add {
+  background: #E9F2FF;
+  color: #003466;
+  margin-left: 10px;
+}
+
+#add:hover {
+  color: #A8B4C2;
+}
+
+#study-deck {
+  display: flex;
+  justify-content: center;
+  background: #E9F2FF;
+  padding-top: 25px;
+}
+
+.add-card {
+  padding-bottom: 10px;
 }

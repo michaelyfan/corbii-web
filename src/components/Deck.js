@@ -41,9 +41,9 @@ class Card extends React.Component {
     const { id, front, back, handleDeleteCard } = this.props;
 
     return (
-      <div className='card-wrapper'>
-        <div className='card'>
-          <div className='card-front'>
+      <div className='flashcard'>
+        <div className='flashcard'>
+          <div className='flashcard-text edit-card'>
             <p className='low'>Front</p>
             {
               this.state.isUpdate && this.props.userIsOwner
@@ -51,7 +51,7 @@ class Card extends React.Component {
                 : <p>{front}</p>
             }
           </div>
-          <div>
+          <div className = 'flashcard-text edit-card'>
             <p className='low'>Back</p>
             {
               this.state.isUpdate && this.props.userIsOwner
@@ -195,42 +195,53 @@ class Deck extends React.Component {
   render() {
     return (
       <div>
-        <h1>{this.state.deckName}</h1>
-        {this.state.statusText}
-        <br />
-        <Link to='/dashboard'>
-          <button>Your decks</button>
-        </Link>
-        {
-          this.state.userIsOwner
-            ? <form onSubmit={this.handleAddCard}>
-                <span>Add a card:</span>
-                <input
-                  placeholder='Front...'
-                  type='text'
-                  autoComplete='off'
-                  value={this.state.addCardFrontName}
-                  onChange={this.handleChangeAddCardFront} />
-                <input
-                  placeholder='Back...'
-                  type='text'
-                  autoComplete='off'
-                  value={this.state.addCardBackName}
-                  onChange={this.handleChangeAddCardBack} />
-                <button type='submit'>Add</button>
-              </form>
-            : null
-        }
         <div>
-          <Link to={{
+          <Link to='/dashboard'>
+            <button id = 'back-to-deck'>back to decks</button>
+          </Link>
+          <p className = 'deck-title' id = 'edit-title'>{this.state.deckName}</p>
+          <p className = 'small-caption'>deck title</p>
+          <div class = 'hr'><hr /></div>
+        </div>
+
+        <div>
+          <Link id = 'study-deck' to={{
             pathname: `/study/deck`,
             search: `?d=${this.state.id}`
           }}>
-            <button>
-              Study
-            </button>
+            <button className = 'primary-button'>study this deck</button>
           </Link>
         </div>
+
+        {
+          this.state.userIsOwner
+            ? <form onSubmit={this.handleAddCard}>
+                <div>
+                  <p id = 'add-a-card'>add a card:</p>
+                  <div className = 'flashcard add-card'>
+                    <textarea
+                      placeholder='front information'
+                      className = 'flashcard-text'
+                      type='text'
+                      autoComplete='off'
+                      value={this.state.addCardFrontName}
+                      onChange={this.handleChangeAddCardFront} />
+                    <img class = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+                    <textarea
+                      placeholder='back information'
+                      className = 'flashcard-text'
+                      type='text'
+                      autoComplete='off'
+                      value={this.state.addCardBackName}
+                      onChange={this.handleChangeAddCardBack} />
+                    <button type='submit' id = 'add'>add</button>
+                  </div>
+                  <div class = 'hr'><hr /></div>
+                </div>
+              </form>
+            : null
+        }
+
         {this.state.cards.map((card) => 
           <Card 
             userIsOwner={this.state.userIsOwner}

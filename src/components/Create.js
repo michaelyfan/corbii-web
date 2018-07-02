@@ -90,13 +90,15 @@ class CreateConceptCard extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className = 'flashcard'>
         <input type='text' 
+          className = 'flashcard-text'
+          id = 'concept-card'
           key='question'
           value={this.state.question}
           onChange={this.handleChange}
           onBlur={this.handleSave}
-          placeholder='question' />
+          placeholder='question or concept' />
 
       </div>
     )
@@ -261,8 +263,13 @@ class CreateList extends React.Component {
               key={concept.id}
               save={this.save} />
           )};
-          <button onClick={this.handleAddConcept}>Add a concept</button>
-          <button onClick={() => {this.props.handleCreateList(this.state.concepts)}}>Create list</button>
+          <button 
+            className = 'secondary-button'
+            id = 'more-concept'
+            onClick={this.handleAddConcept}>
+              add a concept
+          </button>
+          <button onClick={() => {this.props.handleCreateList(this.state.concepts)}}>create list</button>
         </div>        
       </div>
     )
@@ -311,7 +318,7 @@ class Create extends React.Component {
       <div>
         <div className = 'create-deck'>
           <input type='text'
-            id = 'deck-title'
+            className = 'deck-title'
             onChange={this.handleChangeTitle}
             value={this.state.title}
             placeholder =
