@@ -114,14 +114,19 @@ class Deck extends React.Component {
 
   async updateDeck() {
     const { d } = queryString.parse(this.props.location.search);
-    const deck = await getDeck(d);
-    const currentUser = firebase.auth().currentUser;
-    this.setState(() => ({
-      deckName: deck.deckName,
-      id: d,
-      userIsOwner: currentUser != null && deck.creatorId === firebase.auth().currentUser.uid,
-      cards: deck.cards
-    }));
+    let deck;
+    try {
+      deck = await getDeck(d);
+      const currentUser = firebase.auth().currentUser;
+      this.setState(() => ({
+        deckName: deck.deckName,
+        id: d,
+        userIsOwner: currentUser != null && deck.creatorId === firebase.auth().currentUser.uid,
+        cards: deck.cards
+      }));
+    } catch(err) {
+      console.error(err);
+    }
   }
 
   async handleDeleteCard(cardId) {
