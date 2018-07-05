@@ -21,8 +21,8 @@ class NewCardOptions extends React.Component {
     } else if (lastSelectedQuality == 1) { // 'not soon' selected
       options = 
         <div>
-          <button onClick={() => {this.props.submitCard(1, true)}}>Not soon</button>
           <button onClick={() => {this.props.submitCard(0, true)}}>Very soon</button>
+          <button onClick={() => {this.props.submitCard(1, true)}}>Not soon</button>
           <button onClick={() => {this.props.submitCard(2, true)}}>1 day</button>
         </div>
     } else { // first time seeing card
@@ -215,7 +215,8 @@ class StudyDeck extends React.Component {
         arrayTodo: arrayDue.concat(arrayNew),
         arrayLeft: arrayLeft,
         personalData: personalData,
-        id: d
+        id: d,
+        isDone: arrayDue.concat(arrayNew).length === 0
       }), this.updateContent);
     }).catch((err) => {
       console.error(err);
@@ -265,8 +266,9 @@ class StudyDeck extends React.Component {
   render() {
     const { name, creator, arrayTodo, index, personalData, id, isDone } = this.state;
     const { signedIn } = this.props;
-    console.log(arrayTodo); 
 
+    const card = arrayTodo[index] || {};
+    const cardData = personalData ? personalData[card.id] : null;
     return (
       <div>
         { signedIn 
@@ -280,11 +282,11 @@ class StudyDeck extends React.Component {
                     <p>Keep in mind that studying past your set amount will decrease effectiveness.</p>
                   </div>
                 : <StudyCard 
-                    deckId={this.state.id}
-                    card={arrayTodo[index] || {}}
+                    deckId={id}
+                    card={card}
                     changeIndex={this.changeIndex}
                     learner={this.learner}
-                    cardData={personalData ? personalData[id] : null} />
+                    cardData={cardData} />
               }
               
             </div>

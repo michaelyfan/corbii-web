@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import Auth from './Auth.js';
+import PropTypes from 'prop-types';
  
 const customStyles = {
   content : {
@@ -55,12 +56,18 @@ class Login extends React.Component {
             <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
             <button className = 'primary-button' id = 'submit-email'>{this.props.header}</button>     
 */}
-            <Auth />
+            <Auth 
+              signedIn={this.props.signedIn}
+              doGetProfilePic = {this.props.doGetProfilePic} />
           </div>
         </Modal>
       </div>
     );
   }
+}
+
+Login.propTypes = {
+  signedIn: PropTypes.bool.isRequired
 }
  
 export default Login;

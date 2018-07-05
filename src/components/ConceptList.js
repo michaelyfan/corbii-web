@@ -211,7 +211,7 @@ class ConceptList extends React.Component {
             : null
         }
         <div>
-          <Link to='/study/conceptlist'>
+          <Link to={'/study/conceptlist/' + this.state.id}>
             <button>
               Study
             </button>

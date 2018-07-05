@@ -45,23 +45,28 @@ class App extends React.Component {
   }
 
   doGetProfilePic() {
-    return getCurrentUserProfilePic().then((url) => {
+    getCurrentUserProfilePic().then((url) => {
       this.setState(() => ({profilePic: url}))
+    }).catch((err) => {
+      console.error(err);
     })
   }
 
   render() {
 
+    const { signedIn, profilePic } = this.state;
+
     return (
       <Router>
         <div>
-          <Nav profilePic={this.state.profilePic} />
+          <Nav profilePic={profilePic} />
           <Switch>
             <Route 
               exact path='/' 
               render={(props) => 
                 <Homepage {...props} 
-                  signedIn={this.state.signedIn} />} />
+                  signedIn={signedIn}
+                  doGetProfilePic={this.doGetProfilePic} />} />
             <Route
               path='/FAQ'
               component={FAQ} />
@@ -69,27 +74,22 @@ class App extends React.Component {
               path='/search'
               component={Search} />
             <Route 
-              exact path='/signin'
-              render={(props) => 
-                <Auth {...props} 
-                  signedIn={this.state.signedIn} />} />
-            <Route 
               exact path='/profile'
               render={(props) => 
                 <Profile {...props} 
                   doGetProfilePic={this.doGetProfilePic}
-                  profilePic={this.state.profilePic}
-                  signedIn={this.state.signedIn} />} />
+                  profilePic={profilePic}
+                  signedIn={signedIn} />} />
             <Route 
               exact path='/dashboard'
               render={(props) => 
                 <Dashboard {...props} 
-                  signedIn={this.state.signedIn} />} />
+                  signedIn={signedIn} />} />
             <Route
               path='/create'
               render={(props) => 
                 <Create {...props}
-                  signedIn={this.state.signedIn} />} />
+                  signedIn={signedIn} />} />
             <Route
               path='/decks'
               component={Deck} />
@@ -100,7 +100,12 @@ class App extends React.Component {
               path='/study/deck'
               render={(props) =>
                 <StudyDeck {...props}
-                  signedIn={this.state.signedIn} />} />
+                  signedIn={signedIn} />} />
+            <Route
+              path='/study/conceptlist/:id'
+              render={(props) =>
+                <StudyConcept {...props}
+                  signedIn={signedIn} />} />
             <Route
               path='/user'
               component={User} />

@@ -206,7 +206,7 @@ class Deck extends React.Component {
           </Link>
           <p className = 'deck-title' id = 'edit-title'>{this.state.deckName}</p>
           <p className = 'small-caption'>deck title</p>
-          <div class = 'hr'><hr /></div>
+          <div className = 'hr'><hr /></div>
         </div>
 
         <div>
@@ -231,7 +231,7 @@ class Deck extends React.Component {
                       autoComplete='off'
                       value={this.state.addCardFrontName}
                       onChange={this.handleChangeAddCardFront} />
-                    <img class = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+                    <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
                     <textarea
                       placeholder='back information'
                       className = 'flashcard-text'
@@ -241,7 +241,7 @@ class Deck extends React.Component {
                       onChange={this.handleChangeAddCardBack} />
                     <button type='submit' id = 'add'>add</button>
                   </div>
-                  <div class = 'hr'><hr /></div>
+                  <div className = 'hr'><hr /></div>
                 </div>
               </form>
             : null

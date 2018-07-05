@@ -28,8 +28,7 @@ class Nav extends React.Component {
         this.setState(() => ({
           name: user.displayName,
           signedIn: true
-        }), () => {
-        })
+        }));
       } else {
         this.setState(() => ({
           name: 'not logged in',

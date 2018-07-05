@@ -38,7 +38,7 @@ class CreateDeckCard extends React.Component {
           onChange={(e) => {this.handleChange('front', e)}}
           onBlur={this.handleSave}
           placeholder='front information' />
-        <img class = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+        <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
         <textarea type='text'
           className = 'flashcard-text' 
           key='back'
@@ -47,10 +47,10 @@ class CreateDeckCard extends React.Component {
           onBlur={this.handleSave}
           placeholder='back information' />
 
-        <div class = 'side-menu'>
-          <img class = 'side-options' src = '../src/resources/flashcard-img/up-arrow.png' />
-          <img class = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
-          <img class = 'side-options' src = '../src/resources/flashcard-img/down-arrow.png' />
+        <div className = 'side-menu'>
+          <img className = 'side-options' src = '../src/resources/flashcard-img/up-arrow.png' />
+          <img className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+          <img className = 'side-options' src = '../src/resources/flashcard-img/down-arrow.png' />
         </div>
       </div>
     )
@@ -116,7 +116,7 @@ class CreateDeck extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 1,
+      count: 3,
       cards: [{
         front: '',
         back: '',
@@ -124,11 +124,11 @@ class CreateDeck extends React.Component {
       },{
         front: '',
         back: '',
-        id: 0
+        id: 1
       },{
         front: '',
         back: '',
-        id: 0
+        id: 2
       }]
     }
 
@@ -334,7 +334,7 @@ class Create extends React.Component {
               : 'deck title'
            } 
           </p>
-          <div class = 'hr'><hr /></div>
+          <div className = 'hr'><hr /></div>
         </div>
 
         <div className = 'button-wrapper'>

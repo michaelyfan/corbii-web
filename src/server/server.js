@@ -107,11 +107,9 @@ app.post('/api/deletedeck', (req, res) => {
       } else {
         const cardsPath = `decks/${req.body.deckId}/cards`;
         const deckPath = `decks/${req.body.deckId}`;
-        const userDeckPath = `users/${userId}/decks/${req.body.deckId}`;
         Promise.all([
           deleteCollection(cardsPath, 100),
-          deleteDocument(deckPath),
-          deleteDocument(userDeckPath)
+          deleteDocument(deckPath)
         ]).then((results) => {
           deletealgolia(req.body.deckId);
           res.sendStatus(200);
@@ -133,11 +131,9 @@ app.post('/api/deletelist', (req, res) => {
       } else {
         const conceptsPath = `lists/${req.body.listId}/concepts`;
         const listPath = `lists/${req.body.listId}`;
-        const userListPath = `users/${userId}/lists/${req.body.listId}`;
         Promise.all([
           deleteCollection(conceptsPath, 100),
           deleteDocument(listPath),
-          deleteDocument(userListPath)
         ]).then((results) => {
           // deletealgolia(req.body.listId);
           res.sendStatus(200);

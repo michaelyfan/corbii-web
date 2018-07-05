@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Login from './Login';
 import { Carousel } from 'react-responsive-carousel';
+import PropTypes from 'prop-types';
 
 class Slideshow extends React.Component {
   render() {
@@ -34,6 +35,8 @@ class Homepage extends React.Component {
               <Login 
                 header = 'sign up'
                 text = 'i am a student'
+                signedIn = {this.props.signedIn}
+                doGetProfilePic = {this.props.doGetProfilePic}
               />
             </button>
           <br /><br />
@@ -45,6 +48,8 @@ class Homepage extends React.Component {
             <Login 
               header = "log in"
               text = 'Log in.'
+              signedIn = {this.props.signedIn}
+              doGetProfilePic = {this.props.doGetProfilePic}
             /> 
           </button>
           </h3>
@@ -80,6 +85,11 @@ class Homepage extends React.Component {
       </div>
     );
   }
+}
+
+Homepage.propTypes = {
+  signedIn: PropTypes.bool.isRequired,
+  doGetProfilePic: PropTypes.func.isRequired
 }
 
 export default Homepage;

@@ -25,6 +25,7 @@
     "express": "^4.16.3",
     "firebase": "^5.1.0",
     "firebase-admin": "^5.12.1",
+    "firebaseui": "^3.1.1",
     "moment": "^2.22.2",
     "query-string": "^6.1.0",
     "react": "^16.4.1",
