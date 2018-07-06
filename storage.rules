@@ -1,8 +1,8 @@
 service firebase.storage {
   match /b/{bucket}/o {
-    match /profilePics/{image} {
+    match /profilePics/{imageId} {
       allow read;
-      allow write: if request.auth.uid == request.resource.name
+      allow write: if request.auth.uid == imageId
                     && request.resource.contentType.matches('image/.*');
     }
   }

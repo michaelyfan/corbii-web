@@ -74,7 +74,7 @@ class DeckRow extends React.Component {
               </Link>
         }
 
-        <div class = 'stuff-menu'>
+        <div className = 'stuff-menu'>
           <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>&nbsp; change name</button>
           <span className = 'modify-stuff'>&nbsp; | </span>
           <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>

@@ -1,5 +1,6 @@
 // imports
 import firebase from '../utils/firebase';
+import firebaseui from 'firebaseui';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { createNewDbUser } from '../utils/api';
 import React from 'react';
@@ -8,7 +9,14 @@ import { Redirect } from 'react-router-dom';
 
 class Auth extends React.Component {
 
+
   render() {
+    console.log('rendering auth!');
+
+    if (this.props.signedIn) {
+      return <Redirect to='/dashboard' />
+    }
+
     const firebaseUiConfig = {
       signInFlow: 'popup',
       signInOptions: [
@@ -16,19 +24,18 @@ class Auth extends React.Component {
         firebase.auth.FacebookAuthProvider.PROVIDER_ID,
         firebase.auth.EmailAuthProvider.PROVIDER_ID
       ],
+      credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
       callbacks: {
         signInSuccessWithAuthResult: (authResult)  => {
           if (authResult.additionalUserInfo.isNewUser) {
-            createNewDbUser().catch((err) => {
+            createNewDbUser().then(() => {
+              this.props.doGetProfilePic();
+            }).catch((err) => {
               console.log(err);
             })
           }
         }
       }
-    }
-
-    if (this.props.signedIn) {
-      return <Redirect to='/dashboard' />
     }
 
     return (

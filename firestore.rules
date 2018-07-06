@@ -12,25 +12,22 @@ service cloud.firestore {
 
           match /cards/{cardId} {
             allow read: if true;
-            allow create, update: if request.auth.uid == userId;          
+            allow create, update, delete: if request.auth.uid == userId;          
           }
         }
 
-        match /decks/{deckId} {
+        match /studiedLists/{cardId} {
           allow read: if true;
-          allow create, update: if request.auth.uid == userId;
+          allow create, update, delete: if request.auth.uid == userId;
         }
 
-        match /lists/{listId} {
-          allow read: if true;
-          allow create, update: if request.auth.uid == userId;
-        }
     }
 
     match /decks/{deckId} {
       allow read: if true;
 
-      allow create, update: if request.auth.uid == request.resource.data.creatorId;
+      allow create: if request.auth.uid == request.resource.data.creatorId;
+      allow update: if request.auth.uid == resource.data.creatorId;
 
       match /cards/{cardId} {
         allow read: if true;
@@ -42,7 +39,8 @@ service cloud.firestore {
     match /lists/{listId} {
       allow read: if true;
 
-      allow create, update: if request.auth.uid == request.resource.data.creatorId;
+      allow create: if request.auth.uid == request.resource.data.creatorId;
+      allow update: if request.auth.uid == resource.data.creatorId;
 
       match /concepts/{conceptId} {
         allow read: if true;

@@ -83,7 +83,8 @@ export function getDeckForStudy(deckId) {
         const { interval, nextReviewed } = cardsToBeDeleted[card.id];
         const now = new Date();
         const percentOverdue = getPercentOverdue(interval, nextReviewed.toDate(), now);
-        if (percentOverdue >= 1) { // card is due.
+
+        if (percentOverdue >= 0) { // card is due.
           cardsToBeDeleted[card.id].isDue = true;
           cardsToBeDeleted[card.id].percentOverdue = percentOverdue;
           card.percentOverdue = percentOverdue;
@@ -133,6 +134,11 @@ function getPercentOverdue(interval, due_date, current_date) {
   const dueMoment = moment(due_date);
   const currentMoment = moment(current_date);
   const percentOverdue = currentMoment.diff(dueMoment, 'days') / interval;
+
+  console.log(currentMoment);
+  console.log(dueMoment);
+  console.log(currentMoment.diff(dueMoment, 'days')); 
+
   if (percentOverdue >= 2) {
     return 2;
   } else {
@@ -158,15 +164,59 @@ export function getConceptList(listId) {
       concepts: conceptArr
     }
   });
+}
 
+export function getConceptListForStudy(listId) {
+  const uid = firebase.auth().currentUser.uid;
+
+  let contentRef = db.collection('lists').doc(listId);
+  let dataRef = db.collection('users').doc(uid)
+                  .collection('studiedLists')
+                  .where('listId', '==', listId);
+
+
+  return Promise.all([
+    getConceptList(listId),
+    dataRef.get()
+  ]).then(([ list, dataSnapshot ]) => {
+    let conceptsToBeDeleted = {};
+    dataSnapshot.forEach((concept) => {
+      conceptsToBeDeleted[concept.id] = concept.data();
+    });
+
+    let concepts = [];
+    let conceptsToBeKept = {};
+    list.concepts.forEach((concept) => {
+      concepts.push(concept);
+      conceptsToBeKept[concept.id] = conceptsToBeDeleted[concept.id];
+      delete conceptsToBeDeleted[concept.id];
+    });
+
+    let batch = db.batch();
+    Object.keys(conceptsToBeDeleted).forEach((id) => {
+      let badCardRef = db.collection('users').doc(uid)
+                         .collection('studiedLists').doc(id);
+      batch.delete(badCardRef);
+    });
+
+    return batch.commit().then(() => {
+      return {
+        name: list.listName,
+        creatorId: list.creatorId,
+        concepts: concepts,
+        conceptsAnswers: conceptsToBeKept
+      };
+    });
+  })
 }
 
 export function getUser(uid) {
   let userRef = db.collection('users').doc(uid);
+  let userDecksQuery = db.collection('decks').where('creatorId', '==', uid);
 
   return Promise.all([
     userRef.get(),
-    userRef.collection('decks').get(),
+    userDecksQuery.get(),
     getProfilePic(uid)
   ]).then((results) => {
     const [ user, decks, url ] = results;
@@ -188,8 +238,8 @@ export function getUser(uid) {
 }
 
 export function getCurrentUserDecks() {
-  const userId = firebase.auth().currentUser.uid;
-  return db.collection('users').doc(userId).collection('decks').get()
+  const uid = firebase.auth().currentUser.uid;
+  return db.collection('decks').where('creatorId', '==', uid).get()
     .then((querySnapshot) => {
       let decksArr = [];
       querySnapshot.forEach((deck) => {
@@ -203,8 +253,8 @@ export function getCurrentUserDecks() {
 }
 
 export function getCurrentUserConceptLists() {
-  const userId = firebase.auth().currentUser.uid;
-  return db.collection('users').doc(userId).collection('lists').get()
+  const uid = firebase.auth().currentUser.uid;
+  return db.collection('lists').where('creatorId', '==', uid).get()
     .then((querySnapshot) => {
       let listsArr = [];
       querySnapshot.forEach((conceptList) => {
@@ -244,16 +294,16 @@ export function createNewDbUser() {
       'Content-Type': 'application/json'
     }
   });
-  
+
   return Promise.all([
     db.collection('users').doc(uid).set({
       name: displayName,
       email: email
     }),
-    fetch('https://i.imgur.com/nYDMVCK.jpg').then((res) => res.blob()).then((res) => {
-      updateProfilePic(res);
-    })
-  ]);
+    fetch('https://i.imgur.com/nYDMVCK.jpg')
+  ]).then((res) => res[1].blob()).then((res) => {
+    return updateCurrentUserProfilePic(res);
+  });
 }
 
 export function createDeckCurrentUser(deckName, cards) {
@@ -276,17 +326,16 @@ export function createDeckCurrentUser(deckName, cards) {
       }
     });
 
-    return db.collection('users').doc(uid).collection('decks').doc(deckRef.id).set(data).then(() => {
-      if (cards) {
-        // consider mixing this batch with the deck creation call
-        const batch = db.batch();
-        cards.forEach((card) => {
-          const newCardRef = db.collection('decks').doc(deckRef.id).collection('cards').doc();
-          batch.set(newCardRef, {front: card.front, back: card.back});
-        });
-        return batch.commit();
-      }
-    })
+    if (cards) {
+      // consider mixing this batch with the deck creation call
+      const batch = db.batch();
+      cards.forEach((card) => {
+        const newCardRef = db.collection('decks').doc(deckRef.id).collection('cards').doc();
+        batch.set(newCardRef, {front: card.front, back: card.back});
+      });
+      return batch.commit();
+    }
+
   });
 }
 
@@ -309,20 +358,18 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
     //     'Content-Type': 'application/json'
     //   }
     // });
-    return db.collection('users').doc(uid).collection('lists').doc(listRef.id).set(data).then(() => {
-      if (concepts) {
-        // consider mixing this batch with the deck creation call
-        const batch = db.batch();
-        concepts.forEach((concept) => {
-          const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
-          if (!concept.answer) {
-            concept.answer = '';
-          }
-          batch.set(newCardRef, {question: concept.question, answer: concept.answer});
-        });
-        return batch.commit();
-      }
-    })
+    if (concepts) {
+      // consider mixing this batch with the deck creation call
+      const batch = db.batch();
+      concepts.forEach((concept) => {
+        const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
+        if (!concept.answer) {
+          concept.answer = '';
+        }
+        batch.set(newCardRef, {question: concept.question, answer: concept.answer});
+      });
+      return batch.commit();
+    }
   });
 }
 
@@ -355,7 +402,6 @@ export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInt
                     .collection('studiedDecks').doc(deckId)
                     .collection('cards').doc(cardId);
 
-  console.log(oldInterval);
   const  [ newEasinessFactor, newInterval ] = smAlgorithm(oldEasinessFactor, oldInterval, quality);
   const newNextReviewed = new Date();
   newNextReviewed.setDate(newNextReviewed.getDate()  + newInterval);
@@ -367,7 +413,6 @@ export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInt
     isDue: false,
     percentOverdue: 0
   }, { merge: true });
-  
 }
 
 export function updateCard(deckId, cardId, front, back) {
@@ -386,6 +431,18 @@ export function updateConcept(listId, conceptId, question, answer) {
     question: question,
     answer: answer
   });
+}
+
+export function updateConceptPersonalData(listId, cardId, newAnswer) {
+  const uid = firebase.auth().currentUser.uid;
+  const dataRef = db.collection('users').doc(uid)
+                    .collection('studiedLists').doc(cardId);
+
+
+  return dataRef.set({
+    answer: newAnswer,
+    listId: listId
+  }, {merge: true});
 }
 
 function updateDeckCountByOne(deckId, isIncrement) {
@@ -453,7 +510,6 @@ function updateListCountByOne(listId, isIncrement) {
 export function updateCurrentUserDeck(deckId, deckName) {
   const userId = firebase.auth().currentUser.uid;
   const deckRef = `decks/${deckId}`
-  const userDeckRef = `users/${userId}/decks/${deckId}`;
 
   // very temporary algolia index solution
   fetch('/api/updatealgolianame', {
@@ -467,16 +523,12 @@ export function updateCurrentUserDeck(deckId, deckName) {
     }
   });
 
-  return Promise.all([
-    db.doc(deckRef).update({name: deckName}),
-    db.doc(userDeckRef).update({name: deckName})
-  ]);
+  return db.doc(deckRef).update({name: deckName});
 }
 
 export function updateCurrentUserList(listId, listName) {
   const userId = firebase.auth().currentUser.uid;
   const listRef = `lists/${listId}`
-  const userListRef = `users/${userId}/lists/${listId}`;
 
   // // very temporary algolia index solution
   // fetch('/api/updatealgolianame', {
@@ -490,10 +542,7 @@ export function updateCurrentUserList(listId, listName) {
   //   }
   // });
 
-  return Promise.all([
-    db.doc(listRef).update({name: listName}),
-    db.doc(userListRef).update({name: listName})
-  ]);
+  return db.doc(listRef).update({name: listName});
 }
 
 export function updateCurrentUserProfilePic(file) {
