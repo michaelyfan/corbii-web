@@ -57,8 +57,7 @@ export function getDeck(deckId) {
 export function getDeckForStudy(deckId) {
   const uid = firebase.auth().currentUser.uid;
   const userCardsStudiedRef = db.collection('users').doc(uid)
-                                .collection('studiedDecks').doc(deckId)
-                                .collection('cards');
+                                .collection('studiedDecks').where('deckId', '==', deckId);
 
   return Promise.all([
     getDeck(deckId),
@@ -399,19 +398,19 @@ export function createConcept(question, answer, listId) {
 export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInterval, quality) {
   const uid = firebase.auth().currentUser.uid;
   const cardRef = db.collection('users').doc(uid)
-                    .collection('studiedDecks').doc(deckId)
-                    .collection('cards').doc(cardId);
+                    .collection('studiedDecks').doc(cardId);
 
   const  [ newEasinessFactor, newInterval ] = smAlgorithm(oldEasinessFactor, oldInterval, quality);
   const newNextReviewed = new Date();
-  newNextReviewed.setDate(newNextReviewed.getDate()  + newInterval);
+  newNextReviewed.setDate(newNextReviewed.getDate() + newInterval);
 
   cardRef.set({
     easinessFactor: newEasinessFactor,
     interval: newInterval,
     nextReviewed: newNextReviewed,
     isDue: false,
-    percentOverdue: 0
+    percentOverdue: 0,
+    deckId: deckId
   }, { merge: true });
 }
 
