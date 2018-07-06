@@ -131,8 +131,8 @@ export function getDeckForStudy(deckId) {
 }
 
 function getPercentOverdue(interval, due_date, current_date) {
-  const dueMoment = moment(due_date);
-  const currentMoment = moment(current_date);
+  const currentMoment = moment(current_date).startOf('day');
+  const dueMoment = moment(due_date).startOf('day');
   const percentOverdue = currentMoment.diff(dueMoment, 'days') / interval;
 
   console.log(currentMoment);
