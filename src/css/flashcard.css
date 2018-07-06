@@ -141,6 +141,7 @@
 .edit-card {
   margin-left: 5px;
   margin-right: 5px;
+  background: #FFFFFF;
 }
 
 #back-to-deck {
@@ -185,5 +186,52 @@
 }
 
 .add-card {
-  padding-bottom: 10px;
+  padding-bottom: 25px;
+}
+
+.low {
+  font-size: 18px;
+  color: #003466;
+  margin-top: 5px;
+}
+
+.editable-card {
+  color: #003466;
+  padding-top: 20px;
+}
+
+.edit-button {
+  padding: 0;
+  margin-top: 107px;
+  margin-left: 10px;
+}
+
+#delete-button {
+  margin-left: 10px;
+  height: auto;  
+}
+
+.edit-options {
+  margin-top: 95px;
+  padding-left: 10px;
+}
+
+.editing {
+  display: block;
+}
+
+#line {
+  margin-top: 107px;
+}
+
+.update-card {
+  text-decoration: none;
+  font-family: Print Clearly;
+  font-size: 30px;
+  border: none;
+  resize: none;
+  text-align: center;
+  padding-top: 10px;
+  width: 90%;
+  height: 60%;
 }

@@ -44,19 +44,27 @@ class Card extends React.Component {
       <div className='flashcard'>
         <div className='flashcard'>
           <div className='flashcard-text edit-card'>
-            <p className='low'>Front</p>
+            <p className='low'>front</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <input type='text' value={this.state.frontChangeValue} onChange={this.handleFrontChange} />
-                : <p>{front}</p>
+                ? <textarea 
+                    type='text'
+                    value={this.state.frontChangeValue}
+                    onChange={this.handleFrontChange} 
+                    className = 'update-card' />
+                : <p className = 'editable-card'>{front}</p>
             }
           </div>
           <div className = 'flashcard-text edit-card'>
-            <p className='low'>Back</p>
+            <p className='low'>back</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <input type='text' value={this.state.backChangeValue} onChange={this.handleBackChange} />
-                : <p>{back}</p>
+                ? <textarea 
+                    type='text'
+                    value={this.state.backChangeValue}
+                    onChange={this.handleBackChange} 
+                    className = 'update-card'/>
+                : <p className = 'editable-card'>{back}</p>
             }
           </div>
         </div>
@@ -64,14 +72,17 @@ class Card extends React.Component {
         { 
           this.props.userIsOwner
             ? this.state.isUpdate
-                ? <span>
-                    <button onClick={this.handleUpdateCard}>Update</button>
-                    <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
+                ? <span className = 'edit-options'>
+                    <button className = 'modify-stuff editing' onClick={this.handleUpdateCard}>update</button>
+                    <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
                   </span>            
-                : <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Edit</button>
+                : <span className = 'edit-button'>
+                    <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
+                  </span>
             : null
         }
-        { this.props.userIsOwner && <button onClick={() => {handleDeleteCard(id)}}>Delete</button>}
+        <span className = 'modify-stuff' id = 'line'>&nbsp; | </span>
+        { this.props.userIsOwner && <button className = 'modify-stuff' id = 'delete-button' onClick={() => {handleDeleteCard(id)}}>delete</button>}
       </div>
       
     )
