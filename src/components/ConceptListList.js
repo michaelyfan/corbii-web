@@ -102,15 +102,7 @@ class ConceptListList extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.signedIn) {
-      this.getConceptLists();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.getConceptLists();
-    }
+    this.getConceptLists();
   }
 
   getConceptLists() {
@@ -129,37 +121,23 @@ class ConceptListList extends React.Component {
     return (
       <div>
         {this.state.statusText}
-        {
-          this.props.signedIn
-            ? <div>
-                <div className = 'hr'><hr /></div>
-                <h3 className = 'your-stuff'>your concept lists</h3>
-                <div className = 'hr'><hr /></div>
-                {this.state.conceptListArr.map((list) => (
-                  <ConceptListRow 
-                    name={list.name} 
-                    id={list.id} 
-                    key={list.id} 
-                    match={this.props.match}
-                    getConceptLists={this.getConceptLists} />
-                ))}
-              </div>
-            : <div>
-                <h3>Sign in to view your concept lists.</h3>
-                <Link to='/signin'>Sign in</Link>
-              </div>
-            
-        }
-        
-        
+        <div>
+          <div className = 'hr'><hr /></div>
+          <h3 className = 'your-stuff'>your concept lists</h3>
+          <div className = 'hr'><hr /></div>
+          {this.state.conceptListArr.map((list) => (
+            <ConceptListRow 
+              name={list.name} 
+              id={list.id} 
+              key={list.id} 
+              match={this.props.match}
+              getConceptLists={this.getConceptLists} />
+          ))}
+        </div>  
       </div>
       
     )
   }
-}
-
-ConceptListList.propTypes = {
-  signedIn: PropTypes.bool.isRequired
 }
 
 export default ConceptListList;

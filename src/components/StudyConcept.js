@@ -67,16 +67,8 @@ class StudyConcept extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.signedIn) {
-      this.getList();
-    }
+    this.getList();
   } 
-
-  componentDidUpdate(prevProps) {
-    if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.getList();
-    }
-  }
   
   getList() {
     const { id } = this.props.match.params;
@@ -124,10 +116,6 @@ class StudyConcept extends React.Component {
       </div>
     )
   }
-}
-
-StudyConcept.propTypes = {
-  
 }
 
 export default StudyConcept;

@@ -134,10 +134,6 @@ function getPercentOverdue(interval, due_date, current_date) {
   const dueMoment = moment(due_date).startOf('day');
   const percentOverdue = currentMoment.diff(dueMoment, 'days') / interval;
 
-  console.log(currentMoment);
-  console.log(dueMoment);
-  console.log(currentMoment.diff(dueMoment, 'days')); 
-
   if (percentOverdue >= 2) {
     return 2;
   } else {

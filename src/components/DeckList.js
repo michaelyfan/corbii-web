@@ -102,15 +102,7 @@ class DeckList extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.signedIn) {
-      this.getDecks();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.getDecks();
-    }
+    this.getDecks();
   }
 
   getDecks() {
@@ -128,37 +120,25 @@ class DeckList extends React.Component {
     return (
       <div>
         {this.state.statusText}
-        {
-          this.props.signedIn
-            ? <div>
-                <div className = 'hr'><hr /></div>
-                <h3 className = 'your-stuff'>your decks</h3>
-                <div className = 'hr'><hr /></div>
-                {this.state.deckArr.map((deck) => (
-                  <DeckRow 
-                    name={deck.name} 
-                    id={deck.id} 
-                    key={deck.id} 
-                    match={this.props.match}
-                    getDecks={this.getDecks} />
-                ))}
-              </div>
-            : <div>
-                <h3>Sign in to view your decks.</h3>
-                <Link to='/signin'>Sign in</Link>
-              </div>
-            
-        }
+        <div>
+          <div className = 'hr'><hr /></div>
+          <h3 className = 'your-stuff'>your decks</h3>
+          <div className = 'hr'><hr /></div>
+          {this.state.deckArr.map((deck) => (
+            <DeckRow 
+              name={deck.name} 
+              id={deck.id} 
+              key={deck.id} 
+              match={this.props.match}
+              getDecks={this.getDecks} />
+          ))}
+        </div>
         
         
       </div>
       
     )
   }
-}
-
-DeckList.propTypes = {
-  signedIn: PropTypes.bool.isRequired
 }
 
 export default DeckList;

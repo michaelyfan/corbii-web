@@ -194,16 +194,8 @@ class StudyDeck extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.signedIn) {
-      this.getDeck();
-    }
+    this.getDeck();
   } 
-
-  componentDidUpdate(prevProps) {
-    if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.getDeck();
-    }
-  }
 
   getDeck() {
     const { d } = queryString.parse(this.props.location.search);
@@ -265,39 +257,33 @@ class StudyDeck extends React.Component {
 
   render() {
     const { name, creator, arrayTodo, index, personalData, id, isDone } = this.state;
-    const { signedIn } = this.props;
 
     const card = arrayTodo[index] || {};
     const cardData = personalData ? personalData[card.id] : null;
     return (
       <div>
-        { signedIn 
-          ? <div>
-              <h1>{name}</h1>
-              <h5>Created by {creator}</h5>
-              { isDone 
-                ? <div>
-                    <p>You're finished!</p>
-                    <button onClick={this.override}>Continue studying</button>
-                    <p>Keep in mind that studying past your set amount will decrease effectiveness.</p>
-                  </div>
-                : <StudyCard 
-                    deckId={id}
-                    card={card}
-                    changeIndex={this.changeIndex}
-                    learner={this.learner}
-                    cardData={cardData} />
-              }
-              
-            </div>
-          : <h2>You must be signed in to access this page.</h2> }
+        <div>
+          <h1>{name}</h1>
+          <h5>Created by {creator}</h5>
+          { isDone 
+            ? <div>
+                <p>You're finished!</p>
+                <button onClick={this.override}>Continue studying</button>
+                <p>Keep in mind that studying past your set amount will decrease effectiveness.</p>
+              </div>
+            : <StudyCard 
+                deckId={id}
+                card={card}
+                changeIndex={this.changeIndex}
+                learner={this.learner}
+                cardData={cardData} />
+          }
+          
+        </div>
       </div>
     )
   }
 }
 
-StudyDeck.propTypes = {
-  signedIn: PropTypes.bool.isRequired
-}
 
 export default StudyDeck;

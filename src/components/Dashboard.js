@@ -5,6 +5,8 @@ import ConceptListList from './ConceptListList';
 import { Link } from 'react-router-dom';
 import firebase from '../utils/firebase';
 
+const sassyMessage = "You managed to get to this page even though there's no active user session. This could mean that there's a bug on our end, and for that, we're terribly sorry and we'll get to it soon. This could also mean that you tampered with the frontend state to access an unauthorized page. If that's the case, congratulations, but you won't get anywhere from here. But have fun pretending that you know how to hack :)";
+
 class Dashboard extends React.Component {
 
   constructor(props) {
@@ -16,14 +18,11 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.signedIn) {
+    const user = firebase.auth().currentUser;
+    if (user) {
       this.setState(() => ({name: firebase.auth().currentUser.displayName}));
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.setState(() => ({name: firebase.auth().currentUser.displayName}));
+    } else {
+      alert(sassyMessage);
     }
   }
 
@@ -43,16 +42,13 @@ class Dashboard extends React.Component {
         </div>
 
         <div>
-          <DeckList signedIn={this.props.signedIn} match={this.props.match} />
-          <ConceptListList signedIn={this.props.signedIn} match={this.props.match} />
+          <DeckList match={this.props.match} />
+          <ConceptListList match={this.props.match} />
         </div>
+
       </div>
     )
   }
-}
-
-Dashboard.propTypes = {
-  signedIn: PropTypes.bool.isRequired
 }
 
 export default Dashboard;
