@@ -24,6 +24,7 @@ const ALGOLIA_INDEX_3 = 'argh';
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 app.use(express.static("dist"));
+app.listen(process.env.PORT || 3000, () => console.log("Listening on port 3000!"));
 
 app.post('/api/addalgoliauser', (req, res) => {
   const index = algoliaClient.initIndex(ALGOLIA_INDEX_2);
@@ -146,7 +147,7 @@ app.post('/api/deletelist', (req, res) => {
     });
 });
 
-app.listen(3000, () => console.log("Listening on port 3000!"));
+
 
 function deleteDocument(documentPath) {
 
