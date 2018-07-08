@@ -1,8 +1,9 @@
 import React from 'react';
-import { searchUsers, getProfilePic } from '../utils/api';
 import { Route, Link } from 'react-router-dom';
 import queryString from 'query-string';
 import PropTypes from 'prop-types';
+import { searchUsers, getProfilePic } from '../utils/api';
+import routes from '../routes/routes';
 
 class SearchResult extends React.Component {
   constructor(props) {
@@ -63,7 +64,7 @@ class SearchUser extends React.Component {
 
 
     this.unlisten = this.props.history.listen((location, action) => {
-      if (location.pathname === '/search/users') {
+      if (location.pathname === `${routes.searchRoute}/users`) {
         const { q } = queryString.parse(location.search);
         this.updateResults(q);
       }

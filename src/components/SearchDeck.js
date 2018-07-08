@@ -1,8 +1,10 @@
 import React from 'react';
-import { searchDecks } from '../utils/api';
 import { Route, Link } from 'react-router-dom';
 import queryString from 'query-string';
 import PropTypes from 'prop-types';
+
+import routes from '../routes/routes';
+import { searchDecks } from '../utils/api';
 
 function SearchResult(props) {
   return (
@@ -43,7 +45,7 @@ class SearchDeck extends React.Component {
 
 
     this.unlisten = this.props.history.listen((location, action) => {
-      if (location.pathname === '/search/decks') {
+      if (location.pathname === `${routes.searchRoute}/decks`) {
         const { q } = queryString.parse(location.search);
         this.updateResults(q);
       }

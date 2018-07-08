@@ -1,11 +1,11 @@
-// imports
-import firebase from '../utils/firebase';
-import firebaseui from 'firebaseui';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { createNewDbUser } from '../utils/api';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
+import firebaseui from 'firebaseui';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import firebase from '../utils/firebase';
+import { createNewDbUser } from '../utils/api';
+import routes from '../routes/routes';
 
 class Auth extends React.Component {
 
@@ -14,7 +14,7 @@ class Auth extends React.Component {
     console.log('rendering auth!');
 
     if (this.props.signedIn) {
-      return <Redirect to='/dashboard' />
+      return <Redirect to={routes.dashboardRoute} />
     }
 
     const firebaseUiConfig = {

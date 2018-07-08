@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import routes from '../routes/routes';
 
 function NotFound(props) {
   return (
@@ -8,7 +9,7 @@ function NotFound(props) {
       <div>
         <img src='/src/resources/404.jpg' />
       </div>
-      <Link to='/'><button>Return home</button></Link>
+      <Link to={routes.homeRoute}><button>Return home</button></Link>
     </div>
   )
 }

@@ -1,9 +1,10 @@
 import React from 'react';
-import { getConceptList, createConcept, deleteConcept, updateConcept } from '../utils/api';
-import firebase from '../utils/firebase';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import firebase from '../utils/firebase';
+import { getConceptList, createConcept, deleteConcept, updateConcept } from '../utils/api';
+import routes from '../routes/routes';
 
 class Concept extends React.Component {
   constructor(props) {
@@ -202,7 +203,7 @@ class ConceptList extends React.Component {
     return (
       <div>
         <div>
-          <Link to='/dashboard'>
+          <Link to={routes.dashboardRoute}>
             <button className = 'back-to-deck'>back to dashboard</button>
           </Link>
           <p className = 'deck-title edit-title'>{this.state.listName}</p>

@@ -2,6 +2,7 @@ import React from 'react';
 import firebase from '../utils/firebase';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import { testSecurity } from '../utils/api';
+import routes from '../routes/routes';
 import PropTypes from 'prop-types';
 
 class Nav extends React.Component {
@@ -42,7 +43,7 @@ class Nav extends React.Component {
     const user = firebase.auth().currentUser;
     if (user) {
       firebase.auth().signOut().then(() => {
-        this.props.history.push('/');
+        this.props.history.push(routes.homeRoute);
       }).catch((err) => {
         console.log(err);
       })
@@ -70,7 +71,7 @@ class Nav extends React.Component {
       <div className = "header"> 
         <div className = 'flex-header'>
           <div>
-            <Link to='/'>
+            <Link to={routes.homeRoute}>
                <img id = 'header-logo' src='/src/resources/header-logo.png' />
             </Link>
             {/*<button onClick={this.handleTest}>Test</button>*/}
@@ -85,7 +86,7 @@ class Nav extends React.Component {
                 value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: '/search/decks',
+                  pathname: `${routes.searchRoute}/decks`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
                 <button style={{display: 'none'}} type='submit'>Search</button>

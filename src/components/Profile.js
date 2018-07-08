@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getCurrentUser, updateCurrentUserProfilePic } from '../utils/api';
+import routes from '../routes/routes';
 
 class Profile extends React.Component {
 
@@ -67,7 +68,7 @@ class Profile extends React.Component {
               <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
             </form>
             <div className = 'dashboard-link'>
-              <Link to='/dashboard'>
+              <Link to={routes.dashboardRoute}>
                 <button className = 'dashboard-button'>go to dashboard</button>
               </Link>
             </div>

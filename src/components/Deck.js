@@ -4,6 +4,7 @@ import firebase from '../utils/firebase';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import routes from '../routes/routes';
 
 class Card extends React.Component {
   constructor(props) {
@@ -212,7 +213,7 @@ class Deck extends React.Component {
     return (
       <div>
         <div>
-          <Link to='/dashboard'>
+          <Link to={routes.dashboardRoute}>
             <button className = 'back-to-deck'>back to dashboard</button>
           </Link>
           <p className = 'deck-title edit-title'>{this.state.deckName}</p>

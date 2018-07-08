@@ -2,6 +2,7 @@ import React from 'react';
 import firebase from '../utils/firebase';
 import { BrowserRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
 import { getCurrentUserProfilePic } from '../utils/api';
+import routes from '../routes/routes';
 import Nav from './Nav';
 import FAQ from './FAQ';
 import Search from './Search';
@@ -83,19 +84,19 @@ class App extends React.Component {
           <Nav profilePic={profilePic} />
           <Switch>
             <Route 
-              exact path='/' 
+              exact path={routes.homeRoute} 
               render={(props) => 
                 <Homepage {...props} 
                   signedIn={signedIn}
                   doGetProfilePic={this.doGetProfilePic} />} />
             <Route
-              path='/FAQ'
+              path={routes.faqRoute}
               component={FAQ} />
             <Route
-              path='/search'
+              path={routes.searchRoute}
               component={Search} />
             <PrivateRoute 
-              exact path='/dashboard'
+              exact path={routes.dashboardRoute}
               signedIn={signedIn}
               loading={loading}
               component={Dashboard} />
@@ -129,7 +130,7 @@ class App extends React.Component {
               loading={loading}
               component={StudyConcept} />
             <Route
-              path='/user'
+              path='/user/'
               component={User} />
             <Route
               path='/denied'

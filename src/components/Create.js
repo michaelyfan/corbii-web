@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
 import Profile from './Profile.js';
+import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
+import routes from '../routes/routes';
 
 class CreateDeckCard extends React.Component {
 
@@ -307,7 +308,7 @@ class Create extends React.Component {
 
   handleCreateList(concepts) {
     createConceptListCurrentUser(this.state.title, concepts).then(() => {
-      this.props.history.push('/dashboard');
+      this.props.history.push(routes.dashboardRoute);
     }).catch((err) => {
       this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
     });
@@ -315,7 +316,7 @@ class Create extends React.Component {
 
   handleCreateDeck(cards) {
     createDeckCurrentUser(this.state.title, cards).then(() => {
-      this.props.history.push('/dashboard');
+      this.props.history.push(routes.dashboardRoute);
     }).catch((err) => {
       this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
     });
