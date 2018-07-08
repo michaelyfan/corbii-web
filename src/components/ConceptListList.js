@@ -66,10 +66,7 @@ class ConceptListRow extends React.Component {
                 <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
               </div>
             : <Link 
-                to={{
-                  pathname: `/conceptlists`,
-                  search: `?d=${id}`
-                }}>
+                to={`/conceptlists/${id}`}>
                 <button className = 'stuff-title'>{name}</button>
               </Link>
         }

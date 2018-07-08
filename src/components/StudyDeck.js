@@ -228,8 +228,8 @@ class StudyDeck extends React.Component {
   } 
 
   getDeck() {
-    const { d } = queryString.parse(this.props.location.search);
-    getDeckForStudy(d).then((result) => {
+    const { id } = this.props.match.params;
+    getDeckForStudy(id).then((result) => {
       const { name, creator, arrayDue, arrayNew, arrayLeft, personalData } = result;
       this.setState(() => ({
         name: name,
@@ -237,7 +237,7 @@ class StudyDeck extends React.Component {
         arrayTodo: arrayDue.concat(arrayNew),
         arrayLeft: arrayLeft,
         personalData: personalData,
-        id: d,
+        id: id,
         isDone: arrayDue.concat(arrayNew).length === 0
       }), this.updateContent);
     }).catch((err) => {

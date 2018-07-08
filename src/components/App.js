@@ -113,18 +113,20 @@ class App extends React.Component {
               loading={loading}
               component={Create} />
             <Route
-              path='/decks'
+              path='/decks/:id'
               component={Deck} />
             <Route
-              path='/conceptlists'
+              path='/conceptlists/:id'
               component={ConceptList} />
             <PrivateRoute
-              path='/study/deck'
+              path='/study/deck/:id'
               signedIn={signedIn}
               loading={loading}
               component={StudyDeck} />
             <PrivateRoute
               path='/study/conceptlist/:id'
+              signedIn={signedIn}
+              loading={loading}
               component={StudyConcept} />
             <Route
               path='/user'

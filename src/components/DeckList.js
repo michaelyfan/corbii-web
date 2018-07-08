@@ -66,10 +66,7 @@ class DeckRow extends React.Component {
                 <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
               </div>
             : <Link 
-                to={{
-                  pathname: `/decks`,
-                  search: `?d=${id}`
-                }}>
+                to={`/decks/${id}`}>
                 <button className = 'stuff-title'>{name}</button>
               </Link>
         }

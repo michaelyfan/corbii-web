@@ -122,14 +122,14 @@ class ConceptList extends React.Component {
   }
 
   async updateConceptList() {
-    const { d } = queryString.parse(this.props.location.search);
+    const { id } = this.props.match.params;
     let list;
     try {
-      const list = await getConceptList(d);
+      const list = await getConceptList(id);
       const currentUser = firebase.auth().currentUser;
       this.setState(() => ({
         listName: list.listName,
-        id: d,
+        id: id,
         userIsOwner: currentUser != null && list.creatorId === firebase.auth().currentUser.uid,
         concepts: list.concepts
       }));
@@ -232,7 +232,7 @@ class ConceptList extends React.Component {
             : null
         }
         <div>
-          <Link id = 'study-list' to={'/study/conceptlist/' + this.state.id}>
+          <Link id = 'study-list' to={`/study/conceptlist/${this.state.id}`}>
             <button className = 'primary-button'>study this list</button>
           </Link>
         </div>

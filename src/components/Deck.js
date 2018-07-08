@@ -124,14 +124,14 @@ class Deck extends React.Component {
   }
 
   async updateDeck() {
-    const { d } = queryString.parse(this.props.location.search);
+    const { id } = this.props.match.params;
     let deck;
     try {
-      deck = await getDeck(d);
+      deck = await getDeck(id);
       const currentUser = firebase.auth().currentUser;
       this.setState(() => ({
         deckName: deck.deckName,
-        id: d,
+        id: id,
         userIsOwner: currentUser != null && deck.creatorId === firebase.auth().currentUser.uid,
         cards: deck.cards
       }));
@@ -248,10 +248,7 @@ class Deck extends React.Component {
             : null
         }
          <div>
-          <Link id = 'study-deck' to={{
-            pathname: `/study/deck`,
-            search: `?d=${this.state.id}`
-          }}>
+          <Link id = 'study-deck' to={`/study/deck/${this.state.id}`}>
             <button className = 'primary-button'>study this deck</button>
           </Link>
         </div>
