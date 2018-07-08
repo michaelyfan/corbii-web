@@ -82,7 +82,7 @@ class Card extends React.Component {
             : null
         }
         <span className = 'modify-stuff' id = 'line'>&nbsp; | </span>
-        { this.props.userIsOwner && <button className = 'modify-stuff' id = 'delete-button' onClick={() => {handleDeleteCard(id)}}>delete</button>}
+        { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteCard(id)}}>delete</button>}
       </div>
       
     )
@@ -213,20 +213,11 @@ class Deck extends React.Component {
       <div>
         <div>
           <Link to='/dashboard'>
-            <button id = 'back-to-deck'>back to decks</button>
+            <button className = 'back-to-deck'>back to dashboard</button>
           </Link>
-          <p className = 'deck-title' id = 'edit-title'>{this.state.deckName}</p>
+          <p className = 'deck-title edit-title'>{this.state.deckName}</p>
           <p className = 'small-caption'>deck title</p>
           <div className = 'hr'><hr /></div>
-        </div>
-
-        <div>
-          <Link id = 'study-deck' to={{
-            pathname: `/study/deck`,
-            search: `?d=${this.state.id}`
-          }}>
-            <button className = 'primary-button'>study this deck</button>
-          </Link>
         </div>
 
         {
@@ -250,13 +241,20 @@ class Deck extends React.Component {
                       autoComplete='off'
                       value={this.state.addCardBackName}
                       onChange={this.handleChangeAddCardBack} />
-                    <button type='submit' id = 'add'>add</button>
+                    <button type='submit' className = 'add'>add</button>
                   </div>
-                  <div className = 'hr'><hr /></div>
                 </div>
               </form>
             : null
         }
+         <div>
+          <Link id = 'study-deck' to={{
+            pathname: `/study/deck`,
+            search: `?d=${this.state.id}`
+          }}>
+            <button className = 'primary-button'>study this deck</button>
+          </Link>
+        </div>
 
         {this.state.cards.map((card) => 
           <Card 

@@ -25,8 +25,9 @@
 .flashcard {
   display: flex;
   justify-content: center;
-  padding-top: 25px;
+  padding-top: 15px;
   background-color: #E9F2FF;
+  padding-bottom: 15px;
 }
 
 #concept-card {
@@ -94,7 +95,23 @@
   background-color: #E0E9F5;
 }
 
+#more-concept {
+  background-color: #C0CEDE;
+}
+
+#more-concept:hover {
+  background-color: #E0E9F5;
+}
+
+#add-concept {
+  padding-top: 0;
+}
+
 #finalize-deck {
+  margin-bottom: 40px;
+}
+
+#finalize-list {
   margin-bottom: 40px;
 }
 
@@ -116,7 +133,7 @@
    color: #C0CEDE; 
 }
 
-#edit-title {
+.edit-title {
   margin-top: -50px;
   margin-bottom: 15px;
 }
@@ -144,7 +161,7 @@
   background: #FFFFFF;
 }
 
-#back-to-deck {
+.back-to-deck {
   font-size: 28px;
   background: #FFFFFF;
   color: #003466;
@@ -168,17 +185,35 @@
   margin: 0;
 }
 
-#add {
+#add-a-concept {
+  text-align: center;
+  font-family: Print Clearly;
+  font-size: 35px;
+  background: #E9F2FF;
+  padding-top: 15px;
+  color: #003466;
+  width: 100%;
+  margin: 0;
+}
+
+.add {
   background: #E9F2FF;
   color: #003466;
   margin-left: 10px;
 }
 
-#add:hover {
+.add:hover {
   color: #A8B4C2;
 }
 
 #study-deck {
+  display: flex;
+  justify-content: center;
+  background: #E9F2FF;
+  padding-top: 25px;
+}
+
+#study-list {
   display: flex;
   justify-content: center;
   background: #E9F2FF;
@@ -202,13 +237,13 @@
 
 .edit-button {
   padding: 0;
-  margin-top: 107px;
+  margin-top: 109px;
   margin-left: 10px;
 }
 
-#delete-button {
+.delete-button {
   margin-left: 10px;
-  height: auto;  
+
 }
 
 .edit-options {
@@ -234,4 +269,19 @@
   padding-top: 10px;
   width: 90%;
   height: 60%;
+}
+
+#add-question {
+  height: 75px;
+  text-align: left;
+  width: 700px;
+  padding-left: 20px; 
+}
+
+#add-question::placeholder {
+  text-align: left;
+}
+
+#add-question, select, textarea {
+  color: #003466;
 }
