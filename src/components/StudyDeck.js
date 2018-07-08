@@ -113,25 +113,15 @@ class StudyCard extends React.Component {
     const { cardData, card } = this.props;
     return (
       <div>
-<<<<<<< HEAD
-        <div className='study-card'>
-          <p style={{fontSize: '48px'}}>
-            { this.state.isFlipped
-                ? card && card.back
-                : card && card.front
-            }
-          </p>
-=======
         <div className = 'study-card'>        
           <div className= 'flashcard-text'>
             <p className = 'front-text'>
               { this.state.isFlipped
-                  ? this.props.card && this.props.card.back
-                  : this.props.card && this.props.card.front
+                  ? card && card.back
+                  : card && card.front
               }
             </p>
           </div>
->>>>>>> 31ff0da99d548c1b39a831e36b00e65f5e21bbca
         </div>
         <div>
           {
