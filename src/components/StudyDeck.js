@@ -29,7 +29,7 @@ class NewCardOptions extends React.Component {
             <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i am unsure about this card</button>
           </div>
           <div className = 'center-button'>  
-            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(2, true)}}>i definitely know this card</button>
+            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(2, true)}}>i know this card</button>
           </div>
         </div>
     } else { // first time seeing card
