@@ -1,11 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getDeckForStudy, updateCardPersonalData } from '../utils/api';
+import { getDeckForStudy, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
 import { shiftInArray } from '../utils/tools';
 import queryString from 'query-string';
-
-
-
 
 class NewCardOptions extends React.Component {
   render() {
@@ -46,9 +43,9 @@ class NotNewCardOptions extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={() => {this.props.submitCard(0, false)}}>1</button>
-        <button onClick={() => {this.props.submitCard(1, false)}}>2</button>
-        <button onClick={() => {this.props.submitCard(2, false)}}>3</button>
+        <button onClick={() => {this.props.submitCard(0, true)}}>1</button>
+        <button onClick={() => {this.props.submitCard(0, true)}}>2</button>
+        <button onClick={() => {this.props.submitCard(0, true)}}>3</button>
         <button onClick={() => {this.props.submitCard(3, false)}}>4</button>
         <button onClick={() => {this.props.submitCard(4, false)}}>5</button>
         <button onClick={() => {this.props.submitCard(5, false)}}>6</button>
@@ -73,14 +70,17 @@ class StudyCard extends React.Component {
     this.setState((prevState) => ({isFlipped: !prevState.isFlipped}))
   }
 
-  submitCard(quality, isNew) {
-    if (isNew) {
-      this.props.learner(quality, this.props.card.id);
+  submitCard(quality, isLearner) {
+    if (isLearner) {
+      let easinessFactor = null;
+      if (this.props.cardData) { // this is not a new card, but 0, 1, or 2 was selected
+        easinessFactor = this.props.cardData.easinessFactor;
+      }
+      this.props.learner(this.props.card.id, quality, easinessFactor);
     } else {
-      // quality from 0 - 5 inclusive
       const { card, cardData } = this.props;
       const { interval, easinessFactor } = cardData;
-      updateCardPersonalData(this.props.deckId, card.id, interval, easinessFactor, quality);
+      updateCardPersonalData(this.props.deckId, card.id, easinessFactor, interval, quality);
       this.props.changeIndex(false);
     }
     this.setState(() => ({
@@ -89,13 +89,14 @@ class StudyCard extends React.Component {
   }
 
   render() {
+    const { cardData, card } = this.props;
     return (
       <div>
         <div className='study-card'>
           <p style={{fontSize: '48px'}}>
             { this.state.isFlipped
-                ? this.props.card && this.props.card.back
-                : this.props.card && this.props.card.front
+                ? card && card.back
+                : card && card.front
             }
           </p>
         </div>
@@ -103,11 +104,11 @@ class StudyCard extends React.Component {
           {
             this.state.isFlipped 
               ? <div>
-                  { this.props.cardData 
-                      ? <NotNewCardOptions submitCard={this.submitCard} />
-                      : <NewCardOptions 
+                  { !cardData || card.isLearner
+                      ? <NewCardOptions 
                           submitCard={this.submitCard}
-                          card={this.props.card} />
+                          card={card} />
+                      : <NotNewCardOptions submitCard={this.submitCard} />
                   }
                 </div>
               : <button onClick={this.flip}>Flip card</button>
@@ -149,7 +150,7 @@ class StudyDeck extends React.Component {
     this.learner = this.learner.bind(this);
   }
 
-  learner(quality, cardId) {
+  learner(cardId, quality, easinessFactor) {
     /*
       0: very soon
       1: not soon
@@ -162,6 +163,7 @@ class StudyDeck extends React.Component {
       this.setState((prevState) => {
         const { arrayTodo, index } = prevState;
         arrayTodo[index].lastSelectedQuality = 0;
+        arrayTodo[index].isLearner = true;
         if (arrayTodo.length < 5) {
           shiftInArray(arrayTodo, index, index + 3);
         } else {
@@ -183,11 +185,11 @@ class StudyDeck extends React.Component {
       });
     } else if (quality == 2) { 
       const { id, arrayTodo, index } = this.state;
-      updateCardPersonalData(id, arrayTodo[index].id, 2.5, 0, 1);
+      updateCardPersonalDataLearner(id, arrayTodo[index].id, 1, easinessFactor || null); // note quality doesn't matter here
       this.changeIndex(false);
     } else { // quality == 3
       const { id, arrayTodo, index } = this.state;
-      updateCardPersonalData(id, arrayTodo[index].id, 2.5, 1, 1);
+      updateCardPersonalDataLearner(id, arrayTodo[index].id, 3, easinessFactor || null); // note quality doesn't matter here
       this.changeIndex(false);
     }
 

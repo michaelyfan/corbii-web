@@ -90,7 +90,7 @@ export function getDeckForStudy(deckId) {
           arrayDue.push(card); // this pushes CONTENT card with an overdue property
           cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
         } 
-      } else {
+      } else { // card is new
         if (arrayNew.length < 20) {
           arrayNew.push(card);
         } else {
@@ -402,6 +402,24 @@ export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInt
 
   cardRef.set({
     easinessFactor: newEasinessFactor,
+    interval: newInterval,
+    nextReviewed: newNextReviewed,
+    isDue: false,
+    percentOverdue: 0,
+    deckId: deckId
+  }, { merge: true });
+}
+
+export function updateCardPersonalDataLearner(deckId, cardId, newInterval, newEasinessFactor) {
+  const uid = firebase.auth().currentUser.uid;
+  const cardRef = db.collection('users').doc(uid)
+                    .collection('studiedDecks').doc(cardId);
+
+  const newNextReviewed = new Date();
+  newNextReviewed.setDate(newNextReviewed.getDate() + newInterval);
+
+  cardRef.set({
+    easinessFactor: newEasinessFactor || 2.5,
     interval: newInterval,
     nextReviewed: newNextReviewed,
     isDue: false,
