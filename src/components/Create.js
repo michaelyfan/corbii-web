@@ -99,7 +99,6 @@ class CreateConceptCard extends React.Component {
           onChange={this.handleChange}
           onBlur={this.handleSave}
           placeholder='question or concept' />
-
       </div>
     )
   }
@@ -263,13 +262,22 @@ class CreateList extends React.Component {
               key={concept.id}
               save={this.save} />
           )};
-          <button 
-            className = 'secondary-button'
-            id = 'more-concept'
-            onClick={this.handleAddConcept}>
-              add a concept
-          </button>
-          <button onClick={() => {this.props.handleCreateList(this.state.concepts)}}>create list</button>
+          <div className = 'add-more-card' id = 'add-concept'>
+            <button 
+              className = 'secondary-button'
+              id = 'more-concept'
+              onClick={this.handleAddConcept}>
+                add a concept
+            </button>
+          </div>
+          <div className = 'add-more-card'>
+            <button
+              onClick={() => {this.props.handleCreateList(this.state.concepts)}}
+              className = 'primary-button'
+              id = 'finalize-list'>
+                create list
+            </button>
+          </div>
         </div>        
       </div>
     )

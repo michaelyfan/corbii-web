@@ -1,0 +1,96 @@
+.study-card {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+.front-text{
+  color: #003466;
+  padding-top: 45px;
+}
+
+#flip-card {
+  font-size: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.center-button {
+  display: flex;
+  justify-content: center;
+}
+
+.accuracy-button {
+  margin-bottom: 10px;
+  font-size: 30px;
+  width: 350px;
+  margin-right: 3px;
+  margin-left: 3px;
+}
+
+.rating-prompt {
+  font-family: Nunito Bold;
+  font-size: 14px;
+  color: #003466;
+  text-align: center;
+}
+
+.rating-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.maroon {
+  background-color: #6F102F;
+  color: #FFFFFF;
+}
+
+.maroon:hover {
+  background-color: #530C23;
+}
+
+.red {
+  background-color: #C8412B;
+  color: #FFFFFF;
+}
+
+.red:hover {
+  background-color: #963120;
+}
+
+.orange {
+  background-color: #E37F2F;
+  color: #FFFFFF; 
+}
+
+.orange:hover {
+  background-color: #AA5F23;
+}
+
+.yellow {
+  background-color: #E3A02F;
+  color: #FFFFFF;
+}
+
+.yellow:hover {
+  background-color: #AA7823;
+}
+
+.lime {
+  background-color: #E3DD2F;
+  color: #FFFFFF;
+}
+
+.lime:hover {
+  background-color: #AAA623;
+}
+
+.green {
+  background-color: #50BE5C;
+  color: #FFFFFF;
+}
+
+.green:hover {
+  background-color: #3C8F45;
+}

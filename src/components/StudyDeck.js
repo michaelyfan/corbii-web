@@ -14,23 +14,39 @@ class NewCardOptions extends React.Component {
     let options;
     if (lastSelectedQuality == 0) { // 'very soon' selected
       options = 
-        <div>
-          <button onClick={() => {this.props.submitCard(0, true)}}>Very soon</button>
-          <button onClick={() => {this.props.submitCard(1, true)}}>Not soon</button>
+        <div className = 'accuracy-center'>
+          <div className = 'center-button'>
+            <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
+          </div>
+          <div className = 'center-button'>
+            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(1, true)}}>i know this card</button>
+          </div>
         </div>
     } else if (lastSelectedQuality == 1) { // 'not soon' selected
       options = 
-        <div>
-          <button onClick={() => {this.props.submitCard(0, true)}}>Very soon</button>
-          <button onClick={() => {this.props.submitCard(1, true)}}>Not soon</button>
-          <button onClick={() => {this.props.submitCard(2, true)}}>1 day</button>
+        <div className = 'accuracy-center'>
+          <div className = 'center-button'>
+            <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
+          </div>
+          <div className = 'center-button'>
+            <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i am unsure about this card</button>
+          </div>
+          <div className = 'center-button'>  
+            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(2, true)}}>i definitely know this card</button>
+          </div>
         </div>
     } else { // first time seeing card
       options = 
-        <div>
-          <button onClick={() => {this.props.submitCard(0, true)}}>Very soon</button>
-          <button onClick={() => {this.props.submitCard(1, true)}}>Not soon</button>
-          <button onClick={() => {this.props.submitCard(3, true)}}>I know</button>
+        <div className = 'accuracy-center'>
+          <div className = 'center-button'>
+            <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
+          </div>
+          <div className = 'center-button'>
+            <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i am unsure about this card</button>
+          </div>
+          <div className = 'center-button'>  
+            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(3, true)}}>i definitely know this card</button>
+          </div>
         </div>
     }
 
@@ -46,16 +62,21 @@ class NotNewCardOptions extends React.Component {
   render() {
     return (
       <div>
-        <button onClick={() => {this.props.submitCard(0, false)}}>1</button>
-        <button onClick={() => {this.props.submitCard(1, false)}}>2</button>
-        <button onClick={() => {this.props.submitCard(2, false)}}>3</button>
-        <button onClick={() => {this.props.submitCard(3, false)}}>4</button>
-        <button onClick={() => {this.props.submitCard(4, false)}}>5</button>
-        <button onClick={() => {this.props.submitCard(5, false)}}>6</button>
+        <p className = 'rating-prompt'> on a scale of one to six, how comfortable are you with this card?</p>
+        <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
+        <div className = 'rating-buttons'>
+          <button className = 'accuracy-button maroon' onClick={() => {this.props.submitCard(0, false)}}>1</button>
+          <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(1, false)}}>2</button>
+          <button className = 'accuracy-button orange' onClick={() => {this.props.submitCard(2, false)}}>3</button>
+          <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(3, false)}}>4</button>
+          <button className = 'accuracy-button lime' onClick={() => {this.props.submitCard(4, false)}}>5</button>
+          <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(5, false)}}>6</button>
+        </div>
       </div>
     )
   }
 }
+
 
 class StudyCard extends React.Component {
   constructor(props) {
@@ -91,13 +112,15 @@ class StudyCard extends React.Component {
   render() {
     return (
       <div>
-        <div className='study-card'>
-          <p style={{fontSize: '48px'}}>
-            { this.state.isFlipped
-                ? this.props.card && this.props.card.back
-                : this.props.card && this.props.card.front
-            }
-          </p>
+        <div className = 'study-card'>        
+          <div className= 'flashcard-text'>
+            <p className = 'front-text'>
+              { this.state.isFlipped
+                  ? this.props.card && this.props.card.back
+                  : this.props.card && this.props.card.front
+              }
+            </p>
+          </div>
         </div>
         <div>
           {
@@ -110,11 +133,16 @@ class StudyCard extends React.Component {
                           card={this.props.card} />
                   }
                 </div>
-              : <button onClick={this.flip}>Flip card</button>
+              : <div className = 'center-button'>
+                  <button 
+                    className = 'primary-button' 
+                    id = 'flip-card' 
+                    onClick={this.flip}>
+                      flip card
+                  </button>
+                </div>
           }
         </div>
-        
-
       </div>
     )
   }
@@ -273,13 +301,13 @@ class StudyDeck extends React.Component {
       <div>
         { signedIn 
           ? <div>
-              <h1>{name}</h1>
-              <h5>Created by {creator}</h5>
+              <p className = 'deck-title'>{name}</p>
+              <p className = 'small-caption'>Created by {creator}</p>
               { isDone 
                 ? <div>
-                    <p>You're finished!</p>
-                    <button onClick={this.override}>Continue studying</button>
-                    <p>Keep in mind that studying past your set amount will decrease effectiveness.</p>
+                    <p className = 'youre-finished'>you're finished!</p>
+                    <button className = 'primary-button' onClick={this.override}>continue studying</button>
+                    <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
                   </div>
                 : <StudyCard 
                     deckId={id}

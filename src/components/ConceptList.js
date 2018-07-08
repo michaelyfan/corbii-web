@@ -41,22 +41,30 @@ class Concept extends React.Component {
     const { id, question, answer, handleDeleteConcept } = this.props;
 
     return (
-      <div className='card-wrapper'>
-        <div className='card'>
-          <div className='card-front'>
-            <p className='low'>Question</p>
+      <div className='flashcard'>
+        <div className='flashcard'>
+          <div className='flashcard-text edit-card'>
+            <p className='low'>question</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <input type='text' value={this.state.questionChangeValue} onChange={this.handleQuestionChange} />
-                : <p>{question}</p>
+                ? <textarea
+                    type='text' 
+                    value={this.state.questionChangeValue} 
+                    onChange={this.handleQuestionChange} 
+                    className = 'update-card'/>
+                : <p className = 'editable-card'>{question}</p>
             }
           </div>
-          <div>
-            <p className='low'>Your provided answer</p>
+          <div className = 'flashcard-text edit-card'>
+            <p className='low'>provided answer</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <input type='text' value={this.state.answerChangeValue} onChange={this.handleAnswerChange} />
-                : <p>{answer}</p>
+                ? <textarea
+                    type='text'
+                    value={this.state.answerChangeValue} 
+                    onChange={this.handleAnswerChange} 
+                    className = 'update-card'/>
+                : <p className = 'editable-card'>{answer}</p>
             }
           </div>
         </div>
@@ -64,14 +72,17 @@ class Concept extends React.Component {
         { 
           this.props.userIsOwner
             ? this.state.isUpdate
-                ? <span>
-                    <button onClick={this.handleUpdateConcept}>Update</button>
-                    <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
+                ? <span className = 'edit-options'>
+                    <button className = 'modify-stuff editing' onClick={this.handleUpdateConcept}>update</button>
+                    <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
                   </span>            
-                : <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Edit</button>
+                : <span className = 'edit-button'>
+                    <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
+                  </span>
             : null
         }
-        { this.props.userIsOwner && <button onClick={() => {handleDeleteConcept(id)}}>Delete</button>}
+        <span className = 'modify-stuff' id = 'line'>&nbsp; | </span>
+        { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteConcept(id)}}>delete</button>}
       </div>
       
     )
@@ -190,33 +201,42 @@ class ConceptList extends React.Component {
   render() {
     return (
       <div>
-        <h1>{this.state.listName}</h1>
-        {this.state.statusText}
-        <br />
-        <Link to='/dashboard'>
-          <button>Your concept lists</button>
-        </Link>
+        <div>
+          <Link to='/dashboard'>
+            <button className = 'back-to-deck'>back to dashboard</button>
+          </Link>
+          <p className = 'deck-title edit-title'>{this.state.listName}</p>
+          <p className = 'small-caption'>concept list title</p>
+          <div className = 'hr'><hr /></div>
+        </div>
+
+
         {
           this.state.userIsOwner
             ? <form onSubmit={this.handleAddConcept}>
-                <span>Add a concept:</span>
-                <input
-                  placeholder='Question...'
-                  type='text'
-                  autoComplete='off'
-                  value={this.state.addConceptQuestionName}
-                  onChange={this.handleChangeAddConceptQuestion} />
-                <button type='submit'>Add</button>
+                <div>
+                  <p id = 'add-a-concept'>add a concept:</p>
+                  <div className = 'flashcard add-card'>
+                    <input
+                      placeholder='question or concept'
+                      className = 'flashcard-text'
+                      id = 'add-question'
+                      type='text'
+                      autoComplete='off'
+                      value={this.state.addConceptQuestionName}
+                      onChange={this.handleChangeAddConceptQuestion} />
+                    <button type='submit' className = 'add'>add</button>
+                  </div>
+                </div>
               </form>
             : null
         }
         <div>
-          <Link to={'/study/conceptlist/' + this.state.id}>
-            <button>
-              Study
-            </button>
+          <Link id = 'study-list' to={'/study/conceptlist/' + this.state.id}>
+            <button className = 'primary-button'>study this list</button>
           </Link>
         </div>
+
         {this.state.concepts.map((concept) => 
           <Concept 
             userIsOwner={this.state.userIsOwner}
