@@ -360,8 +360,4 @@ class Create extends React.Component {
   }
 }
 
-Create.propTypes = {
-  signedIn: PropTypes.bool.isRequired
-}
-
 export default Create;

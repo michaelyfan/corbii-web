@@ -17,16 +17,9 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.signedIn) {
-       this.getUser();
-    }
+     this.getUser();
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.signedIn === true && this.props.signedIn != prevProps.signedIn) {
-      this.getUser();
-    }
-  }
 
   getUser() {
     getCurrentUser().then((result) => {
@@ -61,28 +54,25 @@ class Profile extends React.Component {
   render() {
     return (
       <div className='profile'>
-        {this.props.signedIn
-          ? <div>
-              <p>{this.state.statusText}</p>
-              <h1 className = 'username'>{this.state.name}</h1>
-              <h3 className = 'email'>{this.state.email}</h3>
-              <div className = 'hr'><hr /></div>
-              <div className = 'profile-pic'>
-                <div>{this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}</div>
-                <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
-                  <span id = 'change-pic'>change profile pic: &nbsp;</span>
-                  <input ref={this.inputFile} type='file' text='Change profile pic' /><br />
-                  <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
-                </form>
-                <div className = 'dashboard-link'>
-                  <Link to='/dashboard'>
-                    <button className = 'dashboard-button'>go to dashboard</button>
-                  </Link>
-                </div>
-              </div>
+        <div>
+          <p>{this.state.statusText}</p>
+          <h1 className = 'username'>{this.state.name}</h1>
+          <h3 className = 'email'>{this.state.email}</h3>
+          <div className = 'hr'><hr /></div>
+          <div className = 'profile-pic'>
+            <div>{this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}</div>
+            <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
+              <span id = 'change-pic'>change profile pic: &nbsp;</span>
+              <input ref={this.inputFile} type='file' text='Change profile pic' /><br />
+              <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
+            </form>
+            <div className = 'dashboard-link'>
+              <Link to='/dashboard'>
+                <button className = 'dashboard-button'>go to dashboard</button>
+              </Link>
             </div>
-          : <h2>Sign in to view your profile.</h2>}
-        
+          </div>
+        </div>
       </div>
     )
   }

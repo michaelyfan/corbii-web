@@ -17,27 +17,47 @@ import StudyConcept from './StudyConcept';
 import StudyDeck from './StudyDeck';
 import Dashboard from './Dashboard';
 import Create from './Create';
+import DeniedNoAuth from './DeniedNoAuth';
+
+function PrivateRoute({ component: Component, render, signedIn, loading, ...rest }) {
+  
+  return <Route {...rest} render={(props) => (
+    loading
+      ? <h1>Loading...</h1>
+      : signedIn
+        ? Component
+          ? <Component {...props} />
+          : render()
+        : <Redirect to='/denied' />
+  )} />
+}
+
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
-      this.state = {
-        profilePic: null,
-        signedIn: false
-      };
+    this.state = {
+      profilePic: null,
+      loading: true,
+      signedIn: false
+    };
 
-      this.doGetProfilePic = this.doGetProfilePic.bind(this);
-    }
+    this.doGetProfilePic = this.doGetProfilePic.bind(this);
+  }
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState(() => ({signedIn: true}));
+        this.setState(() => ({
+          signedIn: true,
+          loading: false
+        }));
         this.doGetProfilePic();
       } else {
         this.setState(() => ({
           signedIn: false,
+          loading: false,
           profilePic: null
         }))
       }
@@ -52,9 +72,10 @@ class App extends React.Component {
     })
   }
 
+
   render() {
 
-    const { signedIn, profilePic } = this.state;
+    const { signedIn, profilePic, loading } = this.state;
 
     return (
       <Router>
@@ -73,42 +94,44 @@ class App extends React.Component {
             <Route
               path='/search'
               component={Search} />
-            <Route 
+            <PrivateRoute 
+              exact path='/dashboard'
+              signedIn={signedIn}
+              loading={loading}
+              component={Dashboard} />
+            <PrivateRoute
               exact path='/profile'
+              signedIn={signedIn}
+              loading={loading}
               render={(props) => 
                 <Profile {...props} 
                   doGetProfilePic={this.doGetProfilePic}
-                  profilePic={profilePic}
-                  signedIn={signedIn} />} />
-            <Route 
-              exact path='/dashboard'
-              render={(props) => 
-                <Dashboard {...props} 
-                  signedIn={signedIn} />} />
-            <Route
+                  profilePic={profilePic} />} />
+            <PrivateRoute
               path='/create'
-              render={(props) => 
-                <Create {...props}
-                  signedIn={signedIn} />} />
+              signedIn={signedIn}
+              loading={loading}
+              component={Create} />
             <Route
               path='/decks'
               component={Deck} />
             <Route
               path='/conceptlists'
               component={ConceptList} />
-            <Route
+            <PrivateRoute
               path='/study/deck'
-              render={(props) =>
-                <StudyDeck {...props}
-                  signedIn={signedIn} />} />
-            <Route
+              signedIn={signedIn}
+              loading={loading}
+              component={StudyDeck} />
+            <PrivateRoute
               path='/study/conceptlist/:id'
-              render={(props) =>
-                <StudyConcept {...props}
-                  signedIn={signedIn} />} />
+              component={StudyConcept} />
             <Route
               path='/user'
               component={User} />
+            <Route
+              path='/denied'
+              component={DeniedNoAuth} />              
             <Route component={NotFound} />
           </Switch>
           <Footer />

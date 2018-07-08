@@ -41,7 +41,9 @@ class Nav extends React.Component {
   handleSignOut() {
     const user = firebase.auth().currentUser;
     if (user) {
-      firebase.auth().signOut().catch((err) => {
+      firebase.auth().signOut().then(() => {
+        this.props.history.push('/');
+      }).catch((err) => {
         console.log(err);
       })
     }
