@@ -4,7 +4,6 @@ const algoliasearch = require('algoliasearch');
 const bodyParser = require('body-parser');
 const express = require("express");
 const app = express();
-app.use(bodyParser.json());
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -23,8 +22,9 @@ const ALGOLIA_INDEX_2 = 'users';
 const ALGOLIA_INDEX_3 = 'argh';
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
-app.use(express.static("dist"));
-app.listen(process.env.PORT || 3000, () => console.log("Listening on port 3000!"));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, '../../dist')));
+
 
 app.post('/api/addalgoliauser', (req, res) => {
   const index = algoliaClient.initIndex(ALGOLIA_INDEX_2);
@@ -200,3 +200,9 @@ function deleteQueryBatch(query, batchSize, resolve, reject) {
     })
     .catch(reject);
 }
+
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../../dist/index.html'));
+});
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}!`));

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 const config = {
   entry: ['babel-polyfill', './src/index.js'],
@@ -28,8 +29,7 @@ const config = {
       template: 'src/index.html'
     })
   ],
-  mode: "development"
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
 };
-
 
 module.exports = config;
