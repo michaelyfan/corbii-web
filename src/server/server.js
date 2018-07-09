@@ -1,6 +1,7 @@
 require('dotenv').config();
 const admin = require('firebase-admin');
 const algoliasearch = require('algoliasearch');
+const path = require('path');
 const bodyParser = require('body-parser');
 const express = require("express");
 const app = express();
@@ -9,7 +10,7 @@ admin.initializeApp({
   credential: admin.credential.cert({
     projectId: 'corbii-web',
     clientEmail: process.env.CLIENT_EMAIL,
-    privateKey: JSON.parse(process.env.PRIVATE_KEY)
+    privateKey: process.env.dev ? process.env.PRIVATE_KEY : JSON.parse(process.env.PRIVATE_KEY)
   }),
   databaseURL: 'https://corbii-web.firebaseio.com'
 });
@@ -204,5 +205,5 @@ function deleteQueryBatch(query, batchSize, resolve, reject) {
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
-const port = process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}!`));
