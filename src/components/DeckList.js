@@ -59,11 +59,17 @@ class DeckRow extends React.Component {
         {
           this.state.isUpdate
             ? <div>
-                <form onSubmit={this.handleUpdateDeck}>
-                  <input type='text' value={this.state.newDeckName} onChange={this.handleChangeNewDeckName} />
-                  <button type='submit'>Update</button>
-                </form>
-                <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
+                <form id = 'next-line' onSubmit={this.handleUpdateDeck}>
+                  <input 
+                    className = 'stuff-title change-title'
+                    type='text' 
+                    value={this.state.newDeckName} 
+                    onChange={this.handleChangeNewDeckName} />
+                  <br />
+                  <button type='submit' className = 'modify-stuff needs-padding'>update</button>
+                  <span className = 'modify-stuff'>&nbsp; | </span>
+                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
+                </form> 
               </div>
             : <Link 
                 to={`/decks/${id}`}>
