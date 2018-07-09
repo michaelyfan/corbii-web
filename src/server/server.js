@@ -9,7 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert({
     projectId: 'corbii-web',
     clientEmail: process.env.CLIENT_EMAIL,
-    privateKey: process.env.PRIVATE_KEY
+    privateKey: JSON.parse(process.env.PRIVATE_KEY)
   }),
   databaseURL: 'https://corbii-web.firebaseio.com'
 });
