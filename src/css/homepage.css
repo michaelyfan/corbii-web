@@ -122,3 +122,41 @@
   padding-left: 80px;
   padding-right: 80px;
 }
+
+.denied {
+  font-family: Nunito;
+  font-size: 35px;
+  color: #003466;
+  text-align: center;
+}
+
+.go-to-home {
+  margin-bottom: 20px;
+}
+
+.no-access {
+  padding-top: 150px;
+  padding-bottom: 150px;
+  background-image: url('/src/resources/triangle.png');
+  background-position: center;
+  background-size: cover;
+}
+
+.error {
+  display: flex;
+}
+
+.uhoh {
+  width: 370px;
+  height: 425px;
+  padding-left: 100px;
+}
+
+#error-page {
+  padding-top: 30px;
+  padding-bottom: 75px;
+}
+
+#whoops {
+  padding-top: 150px;
+}
