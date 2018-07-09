@@ -4,6 +4,7 @@ import { Link, NavLink, withRouter } from 'react-router-dom';
 import { testSecurity } from '../utils/api';
 import routes from '../routes/routes';
 import PropTypes from 'prop-types';
+import Login from './Login';
 
 class Nav extends React.Component {
 
@@ -71,9 +72,15 @@ class Nav extends React.Component {
       <div className = "header"> 
         <div className = 'flex-header'>
           <div>
-            <Link to={routes.homeRoute}>
-               <img id = 'header-logo' src='/src/resources/header-logo.png' />
-            </Link>
+            {this.state.signedIn
+              ? <Link to={routes.dashboardRoute}>
+                  <img id = 'header-logo' src='/src/resources/header-logo.png' />
+                </Link>
+              : <Link to={routes.homeRoute}>
+                  <img id = 'header-logo' src='/src/resources/header-logo.png' />
+                </Link>}
+
+            
             {/*<button onClick={this.handleTest}>Test</button>*/}
           </div>
 
@@ -101,11 +108,19 @@ class Nav extends React.Component {
                   <img className='nav-profile-img' src={this.props.profilePic} />
                </Link>}
 
-          <p>
+          <div>
             {this.state.signedIn
               ? <button className = 'nav-signin' onClick={this.handleSignOut}>sign out</button>
-              : null }
-          </p>
+              : <div>
+                    <Login 
+                      header = "log in"
+                      signedIn = {this.props.signedIn}
+                      doGetProfilePic = {this.props.doGetProfilePic}
+                    >
+                      <button className = 'log-in' id = 'header-login'>log in </button>
+                    </Login>
+                </div> }
+          </div>
         </div>
       </div>
     )

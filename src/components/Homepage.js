@@ -31,27 +31,26 @@ class Homepage extends React.Component {
             <span className = "emphasized-words" id = "you">you</span> 
           </h1>
           <br />
-            <button className = "primary-button" type = "button"> 
-              <Login 
+            <Login 
                 header = 'sign up'
-                text = 'i am a student'
                 signedIn = {this.props.signedIn}
-                doGetProfilePic = {this.props.doGetProfilePic}
-              />
-            </button>
+                doGetProfilePic = {this.props.doGetProfilePic}>
+              <button className = "primary-button" type = "button"> i am a student</button>
+            </Login>
           <br /><br />
           <button className = "secondary-button" type = "button" onClick={() => {alert('Teacher functionality coming soon!')}}>
             i am an educator
           </button>
           <h3 id = 'log-in-subheader'> Already have an account?&nbsp; 
-          <button id = 'log-in'> 
-            <Login 
-              header = "log in"
-              text = 'Log in.'
-              signedIn = {this.props.signedIn}
-              doGetProfilePic = {this.props.doGetProfilePic}
-            /> 
-          </button>
+          
+          <Login 
+            header = "log in" 
+            signedIn = {this.props.signedIn}
+            doGetProfilePic = {this.props.doGetProfilePic}
+          >
+            <button className = 'log-in'>Log in.</button>
+          </Login>
+          
           </h3>
           <br /><br />
         </div>

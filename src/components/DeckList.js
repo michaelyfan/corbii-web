@@ -72,17 +72,18 @@ class DeckRow extends React.Component {
                   <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
                 </form> 
               </div>
-            : <Link 
-                to={`${routes.viewDeckRoute}/${id}`}>
-                <button className = 'stuff-title'>{name}</button>
-              </Link>
+            : <div>
+                <Link 
+                  to={`${routes.viewDeckRoute}/${id}`}>
+                  <button className = 'stuff-title'>{name}</button>
+                </Link>
+                <div className = 'stuff-menu'>
+                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>&nbsp; change name</button>
+                  <span className = 'modify-stuff'>&nbsp; | </span>
+                  <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
+                </div>
+              </div>
         }
-
-        <div className = 'stuff-menu'>
-          <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>&nbsp; change name</button>
-          <span className = 'modify-stuff'>&nbsp; | </span>
-          <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
-        </div>
       </div>
     )
   }

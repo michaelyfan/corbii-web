@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
 import { shiftInArray } from '../utils/tools';
+import routes from '../routes/routes';
 import queryString from 'query-string';
 
 class NewCardOptions extends React.Component {
@@ -59,15 +60,15 @@ class NotNewCardOptions extends React.Component {
   render() {
     return (
       <div>
-        <p className = 'rating-prompt'> on a scale of one to six, how comfortable are you with this card?</p>
+        <p className = 'rating-prompt' id = 'rating-question'> on a scale of one to six, how comfortable are you with this card?</p>
         <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
         <div className = 'rating-buttons'>
-          <button className = 'accuracy-button maroon' onClick={() => {this.props.submitCard(0, true)}}>1</button>
-          <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>2</button>
-          <button className = 'accuracy-button orange' onClick={() => {this.props.submitCard(0, true)}}>3</button>
-          <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(3, false)}}>4</button>
-          <button className = 'accuracy-button lime' onClick={() => {this.props.submitCard(4, false)}}>5</button>
-          <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(5, false)}}>6</button>
+          <button className = 'accuracy-button maroon number-scale' onClick={() => {this.props.submitCard(0, true)}}>1</button>
+          <button className = 'accuracy-button red number-scale' onClick={() => {this.props.submitCard(0, true)}}>2</button>
+          <button className = 'accuracy-button orange number-scale' onClick={() => {this.props.submitCard(0, true)}}>3</button>
+          <button className = 'accuracy-button yellow number-scale' onClick={() => {this.props.submitCard(3, false)}}>4</button>
+          <button className = 'accuracy-button lime number-scale' onClick={() => {this.props.submitCard(4, false)}}>5</button>
+          <button className = 'accuracy-button green number-scale' onClick={() => {this.props.submitCard(5, false)}}>6</button>
         </div>
       </div>
     )
@@ -269,6 +270,7 @@ class StudyDeck extends React.Component {
   override() {
     if (this.state.arrayLeft.length <= 0) {
       alert('You have no more cards remaining.');
+      this.props.history.push(routes.dashboardRoute);
     } else {
       this.setState((prevState) => {
         let newArrayTodo;

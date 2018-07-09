@@ -81,7 +81,7 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <Nav profilePic={profilePic} />
+          <Nav profilePic={profilePic} signedIn={signedIn} />
           <Switch>
             <Route 
               exact path={routes.homeRoute} 

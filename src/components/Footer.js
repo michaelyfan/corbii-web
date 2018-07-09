@@ -6,6 +6,7 @@ class Footer extends React.Component {
   render() {
     return (
       <div className = 'footer'>
+        <div><Link to={routes.homeRoute} className = 'footer-link'>home</Link></div>
         <div><Link to={routes.dashboardRoute} className = 'footer-link'>my decks </Link></div>
         <div><Link to={routes.faqRoute} className = 'footer-link'> faq </Link></div>
         <div><Link to={routes.searchRoute} className = 'footer-link' id = 'footer-search'> search </Link></div>

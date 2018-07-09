@@ -1,6 +1,6 @@
 
 Frontend:
-- make designs mobile-responsive.
+- make designs mobile-responsive
 - why do these keys: [ ] \ freak out the text inputs?
 - make icon keys (switch front/back, move up/down) work for deck creation
 
