@@ -1,0 +1,32 @@
+
+Frontend:
+- finish designs
+- make designs mobile-responsive.
+- why do these keys: [ ] \ freak out the text inputs?
+- make icon keys (switch front/back, delete, etc) work for deck creation
+- fix 'i am a student' button not activating if one clicks the edges
+
+Backend/fullstack:
+- deploy as Node app for Product Day
+- how to handle deletion of personal data when deck is deleted?
+  - automatically clear out personal data after x time of unuse?
+  - make separate root-level collections of cards and concepts for personal data.
+    - each card and concept has userId, deckId, same cardId
+    - use queries
+- automatically updating isDue field instead of updating on retrieval
+- should i deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
+- Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
+- add Algolia calls for concept lists.
+- implement structure necessary for a study history
+- handle different time zones
+- files to be handled:
+  - font files ttf/TTF, url in css
+  - images, url in css
+  - images, src in html
+
+Both:
+- think of a more elegant solution to the new user's profile pic bug. (see Michael)
+- refactor, refactor, refactor
+  -refactor deck vs. conceptlist flow. Create.js
+- run everything through eslint eventually (before pushing to production)
+- implement pictures into the decks
