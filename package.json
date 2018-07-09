@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "SET NODE_ENV='production' && webpack -p",
+    "build": "NODE_ENV='production' webpack -p",
     "client": "webpack-dev-server --devtool inline-source-map --hot",
     "server": "nodemon src/server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "webpack-dev-server --open",
     "prod": "node src/server/server.js",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm install && npm run build"
   },
   "babel": {
     "presets": [
