@@ -64,4 +64,13 @@ button.modify-stuff:hover {
 
 .stuff-menu {
   display: flex;
-};
+}
+
+.change-title {
+  border: none;
+  text-decoration: none;
+}
+
+.needs-padding {
+  padding-left: 12px;
+}

@@ -60,10 +60,16 @@ class ConceptListRow extends React.Component {
           this.state.isUpdate
             ? <div>
                 <form onSubmit={this.handleUpdateConceptList}>
-                  <input type='text' value={this.state.newConceptListName} onChange={this.handleChangeNewConceptListName} />
-                  <button type='submit'>Update</button>
+                  <input 
+                    className = 'stuff-title change-title'
+                    type='text'
+                    value={this.state.newConceptListName}
+                    onChange={this.handleChangeNewConceptListName} />
+                  <br /> 
+                  <button type='submit' className = 'modify-stuff'>update</button>
+                  <span className = 'modify-stuff'>&nbsp; | </span>
+                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
                 </form>
-                <button onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>Cancel</button>
               </div>
             : <Link 
                 to={`/conceptlists/${id}`}>

@@ -298,7 +298,9 @@ class StudyDeck extends React.Component {
           { isDone 
             ? <div>
                 <p className = 'youre-finished'>you're finished!</p>
-                <button className = 'primary-button' onClick={this.override}>continue studying</button>
+                <div className = 'center-button'>
+                  <button className = 'primary-button' onClick={this.override}>continue studying</button>
+                </div>
                 <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
               </div>
             : <StudyCard 

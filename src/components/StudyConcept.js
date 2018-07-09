@@ -35,12 +35,25 @@ class SingleConcept extends React.Component {
     return (
       <div>
         <form onSubmit={this.handleSubmitAnswer}>
-          <p>Question: {content && content.question}</p>
-          <textarea onChange={this.handleChangeText} rows='10' cols='70'></textarea><br />
-          <input type='submit' text='Save' />
+          <p className = 'question-answer'>explain or answer: 
+            <span className = 'content-info'> {content && content.question}</span>
+          </p>
+          <div className = 'center-button'>
+            <textarea 
+              className = 'self-exp-box'
+              onChange={this.handleChangeText} 
+              rows='10' 
+              cols='70'>
+            </textarea>
+          </div>
+          <br />
+          <div className = 'center-button'>
+            <button className = 'primary-button' type='submit'>save</button>
+          </div>
         </form>
-        <p>Past answer:</p>
-        <p style={{maxWidth: '400px', fontSize: '16px', color: 'rgb()'}}>{data ? data.answer : 'none'}</p>
+        <p className = 'question-answer'>previous answer:
+          <span className = 'content-info'>{data ? data.answer : 'none'}</span>
+        </p>
       </div>
     )
   }
@@ -105,14 +118,22 @@ class StudyConcept extends React.Component {
 
     return (
       <div>
-        <h1>{ listName }</h1>
-        <SingleConcept
-          listId={listId}
-          content={conceptContent}
-          data={conceptData}
-          getList={this.getList} />
-        { index > 0 && <button onClick={() => {this.changeIndex(true)}}>Previous</button> }
-        { index < concepts.length - 1 && <button onClick={() => {this.changeIndex(false)}}>Next</button> }
+        <p className = 'deck-title'>{ listName }</p>
+        <div className = 'disp-inline center-button'>
+          { index > 0 && 
+            <img src = '/src/resources/prev-arrow.png'
+              className = 'arrows' 
+              onClick={() => {this.changeIndex(true)}} /> }
+          <SingleConcept
+            listId={listId}
+            content={conceptContent}
+            data={conceptData}
+            getList={this.getList} />
+          { index < concepts.length - 1 && 
+            <img src = '/src/resources/next-arrow.png' 
+              className = 'arrows'
+              onClick={() => {this.changeIndex(false)}} /> }
+        </div>
       </div>
     )
   }

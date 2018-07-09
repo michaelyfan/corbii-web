@@ -94,3 +94,49 @@
 .green:hover {
   background-color: #3C8F45;
 }
+
+.youre-finished {
+  font-size: 26px;
+  text-align: center;
+}
+
+.study-warning {
+  text-align: center;
+  font-size: 21px;
+}
+
+.question-answer {
+  text-align: center;
+  font-family: Nunito Bold;
+  font-size: 28px;
+  color: #A8B4C2;
+}
+
+.content-info {
+  display: block;
+  text-align: center;
+  font-family: Print Clearly;
+  font-size: 35px;
+  color: #003466;
+}
+
+.self-exp-box {
+  border: 5px solid #A8B4C2;
+  padding-left: 15px;
+  padding-top: 10px;
+  resize: none;
+}
+
+.arrows {
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  padding-top: 225px;
+  padding-left: 20px;
+  padding-right: 20px
+}
+
+.disp-inline {
+  display: flex;
+}
