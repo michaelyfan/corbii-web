@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getCurrentUser, updateCurrentUserProfilePic } from '../utils/api';
+import { getCurrentUserProfileInfo, updateCurrentUserProfilePic } from '../utils/api';
 import routes from '../routes/routes';
 
 class Profile extends React.Component {
@@ -23,10 +23,10 @@ class Profile extends React.Component {
 
 
   getUser() {
-    getCurrentUser().then((result) => {
+    getCurrentUserProfileInfo().then((result) => {
       this.setState(() => ({
-        name: result.name,
-        email: result.email,
+        name: result.data().name,
+        email: result.data().email
       }));
     }).catch((err) => {
       console.log(err);

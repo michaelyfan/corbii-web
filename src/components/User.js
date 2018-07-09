@@ -1,18 +1,15 @@
 import React from 'react';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
-import { getUser, getProfilePic } from '../utils/api';
+import { getUserAll, getProfilePic } from '../utils/api';
+import routes from '../routes/routes';
 
 function DeckMiniView(props) {
   const { id, name } = props;
   return (
     <div className='deck-mini-view'>
       <h3>{name}</h3>
-      <Link 
-        to={{
-          pathname: 'decks',
-          search: `?d=${id}`
-        }}>
+      <Link to={`${routes.viewDeckRoute}/${id}`}>
         <button>View</button>
       </Link>  
     </div>
@@ -36,10 +33,10 @@ class User extends React.Component {
   }
 
   async updateDeck() {
-    const { u } = queryString.parse(this.props.location.search);
+    const { u } = this.props.match.params;
     let user;
     try {
-      user = await getUser(u);
+      user = await getUserAll(u);
       this.setState(() => ({
         name: user.name,
         decks: user.decks,

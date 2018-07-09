@@ -233,7 +233,7 @@ class ConceptList extends React.Component {
             : null
         }
         <div>
-          <Link id = 'study-list' to={`/study/conceptlist/${this.state.id}`}>
+          <Link id = 'study-list' to={`${routes.studyConceptListRoute}/${this.state.id}`}>
             <button className = 'primary-button'>study this list</button>
           </Link>
         </div>

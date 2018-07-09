@@ -9,11 +9,7 @@ import { searchDecks } from '../utils/api';
 function SearchResult(props) {
   return (
     <div className='result-box'>
-      <Link 
-        to={{
-          pathname: `/decks`,
-          search: `?d=${props.id}`
-        }}>
+      <Link to={`${routes.viewDeckRoute}/${props.id}`}>
         <p className = 'deck-text' id = 'deck-name'>{props.name}</p>
       </Link>
       <p className = 'deck-text' id = 'deck-owner'>{props.creator}</p>

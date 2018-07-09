@@ -2,6 +2,7 @@ import React from 'react';
 import { getCurrentUserDecks, deleteDeckFromCurrentUser, updateCurrentUserDeck } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
+import routes from '../routes/routes';
 
 class DeckRow extends React.Component {
   constructor(props) {
@@ -72,7 +73,7 @@ class DeckRow extends React.Component {
                 </form> 
               </div>
             : <Link 
-                to={`/decks/${id}`}>
+                to={`${routes.viewDeckRoute}/${id}`}>
                 <button className = 'stuff-title'>{name}</button>
               </Link>
         }

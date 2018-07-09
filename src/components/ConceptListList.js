@@ -2,6 +2,8 @@ import React from 'react';
 import { getCurrentUserConceptLists, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
+import routes from '../routes/routes';
+
 
 class ConceptListRow extends React.Component {
   constructor(props) {
@@ -72,7 +74,7 @@ class ConceptListRow extends React.Component {
                 </form>
               </div>
             : <Link 
-                to={`/conceptlists/${id}`}>
+                to={`${routes.viewConceptListRoute}/${id}`}>
                 <button className = 'stuff-title'>{name}</button>
               </Link>
         }

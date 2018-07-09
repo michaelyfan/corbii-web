@@ -1,4 +1,4 @@
-import React from 'react';
+wimport React from 'react';
 
 export default function FAQ() {
   return (

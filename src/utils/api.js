@@ -25,10 +25,6 @@ const ALGOLIA_INDEX_NAME_3 = 'conceptlists';
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-// Begin get functions
-export function getProfilePic(uid) {
-  return storageRef.child(`profilePics/${uid}`).getDownloadURL();
-}
 
 export function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
@@ -205,35 +201,23 @@ export function getConceptListForStudy(listId) {
   })
 }
 
-export function getUser(uid) {
-  let userRef = db.collection('users').doc(uid);
-  let userDecksQuery = db.collection('decks').where('creatorId', '==', uid);
+/*
+  - get user db information
+  - get user profile pic link
+  - get user's decks
+  - get user's concept lists
+*/
 
-  return Promise.all([
-    userRef.get(),
-    userDecksQuery.get(),
-    getProfilePic(uid)
-  ]).then((results) => {
-    const [ user, decks, url ] = results;
-    let decksArr = [];
-    decks.forEach((deck) => {
-      decksArr.push({
-        id: deck.id,
-        name: deck.data().name,
-      })
-    });
-    return {
-      name: user.data().name,
-      email: user.data().email,
-      id: user.id,
-      decks: decksArr,
-      photoURL: url
-    }
-  });
+
+export function getUserProfileInfo(uid) {
+  return db.collection('users').doc(uid).get();
 }
 
-export function getCurrentUserDecks() {
-  const uid = firebase.auth().currentUser.uid;
+export function getProfilePic(uid) {
+  return storageRef.child(`profilePics/${uid}`).getDownloadURL();
+}
+
+export function getUserDecks(uid) {
   return db.collection('decks').where('creatorId', '==', uid).get()
     .then((querySnapshot) => {
       let decksArr = [];
@@ -247,8 +231,7 @@ export function getCurrentUserDecks() {
     });
 }
 
-export function getCurrentUserConceptLists() {
-  const uid = firebase.auth().currentUser.uid;
+export function getUserConceptLists(uid) {
   return db.collection('lists').where('creatorId', '==', uid).get()
     .then((querySnapshot) => {
       let listsArr = [];
@@ -262,14 +245,50 @@ export function getCurrentUserConceptLists() {
     });
 }
 
+export function getUserAll(uid) {
+
+  return Promise.all([
+    getUserProfileInfo(uid),
+    getUserDecks(uid),
+    getUserConceptLists(uid),
+    getProfilePic(uid)
+  ]).then((results) => {
+    const [ user, decks, conceptLists, url ] = results;
+    return {
+      name: user.data().name,
+      email: user.data().email,
+      id: user.id,
+      decks: decks,
+      conceptLists: conceptLists,
+      photoURL: url
+    }
+  });
+}
+
+
 export function getCurrentUser() {
   const uid = firebase.auth().currentUser.uid;
-  return getUser(uid);
+  return getUserAll(uid);
+}
+
+export function getCurrentUserDecks() {
+  const uid = firebase.auth().currentUser.uid;
+  return getUserDecks(uid);
+}
+
+export function getCurrentUserConceptLists() {
+  const uid = firebase.auth().currentUser.uid;
+  return getUserConceptLists(uid);
 }
 
 export function getCurrentUserProfilePic() {
   const uid = firebase.auth().currentUser.uid;
   return getProfilePic(uid);
+}
+
+export function getCurrentUserProfileInfo() {
+  const uid = firebase.auth().currentUser.uid;
+  return getUserProfileInfo(uid);
 }
 // end get functions
 

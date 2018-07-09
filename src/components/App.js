@@ -101,7 +101,7 @@ class App extends React.Component {
               loading={loading}
               component={Dashboard} />
             <PrivateRoute
-              exact path='/profile'
+              exact path={routes.profileRoute}
               signedIn={signedIn}
               loading={loading}
               render={(props) => 
@@ -109,28 +109,28 @@ class App extends React.Component {
                   doGetProfilePic={this.doGetProfilePic}
                   profilePic={profilePic} />} />
             <PrivateRoute
-              path='/create'
+              path={routes.createRoute}
               signedIn={signedIn}
               loading={loading}
               component={Create} />
             <Route
-              path='/decks/:id'
+              path={`${routes.viewDeckRoute}/:id`}
               component={Deck} />
             <Route
-              path='/conceptlists/:id'
+              path={`${routes.viewConceptListRoute}/:id`}
               component={ConceptList} />
             <PrivateRoute
-              path='/study/deck/:id'
+              path={`${routes.studyDeckRoute}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyDeck} />
             <PrivateRoute
-              path='/study/conceptlist/:id'
+              path={`${routes.studyConceptListRoute}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyConcept} />
             <Route
-              path='/user/'
+              path='/user/:id'
               component={User} />
             <Route
               path='/denied'

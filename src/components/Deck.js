@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDeck, createCard, deleteCard, updateCard } from '../utils/api';
+import { getDeck, getUserProfileInfo, createCard, deleteCard, updateCard } from '../utils/api';
 import firebase from '../utils/firebase';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
@@ -107,6 +107,8 @@ class Deck extends React.Component {
       deckName: '',
       cards: [],
       id: '',
+      creatorName: '',
+      creatorId: '',
       userIsOwner: false,
       addCardFrontName: '',
       addCardBackName: '',
@@ -126,15 +128,19 @@ class Deck extends React.Component {
 
   async updateDeck() {
     const { id } = this.props.match.params;
-    let deck;
     try {
-      deck = await getDeck(id);
+      let deck = await getDeck(id);
+      const { deckName, creatorId, cards } = deck;
+      let profileInfo = await getUserProfileInfo(creatorId);
+      let creatorName = profileInfo.data().name;
       const currentUser = firebase.auth().currentUser;
       this.setState(() => ({
-        deckName: deck.deckName,
+        deckName: deckName,
         id: id,
-        userIsOwner: currentUser != null && deck.creatorId === firebase.auth().currentUser.uid,
-        cards: deck.cards
+        creatorId: creatorId,
+        creatorName: creatorName,
+        userIsOwner: currentUser != null && creatorId === firebase.auth().currentUser.uid,
+        cards: cards
       }));
     } catch(err) {
       console.error(err);
@@ -210,19 +216,22 @@ class Deck extends React.Component {
   }
 
   render() {
+    const { deckName, creatorName, addCardFrontName, addCardBackName, id, cards, userIsOwner } = this.state;
     return (
       <div>
         <div>
           <Link to={routes.dashboardRoute}>
             <button className = 'back-to-deck'>back to dashboard</button>
           </Link>
-          <p className = 'deck-title edit-title'>{this.state.deckName}</p>
+          <p className = 'deck-title edit-title'>{deckName}</p>
           <p className = 'small-caption'>deck title</p>
+        {/*here*/}
+          <p className = 'small-caption'>Created by {creatorName}</p>
           <div className = 'hr'><hr /></div>
         </div>
 
         {
-          this.state.userIsOwner
+          userIsOwner
             ? <form onSubmit={this.handleAddCard}>
                 <div>
                   <p id = 'add-a-card'>add a card:</p>
@@ -232,7 +241,7 @@ class Deck extends React.Component {
                       className = 'flashcard-text'
                       type='text'
                       autoComplete='off'
-                      value={this.state.addCardFrontName}
+                      value={addCardFrontName}
                       onChange={this.handleChangeAddCardFront} />
                     <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
                     <textarea
@@ -240,7 +249,7 @@ class Deck extends React.Component {
                       className = 'flashcard-text'
                       type='text'
                       autoComplete='off'
-                      value={this.state.addCardBackName}
+                      value={addCardBackName}
                       onChange={this.handleChangeAddCardBack} />
                     <button type='submit' className = 'add'>add</button>
                   </div>
@@ -249,14 +258,14 @@ class Deck extends React.Component {
             : null
         }
          <div>
-          <Link id = 'study-deck' to={`/study/deck/${this.state.id}`}>
+          <Link id = 'study-deck' to={`${routes.studyDeckRoute}/${id}`}>
             <button className = 'primary-button'>study this deck</button>
           </Link>
         </div>
 
-        {this.state.cards.map((card) => 
+        {cards.map((card) => 
           <Card 
-            userIsOwner={this.state.userIsOwner}
+            userIsOwner={userIsOwner}
             id={card.id} 
             front={card.front} 
             back={card.back} 

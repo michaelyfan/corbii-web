@@ -16,6 +16,16 @@ class CreateDeckCard extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.initialFront != this.props.initialFront || prevProps.initialBack != this.props.initialBack) {
+      this.setState(() => ({
+        front: this.props.initialFront,
+        back: this.props.initialBack
+      }))
+    }
   }
 
   handleChange(side, e) {
@@ -27,6 +37,10 @@ class CreateDeckCard extends React.Component {
 
   handleSave() {
     this.props.save(this.props.id, this.state.front, this.state.back);
+  }
+
+  handleDelete() {
+    this.props.delete(this.props.id);
   }
 
   render() {
@@ -50,7 +64,9 @@ class CreateDeckCard extends React.Component {
 
         <div className = 'side-menu'>
           <img className = 'side-options' src = '../src/resources/flashcard-img/up-arrow.png' />
-          <img className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+          <span style={{cursor: 'pointer'}} onClick={this.handleDelete}>
+            <img className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+          </span>
           <img className = 'side-options' src = '../src/resources/flashcard-img/down-arrow.png' />
         </div>
       </div>
@@ -134,9 +150,8 @@ class CreateDeck extends React.Component {
 
     this.handleAddCard = this.handleAddCard.bind(this);
     this.save = this.save.bind(this);
+    this.deleteCard = this.deleteCard.bind(this);
   }
-
-  
 
   handleAddCard() {
     this.setState((prevState) => {
@@ -151,6 +166,20 @@ class CreateDeck extends React.Component {
         count: prevState.count + 1
       }
     });
+  }
+
+  deleteCard(id) {
+    this.setState((prevState) => {
+      let cards = prevState.cards;
+      cards.splice(id, 1);
+      for (let i = id; i < cards.length; i++) {
+        cards[i].id--;
+      }
+      return {
+        cards: cards,
+        count: prevState.count - 1
+      }
+    },() => {console.log(this.state)});
   }
 
   save(cardId, newFront, newBack) {
@@ -179,7 +208,8 @@ class CreateDeck extends React.Component {
               initialBack={card.back} 
               id={card.id} 
               key={card.id}
-              save={this.save} />
+              save={this.save}
+              delete={this.deleteCard} />
           )};
           <div className = 'add-more-card'>
             <button 

@@ -97,7 +97,7 @@ class Nav extends React.Component {
 
         <div id= 'navbar-usercard'>
           {this.props.profilePic 
-            && <Link to='/profile'>
+            && <Link to={routes.profileRoute}>
                   <img className='nav-profile-img' src={this.props.profilePic} />
                </Link>}
 
