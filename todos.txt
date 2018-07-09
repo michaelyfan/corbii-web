@@ -1,7 +1,7 @@
 
 Frontend:
-- finish designs
-- make designs mobile-responsive.
+- make designs mobile-responsive
+-	finish faq page
 - why do these keys: [ ] \ freak out the text inputs?
 - make icon keys (switch front/back, delete, etc) work for deck creation
 - fix 'i am a student' button not activating if one clicks the edges

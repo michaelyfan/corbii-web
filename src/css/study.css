@@ -30,10 +30,15 @@
 }
 
 .rating-prompt {
-  font-family: Nunito Bold;
-  font-size: 14px;
+  font-family: Nunito;
+  font-size: 17px;
   color: #003466;
   text-align: center;
+}
+
+#rating-question {
+  font-size:20px;
+  font-family: Nunito Bold;
 }
 
 .rating-buttons {
@@ -139,4 +144,9 @@
 
 .disp-inline {
   display: flex;
+}
+
+.number-scale {
+  width:70px;
+  margin-bottom: 15px;
 }

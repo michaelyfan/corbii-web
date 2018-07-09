@@ -71,17 +71,18 @@ class ConceptListRow extends React.Component {
                   <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
                 </form>
               </div>
-            : <Link 
-                to={`/conceptlists/${id}`}>
-                <button className = 'stuff-title'>{name}</button>
-              </Link>
+            : <div>
+                <Link 
+                  to={`/conceptlists/${id}`}>
+                  <button className = 'stuff-title'>{name}</button>
+                </Link>
+                <div className = 'stuff-menu'>
+                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
+                  <span className = 'modify-stuff'>&nbsp; | </span>
+                  <button className = 'modify-stuff' onClick={() => {this.handleDeleteConceptList(id)}}>&nbsp; delete</button>
+                </div>
+              </div>
         }
-
-        <div className = 'stuff-menu'>
-          <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
-          <span className = 'modify-stuff'>&nbsp; | </span>
-          <button className = 'modify-stuff' onClick={() => {this.handleDeleteConceptList(id)}}>&nbsp; delete</button>
-        </div>
       </div>
     )
   }

@@ -31,6 +31,7 @@ class Login extends React.Component {
   }
  
   openModal() {
+    console.log('open');
     this.setState({modalIsOpen: true});
   }
 
@@ -40,9 +41,14 @@ class Login extends React.Component {
   }
  
   render() {
+    console.log(this.props.children);
     return (
-      <div>
-        <div onClick={this.openModal}>{this.props.text}</div>
+      <span>
+        <span onClick={this.openModal}>
+
+          {this.props.children}
+        </span>
+        
         <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
@@ -61,7 +67,7 @@ class Login extends React.Component {
               doGetProfilePic = {this.props.doGetProfilePic} />
           </div>
         </Modal>
-      </div>
+      </span>
     );
   }
 }
