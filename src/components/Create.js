@@ -179,7 +179,7 @@ class CreateDeck extends React.Component {
         cards: cards,
         count: prevState.count - 1
       }
-    },() => {console.log(this.state)});
+    });
   }
 
   save(cardId, newFront, newBack) {
