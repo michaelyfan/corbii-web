@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { getCurrentUserProfileInfo, updateCurrentUserProfilePic } from '../utils/api';
 import routes from '../routes/routes';
 
@@ -18,7 +19,7 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-     this.getUser();
+    this.getUser();
   }
 
 
@@ -61,7 +62,7 @@ class Profile extends React.Component {
           <h3 className = 'email'>{this.state.email}</h3>
           <div className = 'hr'><hr /></div>
           <div className = 'profile-pic'>
-            <div className = 'profile-padding'>{this.props.profilePic && <img className='profile-img' src={this.props.profilePic} />}</div>
+            <div className = 'profile-padding'>{this.props.photoURL && <img className='profile-img' src={this.props.photoURL} />}</div>
             <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
               <span id = 'change-pic'>change profile pic: &nbsp;</span>
               <input ref={this.inputFile} type='file' text='Change profile pic' /><br />
@@ -77,6 +78,12 @@ class Profile extends React.Component {
       </div>
     )
   }
+}
+
+Profile.propTypes = {
+  doGetProfilePic: PropTypes.func.isRequired,
+  photoURL: PropTypes.string.isRequired
+
 }
 
 export default Profile;

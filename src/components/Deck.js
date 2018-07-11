@@ -98,6 +98,22 @@ Card.propTypes = {
   doUpdateCard: PropTypes.func.isRequired
 }
 
+function DeckTitle(props) {
+  const { deckName, creatorName } = props;
+  return (
+    <div>
+      <p className = 'deck-title edit-title'>{deckName}</p>
+      <p className = 'small-caption'>deck title</p>
+      <p className = 'small-caption'>Created by {creatorName}</p>
+    </div>
+  )
+}
+
+DeckTitle.propTypes = {
+  deckName: PropTypes.string.isRequired,
+  creatorName: PropTypes.string.isRequired
+}
+
 class Deck extends React.Component {
 
   constructor(props) {
@@ -223,45 +239,47 @@ class Deck extends React.Component {
           <Link to={routes.dashboardRoute}>
             <button className = 'back-to-deck'>back to dashboard</button>
           </Link>
-          <p className = 'deck-title edit-title'>{deckName}</p>
-          <p className = 'small-caption'>deck title</p>
-        {/*here*/}
-          <p className = 'small-caption'>Created by {creatorName}</p>
+          <DeckTitle
+            creatorName={creatorName}
+            deckName={deckName} />
           <div className = 'hr'><hr /></div>
         </div>
 
-        {
-          userIsOwner
-            ? <form onSubmit={this.handleAddCard}>
-                <div>
-                  <p id = 'add-a-card'>add a card:</p>
-                  <div className = 'flashcard add-card'>
-                    <textarea
-                      placeholder='front information'
-                      className = 'flashcard-text'
-                      type='text'
-                      autoComplete='off'
-                      value={addCardFrontName}
-                      onChange={this.handleChangeAddCardFront} />
-                    <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
-                    <textarea
-                      placeholder='back information'
-                      className = 'flashcard-text'
-                      type='text'
-                      autoComplete='off'
-                      value={addCardBackName}
-                      onChange={this.handleChangeAddCardBack} />
-                    <button type='submit' className = 'add'>add</button>
-                  </div>
-                </div>
-              </form>
-            : null
-        }
-         <div>
+        <div>
           <Link id = 'study-deck' to={`${routes.studyDeckRoute}/${id}`}>
             <button className = 'primary-button'>study this deck</button>
           </Link>
         </div>
+
+        {
+          userIsOwner
+            && 
+                <form onSubmit={this.handleAddCard}>
+                  <div>
+                    <p id = 'add-a-card'>add a card:</p>
+                    <div className = 'flashcard add-card'>
+                      <textarea
+                        placeholder='front information'
+                        className = 'flashcard-text'
+                        type='text'
+                        autoComplete='off'
+                        value={addCardFrontName}
+                        onChange={this.handleChangeAddCardFront} />
+                      <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+                      <textarea
+                        placeholder='back information'
+                        className = 'flashcard-text'
+                        type='text'
+                        autoComplete='off'
+                        value={addCardBackName}
+                        onChange={this.handleChangeAddCardBack} />
+                      <button type='submit' className = 'add'>add</button>
+                    </div>
+                  </div>
+                </form>
+        }
+
+        
 
         {cards.map((card) => 
           <Card 

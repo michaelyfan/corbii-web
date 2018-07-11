@@ -31,7 +31,6 @@ class Login extends React.Component {
   }
  
   openModal() {
-    console.log('open');
     this.setState({modalIsOpen: true});
   }
 

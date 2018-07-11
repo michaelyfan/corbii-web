@@ -39,7 +39,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      profilePic: null,
+      photoURL: '',
       loading: true,
       signedIn: false
     };
@@ -59,7 +59,7 @@ class App extends React.Component {
         this.setState(() => ({
           signedIn: false,
           loading: false,
-          profilePic: null
+          photoURL: ''
         }))
       }
     });
@@ -67,7 +67,7 @@ class App extends React.Component {
 
   doGetProfilePic() {
     getCurrentUserProfilePic().then((url) => {
-      this.setState(() => ({profilePic: url}))
+      this.setState(() => ({photoURL: url}))
     }).catch((err) => {
       console.error(err);
     })
@@ -76,12 +76,12 @@ class App extends React.Component {
 
   render() {
 
-    const { signedIn, profilePic, loading } = this.state;
+    const { signedIn, photoURL, loading } = this.state;
 
     return (
       <Router>
         <div>
-          <Nav profilePic={profilePic} signedIn={signedIn} />
+          <Nav photoURL={photoURL} signedIn={signedIn} doGetProfilePic={this.doGetProfilePic} />
           <Switch>
             <Route 
               exact path={routes.homeRoute} 
@@ -107,7 +107,7 @@ class App extends React.Component {
               render={(props) => 
                 <Profile {...props} 
                   doGetProfilePic={this.doGetProfilePic}
-                  profilePic={profilePic} />} />
+                  photoURL={photoURL} />} />
             <PrivateRoute
               path={routes.createRoute}
               signedIn={signedIn}

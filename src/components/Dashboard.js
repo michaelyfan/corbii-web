@@ -23,7 +23,7 @@ class Dashboard extends React.Component {
     if (user) {
       this.setState(() => ({name: firebase.auth().currentUser.displayName}));
     } else {
-      alert(sassyMessage);
+      console.log(sassyMessage);
     }
   }
 
@@ -43,8 +43,8 @@ class Dashboard extends React.Component {
         </div>
 
         <div>
-          <DeckList match={this.props.match} />
-          <ConceptListList match={this.props.match} />
+          <DeckList />
+          <ConceptListList />
         </div>
 
       </div>
