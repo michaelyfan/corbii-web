@@ -4,7 +4,6 @@ Frontend:
 -	finish faq page
 - why do these keys: [ ] \ freak out the text inputs?
 - make icon keys (switch front/back, delete, etc) work for deck creation
-- fix 'i am a student' button not activating if one clicks the edges
 
 Backend/fullstack:
 - deploy as Node app for Product Day
