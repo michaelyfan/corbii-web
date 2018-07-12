@@ -2,6 +2,7 @@ import React from 'react';
 import { getCurrentUserDecks, deleteDeckFromCurrentUser, updateCurrentUserDeck } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
+import routes from '../routes/routes';
 
 class DeckRow extends React.Component {
   constructor(props) {
@@ -15,6 +16,7 @@ class DeckRow extends React.Component {
     this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
     this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
     this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
+    this.handleToggleUpdate = this.handleToggleUpdate.bind(this);
   }
 
   handleChangeNewDeckName(e) {
@@ -26,60 +28,59 @@ class DeckRow extends React.Component {
 
   handleUpdateDeck() {
     updateCurrentUserDeck(this.props.id, this.state.newDeckName).then(() => {
-      this.setState(() => ({
-        statusText: 'Deck successfully updated!'
-      }))
       this.props.getDecks();
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and restart the app.'
-      }))
+      alert(err);
     })
     this.setState(() => ({isUpdate: false}));
   }
 
   handleDeleteDeck(deckId) {
     deleteDeckFromCurrentUser(deckId).then(() => {
-      this.setState(() => ({statusText: 'Deck successfully deleted.'}))
       this.props.getDecks();
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. See the console and refresh the page.'
-      }))
+      alert(err);
     })
   }
 
+  handleToggleUpdate() {
+    this.setState((prevState) => ({
+      isUpdate: !prevState.isUpdate
+    })) 
+  }
+
   render() {
-    const { name, id, match } = this.props;
+    const { name, id } = this.props;
+    const { isUpdate, newDeckName } = this.state;
 
     return (
       <div className='deck-row'>
         {
-          this.state.isUpdate
+          isUpdate
             ? <div>
                 <form id = 'next-line' onSubmit={this.handleUpdateDeck}>
                   <input 
                     className = 'stuff-title change-title'
                     type='text' 
-                    value={this.state.newDeckName} 
+                    value={newDeckName} 
                     onChange={this.handleChangeNewDeckName} />
                   <br />
                   <button type='submit' className = 'modify-stuff needs-padding'>update</button>
                   <span className = 'modify-stuff'>&nbsp; | </span>
-                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
+                  <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>cancel</button>
                 </form> 
               </div>
             : <div>
                 <Link 
-                  to={`/decks/${id}`}>
+                  to={`${routes.viewDeckRoute}/${id}`}>
                   <button className = 'stuff-title'>{name}</button>
                 </Link>
                 <div className = 'stuff-menu'>
                   <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>&nbsp; change name</button>
                   <span className = 'modify-stuff'>&nbsp; | </span>
-                  <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
+                  <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>&nbsp; delete</button>
                 </div>
               </div>
         }
@@ -90,7 +91,8 @@ class DeckRow extends React.Component {
 
 DeckRow.propTypes = {
   name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
+  getDecks: PropTypes.func.isRequired
 }
 
 class DeckList extends React.Component {
@@ -131,9 +133,8 @@ class DeckList extends React.Component {
           {this.state.deckArr.map((deck) => (
             <DeckRow 
               name={deck.name} 
-              id={deck.id} 
               key={deck.id} 
-              match={this.props.match}
+              id={deck.id} 
               getDecks={this.getDecks} />
           ))}
         </div>

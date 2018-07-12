@@ -28,11 +28,7 @@ class SearchResult extends React.Component {
       <div className='user-search-result'>
         <img src={this.state.profilePic} />
         <h3>{name}</h3>
-        <Link 
-          to={{
-            pathname: `/user`,
-            search: `?u=${id}`
-          }}>
+        <Link to={`${routes.viewUserRoute}/${id}`}>
           <button>
             View
           </button>

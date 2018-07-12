@@ -1,13 +1,12 @@
 
 Frontend:
 - make designs mobile-responsive
--	finish faq page
 - why do these keys: [ ] \ freak out the text inputs?
-- make icon keys (switch front/back, delete, etc) work for deck creation
+- make icon keys (switch front/back, move up/down) work for deck creation
 
 Backend/fullstack:
-- deploy as Node app for Product Day
-- how to handle deletion of personal data when deck is deleted?
+- constant bug fixing
+- how to handle deletion of personal data when deck/conceptlist is deleted?
   - automatically clear out personal data after x time of unuse?
   - make separate root-level collections of cards and concepts for personal data.
     - each card and concept has userId, deckId, same cardId
@@ -18,13 +17,11 @@ Backend/fullstack:
 - add Algolia calls for concept lists.
 - implement structure necessary for a study history
 - handle different time zones
-- files to be handled:
-  - font files ttf/TTF, url in css
-  - images, url in css
-  - images, src in html
+- use a webpack solution better than copy-webpack-plugin
 
 Both:
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
+- fix Login component not properly redirecting when unmounted (which happens in Nav)
 - refactor, refactor, refactor
   -refactor deck vs. conceptlist flow. Create.js
 - run everything through eslint eventually (before pushing to production)

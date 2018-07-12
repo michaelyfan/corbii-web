@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getDeckForStudy, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
+import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
 import { shiftInArray } from '../utils/tools';
 import routes from '../routes/routes';
 import queryString from 'query-string';
@@ -166,6 +166,7 @@ class StudyDeck extends React.Component {
     this.state = {
       name: '',
       creator: '',
+      creatorName: '',
       id: '',
       index: 0,
       arrayTodo: [],
@@ -231,16 +232,22 @@ class StudyDeck extends React.Component {
   getDeck() {
     const { id } = this.props.match.params;
     getDeckForStudy(id).then((result) => {
-      const { name, creator, arrayDue, arrayNew, arrayLeft, personalData } = result;
+      return getUserProfileInfo(result.creator).then((result2) => {
+        result.creatorName = result2.data().name;
+        return result;
+      });
+    }).then((result) => {
+      const { name, creator, creatorName, arrayDue, arrayNew, arrayLeft, personalData } = result;
       this.setState(() => ({
         name: name,
         creator: creator,
+        creatorName: creatorName,
         arrayTodo: arrayDue.concat(arrayNew),
         arrayLeft: arrayLeft,
         personalData: personalData,
         id: id,
         isDone: arrayDue.concat(arrayNew).length === 0
-      }), this.updateContent);
+      }));
     }).catch((err) => {
       console.error(err);
     });
@@ -288,7 +295,7 @@ class StudyDeck extends React.Component {
 
 
   render() {
-    const { name, creator, arrayTodo, index, personalData, id, isDone } = this.state;
+    const { name, creator, creatorName, arrayTodo, index, personalData, id, isDone } = this.state;
 
     const card = arrayTodo[index] || {};
     const cardData = personalData ? personalData[card.id] : null;
@@ -296,7 +303,7 @@ class StudyDeck extends React.Component {
       <div>
         <div>
           <p className = 'deck-title'>{name}</p>
-          <p className = 'small-caption'>Created by {creator}</p>
+          <p className = 'small-caption'>Created by {creatorName}</p>
           { isDone 
             ? <div>
                 <p className = 'youre-finished'>you're finished!</p>

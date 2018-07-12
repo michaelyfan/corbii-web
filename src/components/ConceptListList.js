@@ -2,6 +2,8 @@ import React from 'react';
 import { getCurrentUserConceptLists, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
+import routes from '../routes/routes';
+
 
 class ConceptListRow extends React.Component {
   constructor(props) {
@@ -15,6 +17,7 @@ class ConceptListRow extends React.Component {
     this.handleUpdateConceptList = this.handleUpdateConceptList.bind(this);
     this.handleChangeNewConceptListName = this.handleChangeNewConceptListName.bind(this);
     this.handleDeleteConceptList = this.handleDeleteConceptList.bind(this);
+    this.handleToggleUpdate = this.handleToggleUpdate.bind(this);
   }
 
   handleChangeNewConceptListName(e) {
@@ -26,33 +29,29 @@ class ConceptListRow extends React.Component {
 
   handleUpdateConceptList() {
     updateCurrentUserList(this.props.id, this.state.newConceptListName).then(() => {
-      this.setState(() => ({
-        statusText: 'Concept list successfully updated!'
-      }))
       this.props.getConceptLists();
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and restart the app.'
-      }))
     })
     this.setState(() => ({isUpdate: false}));
   }
 
   handleDeleteConceptList(listId) {
     deleteListFromCurrentUser(listId).then(() => {
-      this.setState(() => ({statusText: 'Concept list successfully deleted.'}))
       this.props.getConceptLists();
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. See the console and refresh the page.'
-      }))
     })
   }
 
+  handleToggleUpdate() {
+    this.setState((prevState) => ({
+      isUpdate: !prevState.isUpdate
+    }))
+  }
+
   render() {
-    const { name, id, match } = this.props;
+    const { name, id } = this.props;
 
     return (
       <div className='deck-row'>
@@ -68,16 +67,16 @@ class ConceptListRow extends React.Component {
                   <br /> 
                   <button type='submit' className = 'modify-stuff'>update</button>
                   <span className = 'modify-stuff'>&nbsp; | </span>
-                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
+                  <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>cancel</button>
                 </form>
               </div>
             : <div>
                 <Link 
-                  to={`/conceptlists/${id}`}>
+                  to={`${routes.viewConceptListRoute}/${id}`}>
                   <button className = 'stuff-title'>{name}</button>
                 </Link>
                 <div className = 'stuff-menu'>
-                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
+                  <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>change name</button>
                   <span className = 'modify-stuff'>&nbsp; | </span>
                   <button className = 'modify-stuff' onClick={() => {this.handleDeleteConceptList(id)}}>&nbsp; delete</button>
                 </div>
@@ -134,7 +133,6 @@ class ConceptListList extends React.Component {
               name={list.name} 
               id={list.id} 
               key={list.id} 
-              match={this.props.match}
               getConceptLists={this.getConceptLists} />
           ))}
         </div>  

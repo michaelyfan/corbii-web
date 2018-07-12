@@ -39,7 +39,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      profilePic: null,
+      photoURL: '',
       loading: true,
       signedIn: false
     };
@@ -59,7 +59,7 @@ class App extends React.Component {
         this.setState(() => ({
           signedIn: false,
           loading: false,
-          profilePic: null
+          photoURL: ''
         }))
       }
     });
@@ -67,7 +67,7 @@ class App extends React.Component {
 
   doGetProfilePic() {
     getCurrentUserProfilePic().then((url) => {
-      this.setState(() => ({profilePic: url}))
+      this.setState(() => ({photoURL: url}))
     }).catch((err) => {
       console.error(err);
     })
@@ -76,12 +76,12 @@ class App extends React.Component {
 
   render() {
 
-    const { signedIn, profilePic, loading } = this.state;
+    const { signedIn, photoURL, loading } = this.state;
 
     return (
       <Router>
         <div>
-          <Nav profilePic={profilePic} signedIn={signedIn} />
+          <Nav photoURL={photoURL} signedIn={signedIn} doGetProfilePic={this.doGetProfilePic} />
           <Switch>
             <Route 
               exact path={routes.homeRoute} 
@@ -101,36 +101,36 @@ class App extends React.Component {
               loading={loading}
               component={Dashboard} />
             <PrivateRoute
-              exact path='/profile'
+              exact path={routes.profileRoute}
               signedIn={signedIn}
               loading={loading}
               render={(props) => 
                 <Profile {...props} 
                   doGetProfilePic={this.doGetProfilePic}
-                  profilePic={profilePic} />} />
+                  photoURL={photoURL} />} />
             <PrivateRoute
-              path='/create'
+              path={routes.createRoute}
               signedIn={signedIn}
               loading={loading}
               component={Create} />
             <Route
-              path='/decks/:id'
+              path={`${routes.viewDeckRoute}/:id`}
               component={Deck} />
             <Route
-              path='/conceptlists/:id'
+              path={`${routes.viewConceptListRoute}/:id`}
               component={ConceptList} />
             <PrivateRoute
-              path='/study/deck/:id'
+              path={`${routes.studyDeckRoute}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyDeck} />
             <PrivateRoute
-              path='/study/conceptlist/:id'
+              path={`${routes.studyConceptListRoute}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyConcept} />
             <Route
-              path='/user/'
+              path='/user/:id'
               component={User} />
             <Route
               path='/denied'

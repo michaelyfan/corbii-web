@@ -11,8 +11,6 @@ class Auth extends React.Component {
 
 
   render() {
-    console.log('rendering auth!');
-
     if (this.props.signedIn) {
       return <Redirect to={routes.dashboardRoute} />
     }
