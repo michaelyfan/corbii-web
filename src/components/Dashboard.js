@@ -14,7 +14,8 @@ class Dashboard extends React.Component {
     super(props);
 
     this.state = {
-      name: '' 
+      name: '', 
+      isList: false
     }
   }
 
@@ -36,17 +37,31 @@ class Dashboard extends React.Component {
           </h3>
         </div>
 
-        <div className = 'create-a-deck'>
-          <Link to={routes.createRoute}>
-            <button className = 'primary-button' id = 'create-button'>create deck or concept list</button>
-          </Link>
-        </div>
+        <div className = 'inline-display'>
+          <div className = 'dashboard-menu' id = 'no-margin'>
+            <div className ='navigation'>
+              <button className = 'dash-nav'>recent activity</button>
+              <br />
+              <Link to={routes.createRoute}>
+                <button className = 'dash-nav'>create deck or concept list</button>
+              </Link>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({isList: false}))}}>my decks</button>
+              <br />
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({isList: true}))}}>my concept lists</button>
+              <br />
+              <button className = 'dash-nav'>my classrooms</button>
+              <br />
+              <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
+            </div>
+          </div>
 
-        <div>
-          <DeckList />
-          <ConceptListList />
+          <div className = 'active-view'>
+              { this.state.isList 
+                ? <ConceptListList />
+                : <DeckList />
+              }
+          </div>
         </div>
-
       </div>
     )
   }

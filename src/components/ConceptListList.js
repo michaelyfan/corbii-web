@@ -76,7 +76,7 @@ class ConceptListRow extends React.Component {
                   <button className = 'stuff-title'>{name}</button>
                 </Link>
                 <div className = 'stuff-menu'>
-                  <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>change name</button>
+                  <button className = 'modify-stuff buffer' onClick={this.handleToggleUpdate}>change name</button>
                   <span className = 'modify-stuff'>&nbsp; | </span>
                   <button className = 'modify-stuff' onClick={() => {this.handleDeleteConceptList(id)}}>&nbsp; delete</button>
                 </div>
@@ -125,11 +125,9 @@ class ConceptListList extends React.Component {
       <div>
         {this.state.statusText}
         <div>
-          <div className = 'hr'><hr /></div>
           <h3 className = 'your-stuff'>your concept lists</h3>
-          <div className = 'hr'><hr /></div>
           {this.state.conceptListArr.map((list) => (
-            <ConceptListRow 
+            <ConceptListRow
               name={list.name} 
               id={list.id} 
               key={list.id} 
