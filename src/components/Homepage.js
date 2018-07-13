@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Login from './Login';
+import LoginModal from './LoginModal';
 import { Carousel } from 'react-responsive-carousel';
 import PropTypes from 'prop-types';
 
 class Slideshow extends React.Component {
   render() {
     return (
-      <Carousel 
+      <Carousel
         showThumbs = {false}
         showIndicators = {false}
         className = 'slideshow-carousel'
@@ -31,25 +31,27 @@ class Homepage extends React.Component {
             <span className = "emphasized-words" id = "you">you</span> 
           </h1>
           <br />
-            <Login 
+            <LoginModal 
                 header = 'sign up'
                 signedIn = {this.props.signedIn}
-                doGetProfilePic = {this.props.doGetProfilePic}>
+                doGetProfilePic = {this.props.doGetProfilePic}
+                redirectTo='/dashboard'>
               <button className = "primary-button" type = "button"> i am a student</button>
-            </Login>
+            </LoginModal>
           <br /><br />
           <button className = "secondary-button" type = "button" onClick={() => {alert('Teacher functionality coming soon!')}}>
             i am an educator
           </button>
           <h3 id = 'log-in-subheader'> Already have an account?&nbsp; 
           
-          <Login 
+          <LoginModal 
             header = "log in" 
             signedIn = {this.props.signedIn}
             doGetProfilePic = {this.props.doGetProfilePic}
+            redirectTo='/dashboard'
           >
             <button className = 'log-in'>Log in.</button>
-          </Login>
+          </LoginModal>
           
           </h3>
           <br /><br />

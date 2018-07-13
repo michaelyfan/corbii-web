@@ -3,7 +3,7 @@ import firebase from '../utils/firebase';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import routes from '../routes/routes';
 import PropTypes from 'prop-types';
-import Login from './Login';
+import LoginModalPersist from './LoginModalPersist';
 
 class Nav extends React.Component {
 
@@ -13,7 +13,6 @@ class Nav extends React.Component {
     this.state = {
       searchQuery: ''
     }
-
 
     this.enterActivator = this.enterActivator.bind(this);
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
@@ -82,15 +81,18 @@ class Nav extends React.Component {
                   <img className='nav-profile-img' src={photoURL} />
                </Link>}
 
+          <LoginModalPersist 
+            header = "log in"
+            signedIn = {signedIn}
+            doGetProfilePic = {doGetProfilePic} >
+            <button className = 'log-in' id = 'header-login'>log in </button>
+          </LoginModalPersist>
+
           <div>
             {signedIn 
               ? <button className = 'nav-signin' onClick={this.handleSignOut}>sign out</button>
-              : <Login 
-                  header = "log in"
-                  signedIn = {signedIn}
-                  doGetProfilePic = {doGetProfilePic} >
-                  <button className = 'log-in' id = 'header-login'>log in </button>
-                </Login>}   
+              : null
+            }   
             
           </div>
         </div>

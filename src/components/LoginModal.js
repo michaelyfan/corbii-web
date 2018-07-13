@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
-import { Redirect, withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Auth from './Auth.js';
 import routes from '../routes/routes';
@@ -20,7 +20,16 @@ const customStyles = {
 // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 Modal.setAppElement('#root')
  
-class Login extends React.Component {
+
+/*
+  The LoginModal uses the Auth component, and 
+  redirects to a specified page when the signedIn 
+  prop is true.
+
+  If the LoginModal doesn't dismount after logging in,
+  use LoginModalPersist.
+*/
+class LoginModal extends React.Component {
   constructor(props) {
     super(props);
  
@@ -31,7 +40,7 @@ class Login extends React.Component {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
   }
- 
+
   openModal() {
     this.setState({modalIsOpen: true});  
   }
@@ -41,8 +50,10 @@ class Login extends React.Component {
   }
  
   render() {
+    const { redirectTo, header, signedIn, doGetProfilePic } = this.props;
+
     return (
-      <span style={this.props.style}>
+      <span>
         <span onClick={this.openModal}>
           {this.props.children}
         </span>
@@ -55,17 +66,17 @@ class Login extends React.Component {
           contentLabel="log in"
         >
 
-          { this.props.signedIn && <Redirect to='/dashboard' /> }
+          {signedIn && redirectTo != 'none' && <Redirect to='/dashboard' />}
 
           <div className = 'modal-content'>
-            <h3 className= 'header-title' id = 'log-in-header'>{this.props.header}</h3>
+            <h3 className= 'header-title' id = 'log-in-header'>{header}</h3>
 {/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
             <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
-            <button className = 'primary-button' id = 'submit-email'>{this.props.header}</button>     
+            <button className = 'primary-button' id = 'submit-email'>{header}</button>     
 */}
             <Auth 
-              signedIn={this.props.signedIn}
-              doGetProfilePic = {this.props.doGetProfilePic} />
+              signedIn={signedIn}
+              doGetProfilePic = {doGetProfilePic} />
           </div>
         </Modal>
       </span>
@@ -73,8 +84,17 @@ class Login extends React.Component {
   }
 }
 
-Login.propTypes = {
-  signedIn: PropTypes.bool.isRequired
+LoginModal.propTypes = {
+  signedIn: PropTypes.bool.isRequired,
+  doGetProfilePic: PropTypes.func.isRequired,
+  header: PropTypes.string,
+  redirectTo: PropTypes.string
+
+}
+
+LoginModal.defaultProps = {
+  redirectTo: '/dashboard',
+  header: 'log in'
 }
  
-export default withRouter(Login);
+export default LoginModal;
