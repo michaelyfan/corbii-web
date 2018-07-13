@@ -1,20 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
 import firebaseui from 'firebaseui';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from '../utils/firebase';
 import { createNewDbUser } from '../utils/api';
-import routes from '../routes/routes';
 
 class Auth extends React.Component {
 
 
   render() {
-    if (this.props.signedIn) {
-      return <Redirect to={routes.dashboardRoute} />
-    }
-
+    const { signedIn, doGetProfilePic, loginSuccessCallback, loginFailureCallback } = this.props;
     const firebaseUiConfig = {
       signInFlow: 'popup',
       signInOptions: [
@@ -27,10 +22,18 @@ class Auth extends React.Component {
         signInSuccessWithAuthResult: (authResult)  => {
           if (authResult.additionalUserInfo.isNewUser) {
             createNewDbUser().then(() => {
-              this.props.doGetProfilePic();
+              doGetProfilePic();
             }).catch((err) => {
               console.log(err);
             })
+          }
+          if (loginSuccessCallback) {
+            loginSuccessCallback();
+          }
+        },
+        signInFailure: (error) => {
+          if (loginFailureCallback) {
+            loginFailureCallback();
           }
         }
       }
@@ -39,14 +42,17 @@ class Auth extends React.Component {
     return (
       <div>
         {/*Below will be either a separate page or a modal on the '/' path. Modals in React might be harder to animate.*/}
-        {!this.props.signedIn && <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
+        {!signedIn && <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
       </div>
     )
   }
 }
 
 Auth.propTypes = {
-  signedIn: PropTypes.bool.isRequired
+  signedIn: PropTypes.bool.isRequired,
+  doGetProfilePic: PropTypes.func.isRequired,
+  loginSuccessCallback: PropTypes.func,
+  loginFailureCallback: PropTypes.func
 }
 
 export default Auth;

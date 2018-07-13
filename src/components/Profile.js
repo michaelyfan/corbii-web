@@ -38,19 +38,21 @@ class Profile extends React.Component {
   handleChangeProfilePic(e) {
     e.preventDefault();
     const files = this.inputFile.current.files;
+    const file = files[0];
     if (files == null || files.length <= 0) {
-      this.setState(() => ({statusText: 'You haven\'t uploaded any files!'}))
+      this.setState(() => ({statusText: 'You haven\'t chosen any files!'}));
+    } else if (!file.name.match(/.(jpg|jpeg|png|gif)$/i)) {
+      alert('File type must be a JPG, PNG, or GIF image.');
+    } else if (file.size > 100 * 1024) {
+      alert('File size must be under 100 KB.');
     } else {
-      updateCurrentUserProfilePic(files[0]).then(() => {
-        this.setState(() => ({statusText: 'Successfully uploaded!'}));
-        this.props.doGetProfilePic().catch((err) => {
-          this.setState(() => ({statusText:'There was an error. Check the console and refresh the app.'}))    
-        });
+      updateCurrentUserProfilePic(file).then(() => {
+        this.props.doGetProfilePic();
       }).catch((err) => {
+        console.log(err);
         this.setState(() => ({statusText:'There was an error. Check the console and refresh the app.'}))
       });
-    }
-    
+    } 
   }
 
   render() {
@@ -65,7 +67,7 @@ class Profile extends React.Component {
             <div className = 'profile-padding'>{this.props.photoURL && <img className='profile-img' src={this.props.photoURL} />}</div>
             <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
               <span id = 'change-pic'>change profile pic: &nbsp;</span>
-              <input ref={this.inputFile} type='file' text='Change profile pic' /><br />
+              <input ref={this.inputFile} type='file' accept="image/*" text='Change profile pic' /><br />
               <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
             </form>
             <div className = 'dashboard-link'>

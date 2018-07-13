@@ -69,7 +69,8 @@
 }
 
 .side-menu {
-  margin-top: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .side-options {

@@ -98,6 +98,7 @@ Card.propTypes = {
   doUpdateCard: PropTypes.func.isRequired
 }
 
+
 function DeckTitle(props) {
   const { deckName, creatorName } = props;
   return (
@@ -251,32 +252,34 @@ class Deck extends React.Component {
           </Link>
         </div>
 
+        {/* userIsOwner && <AddCard handleAddCard={this.handleAddCard} deckId={id} /> */} 
+
         {
           userIsOwner
             && 
-                <form onSubmit={this.handleAddCard}>
-                  <div>
-                    <p id = 'add-a-card'>add a card:</p>
-                    <div className = 'flashcard add-card'>
-                      <textarea
-                        placeholder='front information'
-                        className = 'flashcard-text'
-                        type='text'
-                        autoComplete='off'
-                        value={addCardFrontName}
-                        onChange={this.handleChangeAddCardFront} />
-                      <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
-                      <textarea
-                        placeholder='back information'
-                        className = 'flashcard-text'
-                        type='text'
-                        autoComplete='off'
-                        value={addCardBackName}
-                        onChange={this.handleChangeAddCardBack} />
-                      <button type='submit' className = 'add'>add</button>
-                    </div>
+              <form onSubmit={this.handleAddCard}>
+                <div>
+                  <p id = 'add-a-card'>add a card:</p>
+                  <div className = 'flashcard add-card'>
+                    <textarea
+                      placeholder='front information'
+                      className = 'flashcard-text'
+                      type='text'
+                      autoComplete='off'
+                      value={addCardFrontName}
+                      onChange={this.handleChangeAddCardFront} />
+                    <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+                    <textarea
+                      placeholder='back information'
+                      className = 'flashcard-text'
+                      type='text'
+                      autoComplete='off'
+                      value={addCardBackName}
+                      onChange={this.handleChangeAddCardBack} />
+                    <button type='submit' className = 'add'>add</button>
                   </div>
-                </form>
+                </div>
+              </form>
         }
 
         

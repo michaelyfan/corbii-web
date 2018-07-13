@@ -83,16 +83,15 @@ class Nav extends React.Component {
                </Link>}
 
           <div>
-            {signedIn
+            {signedIn 
               ? <button className = 'nav-signin' onClick={this.handleSignOut}>sign out</button>
               : <Login 
                   header = "log in"
                   signedIn = {signedIn}
-                  doGetProfilePic = {doGetProfilePic}
-                >
+                  doGetProfilePic = {doGetProfilePic} >
                   <button className = 'log-in' id = 'header-login'>log in </button>
-                </Login>
-            }
+                </Login>}   
+            
           </div>
         </div>
       </div>

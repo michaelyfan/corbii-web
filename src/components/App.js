@@ -6,7 +6,6 @@ import routes from '../routes/routes';
 import Nav from './Nav';
 import FAQ from './FAQ';
 import Search from './Search';
-import Auth from './Auth';
 import Deck from './Deck';
 import ConceptList from './ConceptList';
 import Footer from './Footer';

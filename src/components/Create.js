@@ -17,6 +17,7 @@ class CreateDeckCard extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleSwitch = this.handleSwitch.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -26,6 +27,10 @@ class CreateDeckCard extends React.Component {
         back: this.props.initialBack
       }))
     }
+  }
+
+  handleSwitch() {
+    this.props.switch(this.props.id);
   }
 
   handleChange(side, e) {
@@ -53,7 +58,7 @@ class CreateDeckCard extends React.Component {
           onChange={(e) => {this.handleChange('front', e)}}
           onBlur={this.handleSave}
           placeholder='front information' />
-        <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+        <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
         <textarea type='text'
           className = 'flashcard-text' 
           key='back'
@@ -63,11 +68,7 @@ class CreateDeckCard extends React.Component {
           placeholder='back information' />
 
         <div className = 'side-menu'>
-          <img className = 'side-options' src = '../src/resources/flashcard-img/up-arrow.png' />
-          <span style={{cursor: 'pointer'}} onClick={this.handleDelete}>
-            <img className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
-          </span>
-          <img className = 'side-options' src = '../src/resources/flashcard-img/down-arrow.png' />
+          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
         </div>
       </div>
     )
@@ -151,6 +152,7 @@ class CreateDeck extends React.Component {
     this.handleAddCard = this.handleAddCard.bind(this);
     this.save = this.save.bind(this);
     this.deleteCard = this.deleteCard.bind(this);
+    this.switch = this.switch.bind(this);
   }
 
   handleAddCard() {
@@ -198,6 +200,18 @@ class CreateDeck extends React.Component {
     })
   }
 
+  switch(cardId) {
+    this.setState((prevState) => {
+      let cards = prevState.cards;
+      let temp = cards[cardId].front;
+      cards[cardId].front = cards[cardId].back;
+      cards[cardId].back = temp;
+      return {
+        cards: cards
+      }
+    })
+  }
+
   render() {
     return (
       <div>
@@ -209,6 +223,7 @@ class CreateDeck extends React.Component {
               id={card.id} 
               key={card.id}
               save={this.save}
+              switch={this.switch}
               delete={this.deleteCard} />
           )};
           <div className = 'add-more-card'>
@@ -241,7 +256,6 @@ class CreateList extends React.Component {
       count: 1,
       concepts: [{
         question: '',
-        answer: '',
         id: 0
       }]
     }
@@ -250,14 +264,11 @@ class CreateList extends React.Component {
     this.save = this.save.bind(this);
   }
 
-  
-
   handleAddConcept() {
     this.setState((prevState) => {
       const concepts = prevState.concepts;
       concepts.push({
         question: '',
-        answer: '',
         id: prevState.count
       });
       return {
@@ -337,19 +348,50 @@ class Create extends React.Component {
   }
 
   handleCreateList(concepts) {
-    createConceptListCurrentUser(this.state.title, concepts).then(() => {
-      this.props.history.push(routes.dashboardRoute);
-    }).catch((err) => {
-      this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
-    });
+    if (this.state.title.trim() === '') {
+      alert('Title cannot be empty.');
+    } else if (this.hasEmptyEntries('concepts', concepts)) {
+      alert('One or more of your concepts is empty.');
+    } else {
+      createConceptListCurrentUser(this.state.title, concepts).then(() => {
+        this.props.history.push(routes.dashboardRoute);
+      }).catch((err) => {
+        this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
+      });  
+    }
   }
 
   handleCreateDeck(cards) {
-    createDeckCurrentUser(this.state.title, cards).then(() => {
-      this.props.history.push(routes.dashboardRoute);
-    }).catch((err) => {
-      this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
-    });
+    if (this.state.title.trim() === '') {
+      alert('Title cannot be empty.');
+    } else if (this.hasEmptyEntries('decks', cards)) {
+      alert('One or more of your card entries is empty.');
+    } else {  
+      createDeckCurrentUser(this.state.title, cards).then(() => {
+        this.props.history.push(routes.dashboardRoute);
+      }).catch((err) => {
+        this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
+      });
+    }
+  }
+
+  hasEmptyEntries(type, content) {
+    if (type === 'concepts') {
+      for (let i = 0; i < content.length; i++) {
+        let item = content[i];
+        if (item.question.trim() === '') {
+          return true;
+        }
+      }
+    } else { // type === 'decks'
+      for (let i = 0; i < content.length; i++) {
+        let item = content[i];
+        if (item.front.trim() === '' || item.back.trim() === '') {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   render() {

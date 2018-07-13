@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
-import Auth from './Auth.js';
+import { Redirect, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
- 
+import Auth from './Auth.js';
+import routes from '../routes/routes';
+
 const customStyles = {
   content : {
     top                   : '50%',
@@ -19,8 +21,8 @@ const customStyles = {
 Modal.setAppElement('#root')
  
 class Login extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
  
     this.state = {
       modalIsOpen: false
@@ -31,9 +33,8 @@ class Login extends React.Component {
   }
  
   openModal() {
-    this.setState({modalIsOpen: true});
+    this.setState({modalIsOpen: true});  
   }
-
  
   closeModal() {
     this.setState({modalIsOpen: false});
@@ -41,9 +42,8 @@ class Login extends React.Component {
  
   render() {
     return (
-      <span>
+      <span style={this.props.style}>
         <span onClick={this.openModal}>
-
           {this.props.children}
         </span>
         
@@ -54,6 +54,9 @@ class Login extends React.Component {
           style={customStyles}
           contentLabel="log in"
         >
+
+          { this.props.signedIn && <Redirect to='/dashboard' /> }
+
           <div className = 'modal-content'>
             <h3 className= 'header-title' id = 'log-in-header'>{this.props.header}</h3>
 {/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
@@ -74,4 +77,4 @@ Login.propTypes = {
   signedIn: PropTypes.bool.isRequired
 }
  
-export default Login;
+export default withRouter(Login);

@@ -3,7 +3,8 @@ service firebase.storage {
     match /profilePics/{imageId} {
       allow read;
       allow write: if request.auth.uid == imageId
-                    && request.resource.contentType.matches('image/.*');
+                    && request.resource.contentType.matches('image/.*')
+                    && request.resource.size < 100 * 1024;
     }
   }
 }
