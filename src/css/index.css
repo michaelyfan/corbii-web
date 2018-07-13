@@ -51,6 +51,10 @@ div.hr {
   height:5px;
   margin: 0;
 }
+
+.soft-blue-background {
+  background: #E9F2FF;
+}
 /* End general things */
 
 /* Homepage stuff */

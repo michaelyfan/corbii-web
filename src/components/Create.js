@@ -52,7 +52,8 @@ class CreateDeckCard extends React.Component {
   render() {
     return (
       <div className = 'flashcard'>
-        <TextareaAutosize type='text'
+        <TextareaAutosize 
+          type='text'
           className = 'flashcard-text'
           key='front'
           value={this.state.front}
@@ -62,7 +63,8 @@ class CreateDeckCard extends React.Component {
         <div className = 'side-menu'>
           <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
         </div>
-        <TextareaAutosize type='text'
+        <TextareaAutosize 
+          type='text'
           className = 'flashcard-text' 
           key='back'
           value={this.state.back}

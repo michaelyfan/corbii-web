@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
+import TextareaAutosize from 'react-autosize-textarea';
 
 class Card extends React.Component {
   constructor(props) {
@@ -51,7 +52,7 @@ class Card extends React.Component {
                 ? <textarea 
                     type='text'
                     value={this.state.frontChangeValue}
-                    onChange={this.handleFrontChange} 
+                    onChange={this.handleFrontChange}
                     className = 'update-card' />
                 : <p className = 'editable-card'>{front}</p>
             }
@@ -252,8 +253,8 @@ class Deck extends React.Component {
           </Link>
         </div>
 
-        {/* userIsOwner && <AddCard handleAddCard={this.handleAddCard} deckId={id} /> */} 
 
+        <div className='soft-blue-background'>
         {
           userIsOwner
             && 
@@ -261,7 +262,7 @@ class Deck extends React.Component {
                 <div>
                   <p id = 'add-a-card'>add a card:</p>
                   <div className = 'flashcard add-card'>
-                    <textarea
+                    <TextareaAutosize
                       placeholder='front information'
                       className = 'flashcard-text'
                       type='text'
@@ -269,7 +270,7 @@ class Deck extends React.Component {
                       value={addCardFrontName}
                       onChange={this.handleChangeAddCardFront} />
                     <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
-                    <textarea
+                    <TextareaAutosize
                       placeholder='back information'
                       className = 'flashcard-text'
                       type='text'
@@ -283,17 +284,17 @@ class Deck extends React.Component {
         }
 
         
-
-        {cards.map((card) => 
-          <Card 
-            userIsOwner={userIsOwner}
-            id={card.id} 
-            front={card.front} 
-            back={card.back} 
-            doUpdateCard={this.doUpdateCard}
-            handleDeleteCard={this.handleDeleteCard} 
-            key={card.id} />
-        )}
+          {cards.map((card) => 
+            <Card 
+              userIsOwner={userIsOwner}
+              id={card.id} 
+              front={card.front} 
+              back={card.back} 
+              doUpdateCard={this.doUpdateCard}
+              handleDeleteCard={this.handleDeleteCard} 
+              key={card.id} />
+          )}
+        </div>
       </div>
     )
   }
