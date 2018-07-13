@@ -49,7 +49,7 @@ class Card extends React.Component {
             <p className='low'>front</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <textarea 
+                ? <TextareaAutosize 
                     type='text'
                     value={this.state.frontChangeValue}
                     onChange={this.handleFrontChange}
@@ -61,7 +61,7 @@ class Card extends React.Component {
             <p className='low'>back</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <textarea 
+                ? <TextareaAutosize 
                     type='text'
                     value={this.state.backChangeValue}
                     onChange={this.handleBackChange} 
