@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Profile from './Profile.js';
 import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
 import routes from '../routes/routes';
+import TextareaAutosize from 'react-autosize-textarea';
 
 class CreateDeckCard extends React.Component {
 
@@ -51,21 +52,23 @@ class CreateDeckCard extends React.Component {
   render() {
     return (
       <div className = 'flashcard'>
-        <textarea type='text'
+        <TextareaAutosize type='text'
           className = 'flashcard-text'
           key='front'
           value={this.state.front}
           onChange={(e) => {this.handleChange('front', e)}}
           onBlur={this.handleSave}
-          placeholder='front information' />
-        <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
-        <textarea type='text'
+          placeholder='front' />
+        <div className = 'side-menu'>
+          <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+        </div>
+        <TextareaAutosize type='text'
           className = 'flashcard-text' 
           key='back'
           value={this.state.back}
           onChange={(e) => {this.handleChange('back', e)}}
           onBlur={this.handleSave}
-          placeholder='back information' />
+          placeholder='back' />
 
         <div className = 'side-menu'>
           <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
