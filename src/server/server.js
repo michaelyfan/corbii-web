@@ -69,6 +69,7 @@ app.post('/api/updatealgolia', (req, res) => {
     count: req.body.count
   }, function(err, content) {
     if (err) {
+      console.log(err);
       res.sendStatus(500);
     } else {
       res.sendStatus(200);
@@ -83,6 +84,7 @@ app.post('/api/updatealgolianame', (req, res) => {
     name: req.body.name
   }, function(err, content) {
     if (err) {
+      console.log(err);
       res.sendStatus(500);
     } else {
       res.sendStatus(200);
@@ -116,10 +118,12 @@ app.post('/api/deletedeck', (req, res) => {
           deletealgolia(req.body.deckId);
           res.sendStatus(200);
         }).catch((err) => {
+          console.log(err);
           res.sendStatus(500);
         });
       }
     }).catch(function(error) {
+      console.log(error);
       res.sendStatus(500);
     });
 });
@@ -140,10 +144,12 @@ app.post('/api/deletelist', (req, res) => {
           // deletealgolia(req.body.listId);
           res.sendStatus(200);
         }).catch((err) => {
+          console.log(err);
           res.sendStatus(500);
         });
       }
     }).catch(function(error) {
+      console.log(error);
       res.sendStatus(500);
     });
 });

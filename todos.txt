@@ -9,8 +9,6 @@ Frontend:
 - use something better looking than <input type='file' ...
 - keyboard shortcuts
 - have Create be the interface when a user wants to edit a deck
-- fix Login component not properly redirecting when unmounted (which happens in Nav)
-  - this bug is difficult and will most likely require a restructure, or deletion and rethinking, of the Login component.
 
 Backend:
 - why are the loading times so ridiculous?
