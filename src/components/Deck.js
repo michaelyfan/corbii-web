@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
+import TextareaAutosize from 'react-autosize-textarea';
 
 class Card extends React.Component {
   constructor(props) {
@@ -48,7 +49,7 @@ class Card extends React.Component {
             <p className='low'>front</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <textarea 
+                ? <TextareaAutosize 
                     type='text'
                     value={this.state.frontChangeValue}
                     onChange={this.handleFrontChange} 
@@ -60,7 +61,7 @@ class Card extends React.Component {
             <p className='low'>back</p>
             {
               this.state.isUpdate && this.props.userIsOwner
-                ? <textarea 
+                ? <TextareaAutosize 
                     type='text'
                     value={this.state.backChangeValue}
                     onChange={this.handleBackChange} 
