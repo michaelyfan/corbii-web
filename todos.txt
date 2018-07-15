@@ -1,7 +1,8 @@
 
 Frontend:
 - make designs mobile-responsive
-- why do these keys: [ ] \ freak out the text inputs?
+- find a version of Print Clearly that doesn't add whitespace to its []\^ characters
+  - this is what was causing the weird input issue with [ ] \ ^ characters
 - implement loading icons
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
