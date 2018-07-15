@@ -42,7 +42,7 @@
 }
 
 .flashcard-text {
-  width: 35%;
+  width: 400px;
   border: 4px solid #C0CEDE;
   font-family: Print Clearly;
   font-size: 30px;
@@ -64,6 +64,7 @@
 
 .side-menu {
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
@@ -227,23 +228,19 @@
 
 .editable-card {
   color: #003466;
-  padding-top: 20px;
 }
 
 .edit-button {
-  padding: 0;
-  margin-top: 109px;
-  margin-left: 10px;
+  
 }
 
 .delete-button {
-  margin-left: 10px;
+  
 
 }
 
 .edit-options {
-  margin-top: 95px;
-  padding-left: 10px;
+  
 }
 
 .editing {
@@ -251,7 +248,7 @@
 }
 
 #line {
-  margin-top: 107px;
+  
 }
 
 .update-card {
@@ -261,9 +258,8 @@
   border: none;
   resize: none;
   text-align: center;
-  padding-top: 10px;
-  width: 90%;
-  height: 60%;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 #add-question {

@@ -49,7 +49,8 @@ class CreateDeckCard extends React.Component {
     this.props.delete(this.props.id);
   }
 
-  render() {
+  render() {  
+
     return (
       <div className = 'flashcard'>
         <TextareaAutosize 
