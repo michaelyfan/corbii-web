@@ -607,7 +607,7 @@ export function updateCurrentUserList(listId, listName) {
   const userId = firebase.auth().currentUser.uid;
   const listRef = `lists/${listId}`
 
-  if (deckName.length > 150) {
+  if (listName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
 

@@ -3,6 +3,7 @@ import { getCurrentUserDecks, deleteDeckFromCurrentUser, updateCurrentUserDeck }
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 import routes from '../routes/routes';
+import { Loading, BigLoading } from './Loading';
 
 class DeckRow extends React.Component {
   constructor(props) {
@@ -10,7 +11,8 @@ class DeckRow extends React.Component {
 
     this.state = {
       isUpdate: false,
-      newDeckName: props.name.slice(0)
+      newDeckName: props.name.slice(0),
+      isLoading: false
     };
 
     this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
@@ -27,21 +29,34 @@ class DeckRow extends React.Component {
   }
 
   handleUpdateDeck() {
-    updateCurrentUserDeck(this.props.id, this.state.newDeckName).then(() => {
-      this.props.getDecks();
-    }).catch((err) => {
-      console.log(err);
-      alert(err);
+    this.setState(() => ({
+      isLoading: true
+    }), () => {
+      updateCurrentUserDeck(this.props.id, this.state.newDeckName).then(() => {
+        this.props.getDecks().then(() => {
+          this.setState(() => ({
+            isUpdate: false,
+            isLoading: false
+          }))
+        });
+      }).catch((err) => {
+        console.log(err);
+        alert(err);
+      })
     })
-    this.setState(() => ({isUpdate: false}));
+    
   }
 
   handleDeleteDeck(deckId) {
-    deleteDeckFromCurrentUser(deckId).then(() => {
-      this.props.getDecks();
-    }).catch((err) => {
-      console.log(err);
-      alert(err);
+    this.setState(() => ({
+      isLoading: true
+    }), () => {
+      deleteDeckFromCurrentUser(deckId).then(() => {
+        this.props.getDecks();
+      }).catch((err) => {
+        console.log(err);
+        alert(err);
+      })
     })
   }
 
@@ -53,36 +68,39 @@ class DeckRow extends React.Component {
 
   render() {
     const { name, id } = this.props;
-    const { isUpdate, newDeckName } = this.state;
+    const { isLoading, isUpdate, newDeckName } = this.state;
 
     return (
       <div className='deck-row'>
         {
-          isUpdate
-            ? <div>
-                <form id = 'next-line' onSubmit={this.handleUpdateDeck}>
-                  <input 
-                    maxLength='150'
-                    className = 'stuff-title change-title'
-                    type='text' 
-                    value={newDeckName} 
-                    onChange={this.handleChangeNewDeckName} />
-                  <br />
-                  <button type='submit' className = 'modify-stuff needs-padding'>update</button>
-                  <span className = 'modify-stuff'>&nbsp; | </span>
-                  <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>cancel</button>
-                </form> 
-              </div>
-            : <div>
-                <Link to={`${routes.viewDeckRoute}/${id}`}>
-                  <button className = 'stuff-title'>{name}</button>
-                </Link>
-                <div className = 'stuff-menu'>
-                  <button className = 'modify-stuff buffer' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
-                  <span className = 'modify-stuff'>&nbsp; | </span>
-                  <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
+          isLoading
+            ? <Loading />
+            : isUpdate
+              ? <div>
+                  <form id = 'next-line' onSubmit={this.handleUpdateDeck}>
+                    <input 
+                      maxLength='150'
+                      className = 'stuff-title change-title'
+                      type='text' 
+                      value={newDeckName} 
+                      onChange={this.handleChangeNewDeckName} />
+                    <br />
+                    <button type='submit' className = 'modify-stuff needs-padding'>update</button>
+                    <span className = 'modify-stuff'>&nbsp; | </span>
+                    <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>cancel</button>
+                  </form> 
                 </div>
-              </div>
+              : <div>
+                  <Link to={`${routes.viewDeckRoute}/${id}`}>
+                    <button className = 'stuff-title'>{name}</button>
+                  </Link>
+                  <div className = 'stuff-menu'>
+                    <button className = 'modify-stuff buffer' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
+                    <span className = 'modify-stuff'>&nbsp; | </span>
+                    <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
+                  </div>
+                </div>
+          
         }
       </div>
     )
@@ -112,7 +130,7 @@ class DeckList extends React.Component {
   }
 
   getDecks() {
-    getCurrentUserDecks().then((decks) => {
+    return getCurrentUserDecks().then((decks) => {
       this.setState(() => ({
         deckArr: decks
       }))
@@ -122,19 +140,19 @@ class DeckList extends React.Component {
   }
 
   render() {
-
     return (
       <div>
         {this.state.statusText}
         <div>
           <h3 className = 'your-stuff'>your decks</h3>
           {this.state.deckArr.map((deck) => (
-            <DeckRow 
-              name={deck.name} 
-              key={deck.id} 
-              id={deck.id} 
-              getDecks={this.getDecks} />
-          ))}
+                      
+                      <DeckRow 
+                        name={deck.name} 
+                        key={deck.id} 
+                        id={deck.id} 
+                        getDecks={this.getDecks} />
+                    ))}
         </div>
         
         

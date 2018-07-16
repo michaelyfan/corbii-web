@@ -2,6 +2,7 @@ import React from 'react';
 import { getCurrentUserConceptLists, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
+import { Loading } from './Loading';
 import routes from '../routes/routes';
 
 
@@ -10,6 +11,7 @@ class ConceptListRow extends React.Component {
     super(props);
 
     this.state = {
+      isLoading: false,
       isUpdate: false,
       newConceptListName: props.name.slice(0)
     };
@@ -28,19 +30,32 @@ class ConceptListRow extends React.Component {
   }
 
   handleUpdateConceptList() {
-    updateCurrentUserList(this.props.id, this.state.newConceptListName).then(() => {
-      this.props.getConceptLists();
-    }).catch((err) => {
-      console.log(err);
+    this.setState(() => ({
+      isLoading: true
+    }), () => {
+      updateCurrentUserList(this.props.id, this.state.newConceptListName).then(() => {
+        this.props.getConceptLists().then(() => {
+          this.setState(() => ({
+            isUpdate: false,
+            isLoading: false
+          }));      
+        });
+      }).catch((err) => {
+        console.log(err);
+      })
     })
-    this.setState(() => ({isUpdate: false}));
+    
   }
 
   handleDeleteConceptList(listId) {
-    deleteListFromCurrentUser(listId).then(() => {
-      this.props.getConceptLists();
-    }).catch((err) => {
-      console.log(err);
+    this.setState(() => ({
+      isLoading: true
+    }), () => {
+      deleteListFromCurrentUser(listId).then(() => {
+        this.props.getConceptLists();
+      }).catch((err) => {
+        console.log(err);
+      })  
     })
   }
 
@@ -56,7 +71,9 @@ class ConceptListRow extends React.Component {
     return (
       <div className='deck-row'>
         {
-          this.state.isUpdate
+          this.state.isLoading
+            ? <Loading />
+          : this.state.isUpdate
             ? <div>
                 <form onSubmit={this.handleUpdateConceptList}>
                   <input 
@@ -110,7 +127,7 @@ class ConceptListList extends React.Component {
   }
 
   getConceptLists() {
-    getCurrentUserConceptLists().then((lists) => {
+    return getCurrentUserConceptLists().then((lists) => {
       this.setState(() => ({
         conceptListArr: lists
       }))
