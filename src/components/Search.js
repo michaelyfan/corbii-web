@@ -41,7 +41,11 @@ class Search extends React.Component {
         <div className = 'main-searchbar'>
           <form onSubmit={this.enterActivator}>
             <div>
-              <input id = "big-search" type = "text" placeholder = "search. . ."
+              <input 
+                  id = "big-search" 
+                  maxLength='1000'
+                  type = "text" 
+                  placeholder = "search. . ."
                   onChange={this.handleChangeSearch} value={this.state.searchQuery} />
               <Link
                 to={{

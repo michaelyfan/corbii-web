@@ -27,6 +27,8 @@ class SingleConcept extends React.Component {
     const { content, listId } = this.props;
     updateConceptPersonalData(listId, content.id, this.state.text).then(() => {
       this.props.getList();
+    }).catch((err) => {
+      console.error(err);
     });
   }
 

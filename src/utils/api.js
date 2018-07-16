@@ -321,6 +321,16 @@ export function createNewDbUser() {
 }
 
 export function createDeckCurrentUser(deckName, cards) {
+  if (deckName.length > 150) {
+    return Promise.reject(new Error('Deck name is too long.'));
+  } else {
+    for (let i = 0; i < cards.length; i++) {
+      if (cards[i].front.length > 1000 || cards[i].back.length > 1000) {
+        return Promise.reject(new Error('One of the card inputs is too long.'));
+      }
+    }
+  }
+
   const { uid, displayName } = firebase.auth().currentUser;
 
   const data = {
@@ -354,6 +364,16 @@ export function createDeckCurrentUser(deckName, cards) {
 }
 
 export function createConceptListCurrentUser(conceptListName, concepts) {
+  if (conceptListName.length > 1000) {
+    return Promise.reject(new Error('Deck name is too long.'));
+  } else {
+    for (let i = 0; i < concepts.length; i++) {
+      if (concepts[i].question.length > 200 || concepts[i].answer.length > 4000) {
+        return Promise.reject(new Error('Concept is too long.'));
+      }
+    }
+  }
+
   const { uid, displayName } = firebase.auth().currentUser;
 
   const data = {
@@ -388,6 +408,9 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
 }
 
 export function createCard(front, back, deckId) {
+  if (front.length > 1000 || back.length > 1000) {
+    return Promise.reject(new Error('One of the card inputs is too long.'));
+  }
   const deckRef = db.collection('decks').doc(deckId);
   return deckRef.collection('cards').add({
     front: front,
@@ -399,6 +422,10 @@ export function createCard(front, back, deckId) {
 }
 
 export function createConcept(question, answer, listId) {
+  if (question.length > 200 || answer.length > 4000) {
+    return Promise.reject(new Error('Concept is too long.'));
+  }
+
   const deckRef = db.collection('lists').doc(listId);
   return deckRef.collection('concepts').add({
     question: question,
@@ -448,6 +475,10 @@ export function updateCardPersonalDataLearner(deckId, cardId, newInterval, newEa
 }
 
 export function updateCard(deckId, cardId, front, back) {
+  if (front.length > 1000 || back.length > 1000) {
+    return Promise.reject(new Error('One of the card inputs is too long.'));
+  }
+
   const cardRef = `decks/${deckId}/cards/${cardId}`;
 
   return db.doc(cardRef).update({ 
@@ -457,6 +488,10 @@ export function updateCard(deckId, cardId, front, back) {
 }
 
 export function updateConcept(listId, conceptId, question, answer) {
+  if (question.length > 200 || answer.length > 4000) {
+    return Promise.reject(new Error('Concept is too long.'));
+  }
+
   const cardRef = `decks/${listId}/cards/${conceptId}`;
 
   return db.doc(cardRef).update({ 
@@ -465,14 +500,18 @@ export function updateConcept(listId, conceptId, question, answer) {
   });
 }
 
-export function updateConceptPersonalData(listId, cardId, newAnswer) {
+export function updateConceptPersonalData(listId, cardId, answer) {
+  if (answer.length > 4000) {
+    return Promise.reject(new Error('Answer is too long.'));
+  }
+
   const uid = firebase.auth().currentUser.uid;
   const dataRef = db.collection('users').doc(uid)
                     .collection('studiedLists').doc(cardId);
 
 
   return dataRef.set({
-    answer: newAnswer,
+    answer: answer,
     listId: listId
   }, {merge: true});
 }
@@ -540,6 +579,9 @@ function updateListCountByOne(listId, isIncrement) {
 }
 
 export function updateCurrentUserDeck(deckId, deckName) {
+  if (deckName.length > 150) {
+    return Promise.reject(new Error('Deck name is too long.'));
+  }
   const userId = firebase.auth().currentUser.uid;
   const deckRef = `decks/${deckId}`
 
@@ -559,8 +601,15 @@ export function updateCurrentUserDeck(deckId, deckName) {
 }
 
 export function updateCurrentUserList(listId, listName) {
+  if (listName.length > 150) {
+    return Promise.reject(new Error('Deck name is too long.'));
+  }
   const userId = firebase.auth().currentUser.uid;
   const listRef = `lists/${listId}`
+
+  if (deckName.length > 150) {
+    return Promise.reject(new Error('Deck name is too long.'));
+  }
 
   // // very temporary algolia index solution
   // fetch('/api/updatealgolianame', {
@@ -635,6 +684,11 @@ export function deleteListFromCurrentUser(listId) {
 
 // begin search functions
 export function searchDecks(query) {
+
+  if (query.length > 1000) {
+    return Promise.reject(new Error('Query is too long.'));
+    // add algolia check
+  }
   return new Promise((resolve, reject) => {
     const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_1);
     index.search(
@@ -653,6 +707,9 @@ export function searchDecks(query) {
 }
 
 export function searchUsers(query) {
+  if (query.length > 1000) {
+    return Promise.reject(new Error('Query is too long.'));
+  }
   return new Promise((resolve, reject) => {
     const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_2);
     index.search(

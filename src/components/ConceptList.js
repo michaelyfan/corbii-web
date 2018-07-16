@@ -219,6 +219,7 @@ class ConceptList extends React.Component {
                   <p id = 'add-a-concept'>add a concept:</p>
                   <div className = 'flashcard add-card'>
                     <input
+                      maxLength='200'
                       placeholder='question or concept'
                       className = 'flashcard-text'
                       id = 'add-question'

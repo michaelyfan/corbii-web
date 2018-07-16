@@ -60,6 +60,7 @@ class Nav extends React.Component {
             <form onSubmit={this.enterActivator}>
               <input 
                 id = "searchbar" 
+                maxLength='1000'
                 type = "text" 
                 placeholder = "search . . ." 
                 onChange={this.handleChangeSearch} 

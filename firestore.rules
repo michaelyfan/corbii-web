@@ -8,17 +8,14 @@ service cloud.firestore {
 
         match /studiedDecks/{deckId} {
           allow read: if true;
-          allow create, update: if request.auth.uid == userId;
-
-          match /cards/{cardId} {
-            allow read: if true;
-            allow create, update, delete: if request.auth.uid == userId;          
-          }
+          allow create, update, delete: if request.auth.uid == userId;
         }
 
         match /studiedLists/{cardId} {
           allow read: if true;
-          allow create, update, delete: if request.auth.uid == userId;
+          allow create, update: if request.auth.uid == userId
+                                && request.resource.data.answer.size() <= 4000;
+          allow delete: if request.auth.uid == userId;
         }
 
     }
@@ -26,12 +23,18 @@ service cloud.firestore {
     match /decks/{deckId} {
       allow read: if true;
 
-      allow create: if request.auth.uid == request.resource.data.creatorId;
-      allow update: if request.auth.uid == resource.data.creatorId;
+      allow create: if request.auth.uid == request.resource.data.creatorId
+                    && request.resource.data.name.size() <= 150;
+      allow update: if request.auth.uid == resource.data.creatorId
+                    && request.resource.data.name.size() <= 150;
 
       match /cards/{cardId} {
         allow read: if true;
-        allow create, update, delete: if request.auth.uid == get(/databases/$(database)/documents/decks/$(deckId)).data.creatorId;
+        allow create, update: if request.auth.uid == get(/databases/$(database)/documents/decks/$(deckId)).data.creatorId
+                              && request.resource.data.front.size() <= 1000
+                              && request.resource.data.back.size() <= 1000;
+
+        allow delete: if request.auth.uid == get(/databases/$(database)/documents/decks/$(deckId)).data.creatorId;
       }
 
     }
@@ -39,12 +42,18 @@ service cloud.firestore {
     match /lists/{listId} {
       allow read: if true;
 
-      allow create: if request.auth.uid == request.resource.data.creatorId;
-      allow update: if request.auth.uid == resource.data.creatorId;
+      allow create: if request.auth.uid == request.resource.data.creatorId
+                    && request.resource.data.name.size() <= 150;
+      allow update: if request.auth.uid == resource.data.creatorId
+                    && request.resource.data.name.size() <= 150;
 
       match /concepts/{conceptId} {
         allow read: if true;
-        allow create, update, delete: if request.auth.uid == get(/databases/$(database)/documents/lists/$(listId)).data.creatorId;
+        allow create, update: if request.auth.uid == get(/databases/$(database)/documents/decks/$(deckId)).data.creatorId
+                              && request.resource.data.question.size() <= 200
+                              && request.resource.data.answer.size() <= 4000;
+
+        allow delete: if request.auth.uid == get(/databases/$(database)/documents/lists/$(listId)).data.creatorId;
       }
 
     }

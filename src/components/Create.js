@@ -116,6 +116,7 @@ class CreateConceptCard extends React.Component {
     return (
       <div className = 'flashcard'>
         <input type='text' 
+          maxLength='200'
           className = 'flashcard-text'
           id = 'concept-card'
           key='question'
@@ -376,6 +377,7 @@ class Create extends React.Component {
       createDeckCurrentUser(this.state.title, cards).then(() => {
         this.props.history.push(routes.dashboardRoute);
       }).catch((err) => {
+        console.log(err);
         this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
       });
     }
@@ -405,6 +407,7 @@ class Create extends React.Component {
       <div>
         <div className = 'create-deck'>
           <input type='text'
+            maxLength='150'
             className = 'deck-title'
             onChange={this.handleChangeTitle}
             value={this.state.title}

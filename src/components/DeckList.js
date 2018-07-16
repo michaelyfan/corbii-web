@@ -62,6 +62,7 @@ class DeckRow extends React.Component {
             ? <div>
                 <form id = 'next-line' onSubmit={this.handleUpdateDeck}>
                   <input 
+                    maxLength='150'
                     className = 'stuff-title change-title'
                     type='text' 
                     value={newDeckName} 

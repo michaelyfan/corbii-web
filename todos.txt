@@ -8,9 +8,11 @@ Frontend:
   - https://www.npmjs.com/package/react-toastify
 - use something better looking than <input type='file' ...
 - keyboard shortcuts
+- compress (lossless) all resources as much as possible
 - have Create be the interface when a user wants to edit a deck
 
 Backend:
+- pretend that you have the money and implement search functions
 - why are the loading times so ridiculous?
 - how to handle deletion of personal data when deck/conceptlist is deleted?
   - automatically clear out personal data after x time of unuse?
@@ -24,11 +26,20 @@ Backend:
 - implement structure necessary for a study history
 
 Fullstack:
-- handle different time zones
-- implement maximum lengths for card entries (like 1000 characters)
-- use a webpack solution better than copy-webpack-plugin
+- make sure the timestamps account for time zones (probably?)
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
-- refactor, refactor, refactor
-  - refactor deck vs. conceptlist flow. Create.js
+- use a webpack solution better than copy-webpack-plugin
 - run everything through eslint eventually (before pushing to production)
 - implement pictures into the decks
+- refactor, refactor, refactor
+  - refactor deck vs. conceptlist flow. Create.js
+  - lookup reactjs bad smells
+  - try to limit duplicate code as much as possible
+- run security testing
+
+
+Maximum input lengths:
+  - deck and conceptlist titles: 150 characters
+  - deck cards (front, back): 1000 characters
+  - conceptlist questions: 200 characters
+  - conceptlist answers: 4000 characters

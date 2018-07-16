@@ -60,6 +60,7 @@ class ConceptListRow extends React.Component {
             ? <div>
                 <form onSubmit={this.handleUpdateConceptList}>
                   <input 
+                    maxLength = '150'
                     className = 'stuff-title change-title'
                     type='text'
                     value={this.state.newConceptListName}
