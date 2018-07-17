@@ -263,6 +263,7 @@ class CreateList extends React.Component {
       count: 1,
       concepts: [{
         question: '',
+        answer: '',
         id: 0
       }]
     }
@@ -276,6 +277,7 @@ class CreateList extends React.Component {
       const concepts = prevState.concepts;
       concepts.push({
         question: '',
+        answer: '',
         id: prevState.count
       });
       return {
@@ -290,7 +292,7 @@ class CreateList extends React.Component {
       const concepts = prevState.concepts;
       const newConcepts = prevState.concepts.map((concept) => {
         return concept.id === conceptId 
-          ? {id: conceptId, question: newQuestion} 
+          ? {id: conceptId, question: newQuestion, answer: ''} 
           : concept
       });
 
@@ -363,6 +365,7 @@ class Create extends React.Component {
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
         this.props.history.push(routes.dashboardRoute);
       }).catch((err) => {
+        console.error(err);
         this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
       });  
     }
@@ -377,7 +380,7 @@ class Create extends React.Component {
       createDeckCurrentUser(this.state.title, cards).then(() => {
         this.props.history.push(routes.dashboardRoute);
       }).catch((err) => {
-        console.log(err);
+        console.error(err);
         this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
       });
     }

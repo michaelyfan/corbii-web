@@ -5,7 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const express = require("express");
 const app = express();
-  
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: 'corbii-web',
@@ -20,21 +20,36 @@ const ALGOLIA_ID = process.env.ALGOLIA_ID;
 const ALGOLIA_ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY;
 const ALGOLIA_INDEX_1 = 'decks';
 const ALGOLIA_INDEX_2 = 'users';
-const ALGOLIA_INDEX_3 = 'argh';
+const ALGOLIA_INDEX_3 = 'lists';
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../../dist')));
 
+app.post('/api/addalgolia', (req, res) => {
+  const type = req.body.type;
+  const object = req.body.object;
 
-app.post('/api/addalgoliauser', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_2);
-  index.addObject({
-    objectID: req.body.uid,
-    name: req.body.name,
-    photoURL: req.body.photoURL,
-    email: req.body.email
-  }, function(err, content) {
+  if (type == null) {
+    res.status(400).send({
+      message: 'A type must be specified.'
+    })
+  } else if (object == null){
+    res.status(400).send({
+      message: 'An object must be specified.'
+    })
+  } else if (object.objectID == null) {
+    res.status(400).send({
+      message: 'An object with an objectID must be specified.'
+    })
+  } else if (type != 'decks' && type !='users' && type != 'lists') {
+    res.status(400).send({
+      message: 'Invalid type.'
+    })
+  }
+
+  const index = algoliaClient.initIndex(type);
+  index.addObject(object, (err, content) => {
     if (err) {
       console.log(err);
       res.sendStatus(500);
@@ -42,32 +57,32 @@ app.post('/api/addalgoliauser', (req, res) => {
       res.sendStatus(200);
     }
   });
-}); 
-
-app.post('/api/addalgolia', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
-
-  index.addObject({
-    objectID: req.body.deckId,
-    name: req.body.name,
-    creatorId: req.body.creatorId,
-    creatorName: req.body.creatorName,
-    count: req.body.count
-  }).then((content) => {
-    res.sendStatus(200);
-  }).catch((err) => {
-    console.log(err);
-    res.sendStatus(500);
-  }); 
-
 });
 
 app.post('/api/updatealgolia', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
-  index.partialUpdateObject({
-    objectID: req.body.deckId,
-    count: req.body.count
-  }, function(err, content) {
+  const type = req.body.type;
+  const object = req.body.object;
+
+  if (type == null) {
+    res.status(400).send({
+      message: 'A type must be specified.'
+    })
+  } else if (object == null){
+    res.status(400).send({
+      message: 'An object must be specified.'
+    })
+  } else if (object.objectID == null) {
+    res.status(400).send({
+      message: 'An object with an objectID must be specified.'
+    })
+  } else if (type != 'decks' && type !='users' && type != 'lists') {
+    res.status(400).send({
+      message: 'Invalid type.'
+    })
+  }
+
+  const index = algoliaClient.initIndex(type);
+  index.partialUpdateObject(object, function(err, content) {
     if (err) {
       console.log(err);
       res.sendStatus(500);
@@ -75,26 +90,25 @@ app.post('/api/updatealgolia', (req, res) => {
       res.sendStatus(200);
     }
   })
-});
+})
 
-app.post('/api/updatealgolianame', (req, res) => {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
-  index.partialUpdateObject({
-    objectID: req.body.deckId,
-    name: req.body.name
-  }, function(err, content) {
-    if (err) {
-      console.log(err);
-      res.sendStatus(500);
-    } else {
-      res.sendStatus(200);
-    }
-  })
-});
+function deletealgolia(type, objectID) {
+  if (type == null) {
+    res.status(400).send({
+      message: 'A type must be specified.'
+    })
+  } else if (objectID == null){
+    res.status(400).send({
+      message: 'An objectID must be specified.'
+    })
+  } else if (type != 'decks' && type !='users' && type != 'lists') {
+    res.status(400).send({
+      message: 'Invalid type.'
+    })
+  }
 
-function deletealgolia(deckId) {
-  const index = algoliaClient.initIndex(ALGOLIA_INDEX_1);
-  index.deleteObject(deckId, function(err, content) {
+  const index = algoliaClient.initIndex(type);
+  index.deleteObject(objectID, function(err, content) {
     if (err) {
       console.log(err);
     }
@@ -115,7 +129,7 @@ app.post('/api/deletedeck', (req, res) => {
           deleteCollection(cardsPath, 100),
           deleteDocument(deckPath)
         ]).then((results) => {
-          deletealgolia(req.body.deckId);
+          deletealgolia('decks', req.body.deckId);
           res.sendStatus(200);
         }).catch((err) => {
           console.log(err);
@@ -141,7 +155,7 @@ app.post('/api/deletelist', (req, res) => {
           deleteCollection(conceptsPath, 100),
           deleteDocument(listPath),
         ]).then((results) => {
-          // deletealgolia(req.body.listId);
+          deletealgolia('lists', req.body.listId);
           res.sendStatus(200);
         }).catch((err) => {
           console.log(err);

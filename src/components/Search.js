@@ -5,6 +5,8 @@ import queryString from 'query-string';
 import PropTypes from 'prop-types';
 import SearchDeck from './SearchDeck';
 import SearchUser from './SearchUser';
+import SearchList from './SearchList';
+import routes from '../routes/routes';
 
 class Search extends React.Component {
 
@@ -12,8 +14,7 @@ class Search extends React.Component {
     super(props);
 
     this.state = {
-      searchQuery: '',
-      searchMode: 'decks'
+      searchQuery: ''
     }
 
     this.enterActivator = this.enterActivator.bind(this);
@@ -42,7 +43,7 @@ class Search extends React.Component {
           <form onSubmit={this.enterActivator}>
             <div>
               <input 
-                  id = "big-search" 
+                  id = "big-search"
                   maxLength='1000'
                   type = "text" 
                   placeholder = "search. . ."
@@ -59,7 +60,14 @@ class Search extends React.Component {
                   pathname: `${match.url}/users`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
-                <button className = 'filter-button' id = 'show-users'> show user </button>
+                <button className = 'filter-button' id = 'show-users'> show users </button>
+              </Link>
+              <Link
+                to={{
+                  pathname: `${match.url}/lists`,
+                  search: `?q=${this.state.searchQuery}`
+                }}>
+                <button className = 'filter-button' id = 'show-decks'> show lists </button>
               </Link>
             </div>
           </form>
@@ -69,6 +77,7 @@ class Search extends React.Component {
         </div>
         <Route path={`${match.url}/decks`} component={SearchDeck} />
         <Route path={`${match.url}/users`} component={SearchUser} />
+        <Route path={`${match.url}/lists`} component={SearchList} />
       </div>
       
     )

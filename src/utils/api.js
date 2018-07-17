@@ -19,7 +19,7 @@ const algoliaclient = algoliasearch(alg.id, alg.publicKey);
 // variable declarations
 const ALGOLIA_INDEX_NAME_1 = 'decks';
 const ALGOLIA_INDEX_NAME_2 = 'users';
-const ALGOLIA_INDEX_NAME_3 = 'conceptlists';
+const ALGOLIA_INDEX_NAME_3 = 'lists';
 
 // For suppressing a console error
 const settings = {timestampsInSnapshots: true};
@@ -297,12 +297,15 @@ export function createNewDbUser() {
   const { displayName, email, uid } = firebase.auth().currentUser;
 
   // temporary algolia indexing soln
-  fetch('/api/addalgoliauser', {
+  fetch('/api/addalgolia', {
     method: 'POST',
     body: JSON.stringify({
-      uid: uid,
-      name: displayName,
-      email: email
+      type: 'users',
+      object: {
+        objectID: uid,
+        name: displayName,
+        email: email
+      }
     }),
     headers:{
       'Content-Type': 'application/json'
@@ -341,10 +344,14 @@ export function createDeckCurrentUser(deckName, cards) {
   }
 
   return db.collection('decks').add(data).then((deckRef) => {
+    console.log(deckRef);
     // very temporary algolia index solution
     fetch('/api/addalgolia', {
       method: 'POST',
-      body: JSON.stringify(Object.assign({deckId: deckRef.id}, data)),
+      body: JSON.stringify({
+        object: Object.assign({objectID: deckRef.id}, data),
+        type: 'decks'
+      }),
       headers:{
         'Content-Type': 'application/json'
       }
@@ -384,14 +391,17 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
   }
 
   return db.collection('lists').add(data).then((listRef) => {
-    // // very temporary algolia index solution
-    // fetch('/api/addalgolia', {
-    //   method: 'POST',
-    //   body: JSON.stringify(Object.assign({deckId: listRef.id}, data)),
-    //   headers:{
-    //     'Content-Type': 'application/json'
-    //   }
-    // });
+    // very temporary algolia index solution
+    fetch('/api/addalgolia', {
+      method: 'POST',
+      body: JSON.stringify({
+        object: Object.assign({objectID: listRef.id}, data),
+        type: 'lists'
+      }),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    });
     if (concepts) {
       // consider mixing this batch with the deck creation call
       const batch = db.batch();
@@ -535,8 +545,11 @@ function updateDeckCountByOne(deckId, isIncrement) {
       fetch('/api/updatealgolia', {
         method: 'POST',
         body: JSON.stringify({
-          count: newCount,
-          deckId: deckId
+          type: 'decks',
+          object: {
+            objectID: deckId,
+            count: newCount
+          }
         }),
         headers:{
           'Content-Type': 'application/json'
@@ -562,17 +575,20 @@ function updateListCountByOne(listId, isIncrement) {
         count: newCount
       });
 
-      // // very temporary algolia index solution
-      // fetch('/api/updatealgolia', {
-      //   method: 'POST',
-      //   body: JSON.stringify({
-      //     count: newCount,
-      //     listId: listId
-      //   }),
-      //   headers:{
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
+      // very temporary algolia index solution
+      fetch('/api/updatealgolia', {
+        method: 'POST',
+        body: JSON.stringify({
+          type: 'lists',
+          object: {
+            count: newCount,
+            objectID: listId
+          }
+        }),
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      });
 
     })
   })
@@ -583,14 +599,17 @@ export function updateCurrentUserDeck(deckId, deckName) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
   const userId = firebase.auth().currentUser.uid;
-  const deckRef = `decks/${deckId}`
+  const deckRef = `decks/${deckId}`;
 
   // very temporary algolia index solution
-  fetch('/api/updatealgolianame', {
+  fetch('/api/updatealgolia', {
     method: 'POST',
     body: JSON.stringify({
-      name: deckName,
-      deckId: deckId
+      type: 'decks',
+      object: {
+        name: deckName,
+        objectID: deckId
+      }
     }),
     headers:{
       'Content-Type': 'application/json'
@@ -611,17 +630,20 @@ export function updateCurrentUserList(listId, listName) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
 
-  // // very temporary algolia index solution
-  // fetch('/api/updatealgolianame', {
-  //   method: 'POST',
-  //   body: JSON.stringify({
-  //     name: listName,
-  //     listId: listId
-  //   }),
-  //   headers:{
-  //     'Content-Type': 'application/json'
-  //   }
-  // });
+  // very temporary algolia index solution
+  fetch('/api/updatealgolia', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'lists',
+      object: {
+        name: listName,
+        objectID: listId
+      }
+    }),
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  });
 
   return db.doc(listRef).update({name: listName});
 }
@@ -712,6 +734,27 @@ export function searchUsers(query) {
   }
   return new Promise((resolve, reject) => {
     const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_2);
+    index.search(
+      {
+        query: query,
+        hitsPerPage: 50,
+      },
+      (err, content) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(content.hits);
+      }
+    );  
+  })
+}
+
+export function searchLists(query) {
+  if (query.length > 1000) {
+    return Promise.reject(new Error('Query is too long.'));
+  }
+  return new Promise((resolve, reject) => {
+    const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_3);
     index.search(
       {
         query: query,

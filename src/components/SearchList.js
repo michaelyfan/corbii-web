@@ -4,16 +4,17 @@ import queryString from 'query-string';
 import PropTypes from 'prop-types';
 
 import routes from '../routes/routes';
-import { searchDecks } from '../utils/api';
+import { searchLists } from '../utils/api';
 
 function SearchResult(props) {
+  const { id, name, creator, count } = props;
   return (
     <div className='result-box'>
-      <Link to={`${routes.viewDeckRoute}/${props.id}`}>
-        <p className = 'deck-text' id = 'deck-name'>{props.name}</p>
+      <Link to={`${routes.viewConceptListRoute}/${id}`}>
+        <p className = 'deck-text' id = 'deck-name'>{name}</p>
       </Link>
-      <p className = 'deck-text' id = 'deck-owner'>{props.creator}</p>
-      <p className = 'deck-text' id = 'num-of-terms'>{props.count} {props.count === 1 ? 'card' : 'cards'}</p>
+      <p className = 'deck-text' id = 'deck-owner'>{creator}</p>
+      <p className = 'deck-text' id = 'num-of-terms'>{count} {count === 1 ? 'concept' : 'concepts'}</p>
       
     </div>
   )
@@ -25,7 +26,7 @@ SearchResult.propTypes = {
   count: PropTypes.number.isRequired,
 }
 
-class SearchDeck extends React.Component {
+class SearchList extends React.Component {
   constructor(props) {
     super(props);
 
@@ -41,7 +42,7 @@ class SearchDeck extends React.Component {
 
 
     this.unlisten = this.props.history.listen((location, action) => {
-      if (location.pathname === `${routes.searchDecksRoute}`) {
+      if (location.pathname === `${routes.searchConceptListsRoute}`) {
         const { q } = queryString.parse(location.search);
         this.updateResults(q);
       }
@@ -54,12 +55,12 @@ class SearchDeck extends React.Component {
 
   async updateResults(query) {
     try {
-      const results = await searchDecks(query);
+      const results = await searchLists(query);
       this.setState(() => ({
         results: results
       }));
     } catch(err) {
-      console.log(err);
+      console.error(err);
       this.setState(() => ({
         statusText: 'There was an error. Check the console and refresh the app.' 
       }));
@@ -68,12 +69,13 @@ class SearchDeck extends React.Component {
   }
 
   render() {
+    const { statusText, results } = this.state;
     return (
       <div>
-        <p>{this.state.statusText}</p>
-        {this.state.results.length === 0
+        <p>{statusText}</p>
+        {results.length === 0
           ? <p>We didn't find anything  :(  try another search.</p>
-          : this.state.results.map((result) => {
+          : results.map((result) => {
               return (
                 <SearchResult 
                   key={result.objectID}
@@ -90,4 +92,4 @@ class SearchDeck extends React.Component {
 
 }
 
-export default SearchDeck;
+export default SearchList;

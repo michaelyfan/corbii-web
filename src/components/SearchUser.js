@@ -60,7 +60,7 @@ class SearchUser extends React.Component {
 
 
     this.unlisten = this.props.history.listen((location, action) => {
-      if (location.pathname === `${routes.searchRoute}/users`) {
+      if (location.pathname === `${routes.searchUsersRoute}`) {
         const { q } = queryString.parse(location.search);
         this.updateResults(q);
       }

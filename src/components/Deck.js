@@ -74,20 +74,24 @@ class Card extends React.Component {
 
 
         <div className='side-menu'>
+
           { 
             this.props.userIsOwner
-              ? this.state.isUpdate
-                  ? <span className = 'edit-options'>
-                      <button className = 'modify-stuff editing' onClick={this.handleUpdateCard}>update</button>
-                      <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
-                    </span>            
-                  : <span className = 'edit-button'>
-                      <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
-                    </span>
-              : null
+             && <div>
+                  { this.state.isUpdate 
+                    ? <span className = 'edit-options'>
+                        <button className = 'modify-stuff editing' onClick={this.handleUpdateCard}>update</button>
+                        <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
+                      </span>     
+                    : <span className = 'edit-button'>
+                        <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
+                      </span>
+                  }
+                  <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
+                  <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteCard(id)}}>delete</button>
+                </div>
           }
-          <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
-          { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteCard(id)}}>delete</button>}
+
         </div>
       </div>
       
@@ -194,7 +198,9 @@ class Deck extends React.Component {
         .then(() => {
           this.updateDeck();
           this.setState(() => ({
-            statusText: 'Card successfully added!'
+            statusText: 'Card successfully added!',
+            addCardBackName: '',
+            addCardFrontName: ''
           }))
         })
         .catch((err) => {
@@ -255,6 +261,7 @@ class Deck extends React.Component {
               <div className = 'hr'><hr /></div>
             </div>
 
+            <div className='soft-blue-background'>
             <div>
               <Link id = 'study-deck' to={`${routes.studyDeckRoute}/${id}`}>
                 <button className = 'primary-button'>study this deck</button>
@@ -262,7 +269,6 @@ class Deck extends React.Component {
             </div>
 
 
-            <div className='soft-blue-background'>
             {
               userIsOwner
                 && 

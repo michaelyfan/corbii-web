@@ -7,11 +7,12 @@ Frontend:
   - https://www.npmjs.com/package/react-toastify
 - use something better looking than <input type='file' ...
 - keyboard shortcuts
+- add a sick favicon
 - compress (lossless) all resources as much as possible
+- ability to delete concepts in Create interface for conceptlists
 - have Create be the interface when a user wants to edit a deck
 
 Backend:
-- pretend that you have the money and implement search functions
 - define <Route /> children in /study, create components for /study, /study/deck, /study/list, avoid defining route
 children in top-level App
 - why are the loading times so ridiculous?

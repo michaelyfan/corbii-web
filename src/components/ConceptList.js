@@ -216,44 +216,45 @@ class ConceptList extends React.Component {
               <div className = 'hr'><hr /></div>
             </div>
 
-
-            {
-              this.state.userIsOwner
-                ? <form onSubmit={this.handleAddConcept}>
-                    <div>
-                      <p id = 'add-a-concept'>add a concept:</p>
-                      <div className = 'flashcard add-card'>
-                        <input
-                          maxLength='200'
-                          placeholder='question or concept'
-                          className = 'flashcard-text'
-                          id = 'add-question'
-                          type='text'
-                          autoComplete='off'
-                          value={this.state.addConceptQuestionName}
-                          onChange={this.handleChangeAddConceptQuestion} />
-                        <button type='submit' className = 'add'>add</button>
+            <div className='soft-blue-background'>
+              {
+                this.state.userIsOwner
+                  ? <form onSubmit={this.handleAddConcept}>
+                      <div>
+                        <p id = 'add-a-concept'>add a concept:</p>
+                        <div className = 'flashcard add-card'>
+                          <input
+                            maxLength='200'
+                            placeholder='question or concept'
+                            className = 'flashcard-text'
+                            id = 'add-question'
+                            type='text'
+                            autoComplete='off'
+                            value={this.state.addConceptQuestionName}
+                            onChange={this.handleChangeAddConceptQuestion} />
+                          <button type='submit' className = 'add'>add</button>
+                        </div>
                       </div>
-                    </div>
-                  </form>
-                : null
-            }
-            <div>
-              <Link id = 'study-list' to={`${routes.studyConceptListRoute}/${this.state.id}`}>
-                <button className = 'primary-button'>study this list</button>
-              </Link>
-            </div>
+                    </form>
+                  : null
+              }
+              <div>
+                <Link id = 'study-list' to={`${routes.studyConceptListRoute}/${this.state.id}`}>
+                  <button className = 'primary-button'>study this list</button>
+                </Link>
+              </div>
 
-            {this.state.concepts.map((concept) => 
-              <Concept 
-                userIsOwner={this.state.userIsOwner}
-                id={concept.id} 
-                question={concept.question} 
-                answer={concept.answer} 
-                doUpdateConcept={this.doUpdateConcept}
-                handleDeleteConcept={this.handleDeleteConcept} 
-                key={concept.id} />
-            )}
+              {this.state.concepts.map((concept) => 
+                <Concept 
+                  userIsOwner={this.state.userIsOwner}
+                  id={concept.id} 
+                  question={concept.question} 
+                  answer={concept.answer} 
+                  doUpdateConcept={this.doUpdateConcept}
+                  handleDeleteConcept={this.handleDeleteConcept} 
+                  key={concept.id} />
+              )}
+            </div>
           </div>
         )
     
