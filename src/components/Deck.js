@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
+import { BigLoading } from './Loading';
 
 class Card extends React.Component {
   constructor(props) {
@@ -133,7 +134,8 @@ class Deck extends React.Component {
       userIsOwner: false,
       addCardFrontName: '',
       addCardBackName: '',
-      statusText: ''
+      statusText: '',
+      isLoading: true
     }
 
     this.handleAddCard = this.handleAddCard.bind(this);
@@ -161,7 +163,8 @@ class Deck extends React.Component {
         creatorId: creatorId,
         creatorName: creatorName,
         userIsOwner: currentUser != null && creatorId === firebase.auth().currentUser.uid,
-        cards: cards
+        cards: cards,
+        isLoading: false
       }));
     } catch(err) {
       console.error(err);
@@ -237,69 +240,74 @@ class Deck extends React.Component {
   }
 
   render() {
-    const { deckName, creatorName, addCardFrontName, addCardBackName, id, cards, userIsOwner } = this.state;
-    return (
-      <div>
-        <div>
-          <Link to={routes.dashboardRoute}>
-            <button className = 'back-to-deck'>back to dashboard</button>
-          </Link>
-          <DeckTitle
-            creatorName={creatorName}
-            deckName={deckName} />
-          <div className = 'hr'><hr /></div>
-        </div>
+    const { isLoading, deckName, creatorName, addCardFrontName, addCardBackName, id, cards, userIsOwner } = this.state;
+    return isLoading
+      ? <BigLoading />
+      : (
+          <div>
+            <div>
+              <Link to={routes.dashboardRoute}>
+                <button className = 'back-to-deck'>back to dashboard</button>
+              </Link>
+              <DeckTitle
+                creatorName={creatorName}
+                deckName={deckName} />
+              <div className = 'hr'><hr /></div>
+            </div>
 
-        <div>
-          <Link id = 'study-deck' to={`${routes.studyDeckRoute}/${id}`}>
-            <button className = 'primary-button'>study this deck</button>
-          </Link>
-        </div>
+            <div>
+              <Link id = 'study-deck' to={`${routes.studyDeckRoute}/${id}`}>
+                <button className = 'primary-button'>study this deck</button>
+              </Link>
+            </div>
 
 
-        <div className='soft-blue-background'>
-        {
-          userIsOwner
-            && 
-              <form onSubmit={this.handleAddCard}>
-                <div>
-                  <p id = 'add-a-card'>add a card:</p>
-                  <div className = 'flashcard add-card'>
-                    <TextareaAutosize
-                      placeholder='front information'
-                      className = 'flashcard-text'
-                      type='text'
-                      autoComplete='off'
-                      value={addCardFrontName}
-                      onChange={this.handleChangeAddCardFront} />
-                    <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
-                    <TextareaAutosize
-                      placeholder='back information'
-                      className = 'flashcard-text'
-                      type='text'
-                      autoComplete='off'
-                      value={addCardBackName}
-                      onChange={this.handleChangeAddCardBack} />
-                    <button type='submit' className = 'add'>add</button>
-                  </div>
-                </div>
-              </form>
-        }
+            <div className='soft-blue-background'>
+            {
+              userIsOwner
+                && 
+                  <form onSubmit={this.handleAddCard}>
+                    <div>
+                      <p id = 'add-a-card'>add a card:</p>
+                      <div className = 'flashcard add-card'>
+                        <TextareaAutosize
+                          placeholder='front information'
+                          className = 'flashcard-text'
+                          type='text'
+                          autoComplete='off'
+                          value={addCardFrontName}
+                          onChange={this.handleChangeAddCardFront} />
+                        <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+                        <TextareaAutosize
+                          placeholder='back information'
+                          className = 'flashcard-text'
+                          type='text'
+                          autoComplete='off'
+                          value={addCardBackName}
+                          onChange={this.handleChangeAddCardBack} />
+                        <button type='submit' className = 'add'>add</button>
+                      </div>
+                    </div>
+                  </form>
+            }
 
-        
-          {cards.map((card) => 
-            <Card 
-              userIsOwner={userIsOwner}
-              id={card.id} 
-              front={card.front} 
-              back={card.back} 
-              doUpdateCard={this.doUpdateCard}
-              handleDeleteCard={this.handleDeleteCard} 
-              key={card.id} />
-          )}
-        </div>
-      </div>
-    )
+            
+              {cards.map((card) => 
+                <Card 
+                  userIsOwner={userIsOwner}
+                  id={card.id} 
+                  front={card.front} 
+                  back={card.back} 
+                  doUpdateCard={this.doUpdateCard}
+                  handleDeleteCard={this.handleDeleteCard} 
+                  key={card.id} />
+              )}
+            </div>
+          </div>
+        )
+    // return (
+      
+    // )
   }
 }
 

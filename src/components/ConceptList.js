@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
 import { getConceptList, createConcept, deleteConcept, updateConcept } from '../utils/api';
 import routes from '../routes/routes';
+import { BigLoading } from './Loading';
 
 class Concept extends React.Component {
   constructor(props) {
@@ -109,7 +110,8 @@ class ConceptList extends React.Component {
       id: '',
       userIsOwner: false,
       addConceptQuestionName: '',
-      statusText: ''
+      statusText: '',
+      isLoading: true
     }
 
     this.handleAddConcept = this.handleAddConcept.bind(this);
@@ -132,7 +134,8 @@ class ConceptList extends React.Component {
         listName: list.listName,
         id: id,
         userIsOwner: currentUser != null && list.creatorId === firebase.auth().currentUser.uid,
-        concepts: list.concepts
+        concepts: list.concepts,
+        isLoading: false
       }));
     } catch (err) {
       console.error(err);
@@ -200,57 +203,60 @@ class ConceptList extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <div>
-          <Link to={routes.dashboardRoute}>
-            <button className = 'back-to-deck'>back to dashboard</button>
-          </Link>
-          <p className = 'deck-title edit-title'>{this.state.listName}</p>
-          <p className = 'small-caption'>concept list title</p>
-          <div className = 'hr'><hr /></div>
-        </div>
+    return this.state.isLoading
+      ? <BigLoading />
+      : (
+          <div>
+            <div>
+              <Link to={routes.dashboardRoute}>
+                <button className = 'back-to-deck'>back to dashboard</button>
+              </Link>
+              <p className = 'deck-title edit-title'>{this.state.listName}</p>
+              <p className = 'small-caption'>concept list title</p>
+              <div className = 'hr'><hr /></div>
+            </div>
 
 
-        {
-          this.state.userIsOwner
-            ? <form onSubmit={this.handleAddConcept}>
-                <div>
-                  <p id = 'add-a-concept'>add a concept:</p>
-                  <div className = 'flashcard add-card'>
-                    <input
-                      maxLength='200'
-                      placeholder='question or concept'
-                      className = 'flashcard-text'
-                      id = 'add-question'
-                      type='text'
-                      autoComplete='off'
-                      value={this.state.addConceptQuestionName}
-                      onChange={this.handleChangeAddConceptQuestion} />
-                    <button type='submit' className = 'add'>add</button>
-                  </div>
-                </div>
-              </form>
-            : null
-        }
-        <div>
-          <Link id = 'study-list' to={`${routes.studyConceptListRoute}/${this.state.id}`}>
-            <button className = 'primary-button'>study this list</button>
-          </Link>
-        </div>
+            {
+              this.state.userIsOwner
+                ? <form onSubmit={this.handleAddConcept}>
+                    <div>
+                      <p id = 'add-a-concept'>add a concept:</p>
+                      <div className = 'flashcard add-card'>
+                        <input
+                          maxLength='200'
+                          placeholder='question or concept'
+                          className = 'flashcard-text'
+                          id = 'add-question'
+                          type='text'
+                          autoComplete='off'
+                          value={this.state.addConceptQuestionName}
+                          onChange={this.handleChangeAddConceptQuestion} />
+                        <button type='submit' className = 'add'>add</button>
+                      </div>
+                    </div>
+                  </form>
+                : null
+            }
+            <div>
+              <Link id = 'study-list' to={`${routes.studyConceptListRoute}/${this.state.id}`}>
+                <button className = 'primary-button'>study this list</button>
+              </Link>
+            </div>
 
-        {this.state.concepts.map((concept) => 
-          <Concept 
-            userIsOwner={this.state.userIsOwner}
-            id={concept.id} 
-            question={concept.question} 
-            answer={concept.answer} 
-            doUpdateConcept={this.doUpdateConcept}
-            handleDeleteConcept={this.handleDeleteConcept} 
-            key={concept.id} />
-        )}
-      </div>
-    )
+            {this.state.concepts.map((concept) => 
+              <Concept 
+                userIsOwner={this.state.userIsOwner}
+                id={concept.id} 
+                question={concept.question} 
+                answer={concept.answer} 
+                doUpdateConcept={this.doUpdateConcept}
+                handleDeleteConcept={this.handleDeleteConcept} 
+                key={concept.id} />
+            )}
+          </div>
+        )
+    
   }
 }
 

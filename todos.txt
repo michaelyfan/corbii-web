@@ -12,6 +12,8 @@ Frontend:
 
 Backend:
 - pretend that you have the money and implement search functions
+- define <Route /> children in /study, create components for /study, /study/deck, /study/list, avoid defining route
+children in top-level App
 - why are the loading times so ridiculous?
 - how to handle deletion of personal data when deck/conceptlist is deleted?
   - automatically clear out personal data after x time of unuse?
