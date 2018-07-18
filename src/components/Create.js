@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import shortid from 'shortid';
 import Profile from './Profile.js';
 import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
 import routes from '../routes/routes';
@@ -31,7 +32,7 @@ class CreateDeckCard extends React.Component {
   }
 
   handleSwitch() {
-    this.props.switch(this.props.id);
+    this.props.switch(this.props.index);
   }
 
   handleChange(side, e) {
@@ -42,11 +43,11 @@ class CreateDeckCard extends React.Component {
   }
 
   handleSave() {
-    this.props.save(this.props.id, this.state.front, this.state.back);
+    this.props.save(this.props.index, this.state.front, this.state.back);
   }
 
   handleDelete() {
-    this.props.delete(this.props.id);
+    this.props.delete(this.props.index);
   }
 
   render() {  
@@ -84,7 +85,7 @@ class CreateDeckCard extends React.Component {
 CreateDeckCard.propTypes = {
   initialFront: PropTypes.string.isRequired,
   initialBack: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired,
   save: PropTypes.func.isRequired
 }
 
@@ -99,6 +100,7 @@ class CreateConceptCard extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleChange(e) {
@@ -109,7 +111,11 @@ class CreateConceptCard extends React.Component {
   }
 
   handleSave() {
-    this.props.save(this.props.id, this.state.question);
+    this.props.save(this.props.index, this.state.question);
+  }
+
+  handleDelete() {
+    this.props.delete(this.props.index);
   }
 
   render() {
@@ -118,12 +124,15 @@ class CreateConceptCard extends React.Component {
         <input type='text' 
           maxLength='200'
           className = 'flashcard-text'
-          id = 'concept-card'
+          index = 'concept-card'
           key='question'
           value={this.state.question}
           onChange={this.handleChange}
           onBlur={this.handleSave}
           placeholder='question or concept' />
+        <div className = 'side-menu'>
+          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+        </div>
       </div>
     )
   }
@@ -131,7 +140,7 @@ class CreateConceptCard extends React.Component {
 
 CreateConceptCard.propTypes = {
   initialQuestion: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired,
   save: PropTypes.func.isRequired
 }
 
@@ -140,19 +149,18 @@ class CreateDeck extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 3,
       cards: [{
         front: '',
         back: '',
-        id: 0
+        id: shortid.generate()
       },{
         front: '',
         back: '',
-        id: 1
+        id: shortid.generate()
       },{
         front: '',
         back: '',
-        id: 2
+        id: shortid.generate()
       }]
     }
 
@@ -168,51 +176,46 @@ class CreateDeck extends React.Component {
       cards.push({
         front: '',
         back: '',
-        id: prevState.count
+        id: shortid.generate()
       });
       return {
-        cards: cards,
-        count: prevState.count + 1
+        cards: cards
       }
     });
   }
 
-  deleteCard(id) {
+  deleteCard(index) {
     this.setState((prevState) => {
       let cards = prevState.cards;
-      cards.splice(id, 1);
-      for (let i = id; i < cards.length; i++) {
-        cards[i].id--;
-      }
+      cards.splice(index, 1);
       return {
-        cards: cards,
-        count: prevState.count - 1
+        cards: cards
       }
     });
   }
 
-  save(cardId, newFront, newBack) {
+  save(index, newFront, newBack) {
     this.setState((prevState) => {
-
       const cards = prevState.cards;
-      const newCards = prevState.cards.map((card) => {
-        return card.id === cardId 
-          ? {id: cardId, front: newFront, back: newBack} 
-          : card
-      });
+      const oldCard = cards[index];
+      cards[index] = {
+        id: oldCard.id,
+        front: newFront,
+        back: newBack
+      }
 
       return {
-        cards: newCards
+        cards: cards
       }
     })
   }
 
-  switch(cardId) {
+  switch(index) {
     this.setState((prevState) => {
       let cards = prevState.cards;
-      let temp = cards[cardId].front;
-      cards[cardId].front = cards[cardId].back;
-      cards[cardId].back = temp;
+      let temp = cards[index].front;
+      cards[index].front = cards[index].back;
+      cards[index].back = temp;
       return {
         cards: cards
       }
@@ -223,11 +226,11 @@ class CreateDeck extends React.Component {
     return (
       <div>
         <div>
-          {this.state.cards.map((card) => 
+          {this.state.cards.map((card, index) => 
             <CreateDeckCard  
               initialFront={card.front} 
               initialBack={card.back} 
-              id={card.id} 
+              index={index} 
               key={card.id}
               save={this.save}
               switch={this.switch}
@@ -260,15 +263,15 @@ class CreateList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 1,
       concepts: [{
         question: '',
         answer: '',
-        id: 0
+        id: shortid.generate()
       }]
     }
 
     this.handleAddConcept = this.handleAddConcept.bind(this);
+    this.deleteConcept = this.deleteConcept.bind(this);
     this.save = this.save.bind(this);
   }
 
@@ -278,26 +281,35 @@ class CreateList extends React.Component {
       concepts.push({
         question: '',
         answer: '',
-        id: prevState.count
+        id: shortid.generate()
       });
       return {
-        concepts: concepts,
-        count: prevState.count + 1
+        concepts: concepts
       }
     });
   }
 
-  save(conceptId, newQuestion) {
+  deleteConcept(index) {
+    this.setState((prevState) => {
+      let concepts = prevState.concepts;
+      concepts.splice(index, 1);
+      return {
+        concepts: concepts,
+      }
+    });
+  }
+
+  save(index, newQuestion) {
     this.setState((prevState) => {
       const concepts = prevState.concepts;
-      const newConcepts = prevState.concepts.map((concept) => {
-        return concept.id === conceptId 
-          ? {id: conceptId, question: newQuestion, answer: ''} 
-          : concept
-      });
+      const oldConcept = concepts[index];
+      concepts[index] = {
+        id: oldConcept.id,
+        question: newQuestion
+      }
 
       return {
-        concepts: newConcepts
+        concepts: concepts
       }
     })
   }
@@ -306,10 +318,11 @@ class CreateList extends React.Component {
     return (
       <div>
         <div>
-          {this.state.concepts.map((concept) => 
+          {this.state.concepts.map((concept, index) => 
             <CreateConceptCard  
+              delete={this.deleteConcept}
               initialQuestion={concept.question} 
-              id={concept.id} 
+              index={index} 
               key={concept.id}
               save={this.save} />
           )};
