@@ -31,7 +31,6 @@ class Profile extends React.Component {
       }));
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({statusText:'There was an error. Check the console and refresh the app.'}))
     })
   }
 
@@ -40,7 +39,7 @@ class Profile extends React.Component {
     const files = this.inputFile.current.files;
     const file = files[0];
     if (files == null || files.length <= 0) {
-      this.setState(() => ({statusText: 'You haven\'t chosen any files!'}));
+      alert('You haven\'t chosen any files!');
     } else if (!file.name.match(/.(jpg|jpeg|png|gif)$/i)) {
       alert('File type must be a JPG, PNG, or GIF image.');
     } else if (file.size > 100 * 1024) {
@@ -50,7 +49,6 @@ class Profile extends React.Component {
         this.props.doGetProfilePic();
       }).catch((err) => {
         console.log(err);
-        this.setState(() => ({statusText:'There was an error. Check the console and refresh the app.'}))
       });
     } 
   }
@@ -59,7 +57,6 @@ class Profile extends React.Component {
     return (
       <div className='profile'>
         <div>
-          <p>{this.state.statusText}</p>
           <h1 className = 'username'>{this.state.name}</h1>
           <h3 className = 'email'>{this.state.email}</h3>
           <div className = 'hr'><hr /></div>

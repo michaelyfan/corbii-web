@@ -54,6 +54,7 @@ export function getDeckForStudy(deckId) {
   const uid = firebase.auth().currentUser.uid;
   const userCardsStudiedRef = db.collection('users').doc(uid)
                                 .collection('studiedDecks').where('deckId', '==', deckId);
+                                
 
   return Promise.all([
     getDeck(deckId),

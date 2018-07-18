@@ -31,7 +31,6 @@ class SearchList extends React.Component {
     super(props);
 
     this.state = {
-      statusText: '',
       results: []
     };
   }
@@ -61,18 +60,15 @@ class SearchList extends React.Component {
       }));
     } catch(err) {
       console.error(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and refresh the app.' 
-      }));
+
     }
 
   }
 
   render() {
-    const { statusText, results } = this.state;
+    const { results } = this.state;
     return (
       <div>
-        <p>{statusText}</p>
         {results.length === 0
           ? <p>We didn't find anything  :(  try another search.</p>
           : results.map((result) => {

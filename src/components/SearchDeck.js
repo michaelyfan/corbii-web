@@ -30,7 +30,6 @@ class SearchDeck extends React.Component {
     super(props);
 
     this.state = {
-      statusText: '',
       results: []
     };
   }
@@ -60,9 +59,7 @@ class SearchDeck extends React.Component {
       }));
     } catch(err) {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and refresh the app.' 
-      }));
+
     }
 
   }
@@ -70,7 +67,6 @@ class SearchDeck extends React.Component {
   render() {
     return (
       <div>
-        <p>{this.state.statusText}</p>
         {this.state.results.length === 0
           ? <p>We didn't find anything  :(  try another search.</p>
           : this.state.results.map((result) => {

@@ -118,7 +118,6 @@ class DeckList extends React.Component {
     super(props);
 
     this.state = {
-      statusText: '',
       deckArr: []
     };
 
@@ -142,7 +141,6 @@ class DeckList extends React.Component {
   render() {
     return (
       <div>
-        {this.state.statusText}
         <div>
           <h3 className = 'your-stuff'>your decks</h3>
           {this.state.deckArr.map((deck) => (

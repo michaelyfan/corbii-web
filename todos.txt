@@ -3,11 +3,13 @@ Frontend:
 - make designs mobile-responsive
 - find a version of Print Clearly that doesn't add whitespace to its []\^ characters
   - this is what was causing the weird input issue with [ ] \ ^ characters
-- implement toasts for feedback and error feedback for user
-  - https://www.npmjs.com/package/react-toastify
+- implement good-looking error messages, no statusText or alert() boxes
+  - maybe toasts?
+    - https://www.npmjs.com/package/react-toastify
+- implement more attractive file upload for Profile
 - use something better looking than <input type='file' ...
 - keyboard shortcuts
-- add a sick favicon
+- add a favicon
 - compress (lossless) all resources as much as possible
 - ability to delete concepts in Create interface for conceptlists
 - have Create be the interface when a user wants to edit a deck
@@ -15,6 +17,7 @@ Frontend:
 Backend:
 - define <Route /> children in /study, create components for /study, /study/deck, /study/list, avoid defining route
 children in top-level App
+  - make the mode of search (decks, lists, users) a query param, and handle query param stuff in one place
 - why are the loading times so ridiculous?
 - how to handle deletion of personal data when deck/conceptlist is deleted?
   - automatically clear out personal data after x time of unuse?
@@ -31,12 +34,13 @@ Fullstack:
 - make sure the timestamps account for time zones (probably?)
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
 - use a webpack solution better than copy-webpack-plugin
-- run everything through eslint eventually (before pushing to production)
-- implement pictures into the decks
+- implement picture support for the decks
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
   - lookup reactjs bad smells
   - try to limit duplicate code as much as possible
+- run everything through eslint eventually
+- run everything through some sort of code checker
 - run security testing
 
 

@@ -366,7 +366,6 @@ class Create extends React.Component {
         this.props.history.push(routes.dashboardRoute);
       }).catch((err) => {
         console.error(err);
-        this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
       });  
     }
   }
@@ -381,7 +380,6 @@ class Create extends React.Component {
         this.props.history.push(routes.dashboardRoute);
       }).catch((err) => {
         console.error(err);
-        this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
       });
     }
   }

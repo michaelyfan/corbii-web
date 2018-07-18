@@ -115,7 +115,6 @@ class ConceptListList extends React.Component {
     super(props);
 
     this.state = {
-      statusText: '',
       conceptListArr: []
     };
 
@@ -141,7 +140,6 @@ class ConceptListList extends React.Component {
 
     return (
       <div>
-        {this.state.statusText}
         <div>
           <h3 className = 'your-stuff'>your concept lists</h3>
           {this.state.conceptListArr.map((list) => (

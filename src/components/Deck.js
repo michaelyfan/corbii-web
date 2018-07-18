@@ -138,7 +138,6 @@ class Deck extends React.Component {
       userIsOwner: false,
       addCardFrontName: '',
       addCardBackName: '',
-      statusText: '',
       isLoading: true
     }
 
@@ -178,9 +177,6 @@ class Deck extends React.Component {
   async handleDeleteCard(cardId) {
     try {
       await deleteCard(this.state.id, cardId);
-      this.setState(() => ({
-        statusText: 'Card successfully deleted.'
-      }))
     } catch(err) {
       console.log(err);
     }
@@ -198,22 +194,16 @@ class Deck extends React.Component {
         .then(() => {
           this.updateDeck();
           this.setState(() => ({
-            statusText: 'Card successfully added!',
             addCardBackName: '',
             addCardFrontName: ''
           }))
         })
         .catch((err) => {
-          this.setState(() => ({
-            statusText: 'There was an error. Check the console and refresh the app.'
-          }))
           console.error(err);
         })
 
     } else {
-      this.setState(() => ({
-        statusText: 'One of your inputs is empty. Check your inputs and try again.'
-      }))
+      alert("'One of your inputs is empty. Check your inputs and try again.'");
     }
   }
 
@@ -233,15 +223,9 @@ class Deck extends React.Component {
 
   doUpdateCard(cardId, front, back) {
     updateCard(this.state.id, cardId, front, back).then(() => {
-      this.setState(() => ({
-        statusText: 'Card successfully updated!',
-      }));
       this.updateDeck();
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and refresh the app.'
-      }));
     })
   }
 

@@ -21,6 +21,11 @@ class Search extends React.Component {
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
   }
 
+  componentDidMount() {
+    const { q } = queryString.parse(this.props.location.search);
+    console.log(q);
+  }
+
   enterActivator(e) {
     e.preventDefault();
   }
@@ -41,6 +46,8 @@ class Search extends React.Component {
       <div>
         <div className = 'main-searchbar'>
           <form onSubmit={this.enterActivator}>
+            <button type='submit' style={{display: 'none'}}> show lists </button>
+          </form>
             <div>
               <input 
                   id = "big-search"
@@ -50,34 +57,31 @@ class Search extends React.Component {
                   onChange={this.handleChangeSearch} value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: `${match.url}/decks`,
+                  pathname: `${routes.searchDecksRoute}`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
-                <button type='submit' className = 'filter-button' id = 'show-decks'> show decks </button>
+                <button className = 'filter-button' id = 'show-decks'> show decks </button>
               </Link>
               <Link
                 to={{
-                  pathname: `${match.url}/users`,
+                  pathname: `${routes.searchUsersRoute}`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
                 <button className = 'filter-button' id = 'show-users'> show users </button>
               </Link>
               <Link
                 to={{
-                  pathname: `${match.url}/lists`,
+                  pathname: `${routes.searchListsRoute}`,
                   search: `?q=${this.state.searchQuery}`
                 }}>
                 <button className = 'filter-button' id = 'show-decks'> show lists </button>
               </Link>
             </div>
-          </form>
-
-          
-          
         </div>
-        <Route path={`${match.url}/decks`} component={SearchDeck} />
-        <Route path={`${match.url}/users`} component={SearchUser} />
-        <Route path={`${match.url}/lists`} component={SearchList} />
+
+        <Route path={`${routes.searchDecksRoute}`} component={SearchDeck} />
+        <Route path={`${routes.searchUsersRoute}`} component={SearchUser} />
+        <Route path={`${routes.searchListsRoute}`} component={SearchList} />
       </div>
       
     )

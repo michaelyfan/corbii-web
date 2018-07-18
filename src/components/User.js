@@ -23,7 +23,6 @@ class User extends React.Component {
     this.state = {
       name: '',
       decks: [],
-      statusText: '',
       profilePic: null
     }
   }
@@ -46,14 +45,12 @@ class User extends React.Component {
 
     } catch(err) {
       console.error(err);
-      this.setState(() => ({statusText: 'There was an error. Check the console and refresh the app.'}));
     }
   }
 
   render() {
     return (
       <div>
-        {this.state.statusText}
         {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} /> }
         <h2>{this.state.name}</h2>
         {this.state.decks.map((deck) => 

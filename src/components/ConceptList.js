@@ -110,7 +110,6 @@ class ConceptList extends React.Component {
       id: '',
       userIsOwner: false,
       addConceptQuestionName: '',
-      statusText: '',
       isLoading: true
     }
 
@@ -145,9 +144,6 @@ class ConceptList extends React.Component {
   async handleDeleteConcept(conceptId) {
     try {
       await deleteConcept(this.state.id, conceptId);
-      this.setState(() => ({
-        statusText: 'Concept successfully deleted.'
-      }))
     } catch(err) {
       console.log(err);
     }
@@ -163,21 +159,13 @@ class ConceptList extends React.Component {
       createConcept(question, '', this.state.id)
         .then(() => {
           this.updateConceptList();
-          this.setState(() => ({
-            statusText: 'Concept successfully added!'
-          }))
         })
         .catch((err) => {
-          this.setState(() => ({
-            statusText: 'There was an error. Check the console and refresh the app.'
-          }))
           console.error(err);
         })
 
     } else {
-      this.setState(() => ({
-        statusText: 'One of your inputs is empty. Check your inputs and try again.'
-      }))
+      alert("'One of your inputs is empty. Check your inputs and try again.'");
     }
   }
 
@@ -190,15 +178,9 @@ class ConceptList extends React.Component {
 
   doUpdateConcept(conceptId, question, answer) {
     updateConcept(this.state.id, conceptId, question, answer).then(() => {
-      this.setState(() => ({
-        statusText: 'Concept successfully updated!',
-      }));
       this.updateConceptList();
     }).catch((err) => {
       console.log(err);
-      this.setState(() => ({
-        statusText: 'There was an error. Check the console and refresh the app.'
-      }));
     })
   }
 

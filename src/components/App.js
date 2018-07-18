@@ -130,10 +130,10 @@ class App extends React.Component {
               loading={loading}
               component={StudyConcept} />
             <Route
-              path='/user/:id'
+              path={`${routes.viewUserRoute}/:id`}
               component={User} />
             <Route
-              path='/denied'
+              path={`${routes.deniedRoute}`}
               component={DeniedNoAuth} />              
             <Route component={NotFound} />
           </Switch>
