@@ -8,11 +8,11 @@ Frontend:
     - https://www.npmjs.com/package/react-toastify
 - implement more attractive file upload for Profile
 - use something better looking than <input type='file' ...
-- keyboard shortcuts
 - add a favicon
+- keyboard shortcuts
 - compress (lossless) all resources as much as possible
-- ability to delete concepts in Create interface for conceptlists
 - have Create be the interface when a user wants to edit a deck
+  - this is very hard.
 
 Backend:
 - define <Route /> children in /study, create components for /study, /study/deck, /study/list, avoid defining route
@@ -25,9 +25,8 @@ children in top-level App
     - each card and concept has userId, deckId, same cardId
     - use queries
 - automatically updating isDue field in Firestore instead of updating on retrieval
-- should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
-- add Algolia calls for concept lists.
+- should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - implement structure necessary for a study history
 
 Fullstack:
@@ -37,7 +36,7 @@ Fullstack:
 - implement picture support for the decks
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
-  - lookup reactjs bad smells
+  - lookup bad smells common in reactjs and in javascript
   - try to limit duplicate code as much as possible
 - run everything through eslint eventually
 - run everything through some sort of code checker

@@ -1,12 +1,8 @@
 import React from 'react';
-import { searchDecks } from '../utils/api';
 import { Route, Link } from 'react-router-dom';
-import queryString from 'query-string';
-import PropTypes from 'prop-types';
-import SearchDeck from './SearchDeck';
-import SearchUser from './SearchUser';
-import SearchList from './SearchList';
+import SearchResults from './SearchResults';
 import routes from '../routes/routes';
+import queryString from 'query-string';
 
 class Search extends React.Component {
 
@@ -14,20 +10,34 @@ class Search extends React.Component {
     super(props);
 
     this.state = {
-      searchQuery: ''
+      searchQuery: '',
+      mode: 'decks'
     }
 
     this.enterActivator = this.enterActivator.bind(this);
+    this.changeMode = this.changeMode.bind(this);
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
-  }
-
-  componentDidMount() {
-    const { q } = queryString.parse(this.props.location.search);
-    console.log(q);
   }
 
   enterActivator(e) {
     e.preventDefault();
+  }
+
+  componentDidMount() {
+    const { q, mode } = queryString.parse(this.props.location.search);
+    this.setState(() => ({
+      searchQuery: q || '',
+      mode: mode || 'decks'
+    }))
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.mode != prevState.mode) {
+      this.props.history.push({
+        pathname: `${routes.searchRoute}${routes.searchRouteResultsSub}`,
+        search: `?mode=${this.state.mode}&q=${this.state.searchQuery}`
+      })
+    }
   }
 
   handleChangeSearch(e) {
@@ -35,6 +45,12 @@ class Search extends React.Component {
 
     this.setState(() => ({
       searchQuery: value
+    }))
+  }
+
+  changeMode(mode) {
+    this.setState(() => ({
+      mode: mode
     }))
   }
 
@@ -46,8 +62,6 @@ class Search extends React.Component {
       <div>
         <div className = 'main-searchbar'>
           <form onSubmit={this.enterActivator}>
-            <button type='submit' style={{display: 'none'}}> show lists </button>
-          </form>
             <div>
               <input 
                   id = "big-search"
@@ -57,31 +71,20 @@ class Search extends React.Component {
                   onChange={this.handleChangeSearch} value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: `${routes.searchDecksRoute}`,
-                  search: `?q=${this.state.searchQuery}`
+                  pathname: `${routes.searchRoute}${routes.searchRouteResultsSub}`,
+                  search: `?mode=${this.state.mode}&q=${this.state.searchQuery}`
                 }}>
-                <button className = 'filter-button' id = 'show-decks'> show decks </button>
+                <button type='submit' className='no-display'></button>
               </Link>
-              <Link
-                to={{
-                  pathname: `${routes.searchUsersRoute}`,
-                  search: `?q=${this.state.searchQuery}`
-                }}>
-                <button className = 'filter-button' id = 'show-users'> show users </button>
-              </Link>
-              <Link
-                to={{
-                  pathname: `${routes.searchListsRoute}`,
-                  search: `?q=${this.state.searchQuery}`
-                }}>
-                <button className = 'filter-button' id = 'show-decks'> show lists </button>
-              </Link>
+
+              <button className = 'filter-button' onClick={() => {this.changeMode('decks')}} id = 'show-decks'> show decks </button>
+              <button className = 'filter-button' onClick={() => {this.changeMode('users')}} id = 'show-users'> show users </button>
+              <button className = 'filter-button' onClick={() => {this.changeMode('lists')}} id = 'show-decks'> show lists </button>
             </div>
+          </form>
         </div>
 
-        <Route path={`${routes.searchDecksRoute}`} component={SearchDeck} />
-        <Route path={`${routes.searchUsersRoute}`} component={SearchUser} />
-        <Route path={`${routes.searchListsRoute}`} component={SearchList} />
+        <Route path={`${routes.searchRoute}${routes.searchRouteResultsSub}`} component={SearchResults} />
       </div>
       
     )

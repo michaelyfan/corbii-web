@@ -334,16 +334,13 @@ export function createDeckCurrentUser(deckName, cards) {
       }
     }
   }
-
   const { uid, displayName } = firebase.auth().currentUser;
-
   const data = {
     name: deckName,
     creatorId: uid,
     creatorName: displayName,
     count: (cards && cards.length) || 0
   }
-
   return db.collection('decks').add(data).then((deckRef) => {
     console.log(deckRef);
     // very temporary algolia index solution
@@ -357,7 +354,6 @@ export function createDeckCurrentUser(deckName, cards) {
         'Content-Type': 'application/json'
       }
     });
-
     if (cards) {
       // consider mixing this batch with the deck creation call
       const batch = db.batch();
@@ -367,7 +363,6 @@ export function createDeckCurrentUser(deckName, cards) {
       });
       return batch.commit();
     }
-
   });
 }
 
@@ -595,7 +590,7 @@ function updateListCountByOne(listId, isIncrement) {
   })
 }
 
-export function updateCurrentUserDeck(deckId, deckName) {
+export function updateCurrentUserDeck(deckId, deckName, cards) {
   if (deckName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
@@ -617,10 +612,30 @@ export function updateCurrentUserDeck(deckId, deckName) {
     }
   });
 
-  return db.doc(deckRef).update({name: deckName});
+  return db.doc(deckRef).update({name: deckName}).then(() => {
+    if (cards) {
+      const batch = db.batch();
+      cards.forEach((card) => {
+        let cardRef;
+        if (card.id) {
+          cardRef = db.collection('decks').doc(deckId)
+                      .collection('cards').doc(card.id);
+        } else {
+          cardRef = db.collection('decks').doc(deckId)
+                      .collection('cards').doc();
+        }
+        batch.set(cardRef, {
+          front: card.front,
+          back: card.back
+        }, {merge: true});
+
+        return batch.commit();
+      })
+    }
+  });
 }
 
-export function updateCurrentUserList(listId, listName) {
+export function updateCurrentUserList(listId, listName, concepts) {
   if (listName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
@@ -646,7 +661,26 @@ export function updateCurrentUserList(listId, listName) {
     }
   });
 
-  return db.doc(listRef).update({name: listName});
+  return db.doc(listRef).update({name: listName}).then(() => {
+    if (concepts) {
+      const batch = db.batch();
+      concepts.forEach((concept) => {
+        let conceptRef;
+        if (concept.id) {
+          conceptRef = db.collection('lists').doc(listId)
+                      .collection('concepts').doc(concept.id);
+        } else {
+          conceptRef = db.collection('lists').doc(listId)
+                      .collection('concepts').doc();
+        }
+        batch.set(conceptRef, {
+          front: concept.front,
+          back: concept.back
+        }, {merge: true});
+        return batch.commit();
+      })
+    }
+  });
 }
 
 export function updateCurrentUserProfilePic(file) {
