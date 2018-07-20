@@ -13,11 +13,14 @@ Frontend:
 - compress (lossless) all resources as much as possible
 - have Create be the interface when a user wants to edit a deck
   - this is very hard.
+- right now routes without params (such as just /study) lead to 404 page, should it direct to somewhere else?
+- handle deck not found, conceptlist not found, user not found pages
+  - e.g. user navigates via address bar to a url with an incorrect param
+- conceptlist arrows shift entire textbox
+  - consider greyed out conceptlist arrows
+- conceptlist input stays constant throughout inputs
 
 Backend:
-- define <Route /> children in /study, create components for /study, /study/deck, /study/list, avoid defining route
-children in top-level App
-  - make the mode of search (decks, lists, users) a query param, and handle query param stuff in one place
 - why are the loading times so ridiculous?
 - how to handle deletion of personal data when deck/conceptlist is deleted?
   - automatically clear out personal data after x time of unuse?

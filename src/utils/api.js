@@ -25,13 +25,14 @@ const ALGOLIA_INDEX_NAME_3 = 'lists';
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-
+// Begin api functions
 export function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
+  let cardsRef = deckRef.collection('cards');
 
   return Promise.all([
     deckRef.get(),
-    deckRef.collection('cards').get(),
+    cardsRef.get(),
   ]).then(([ deck, cards ]) => {
     let cardsArr = [];
     cards.forEach((card) => {
@@ -52,9 +53,8 @@ export function getDeck(deckId) {
 
 export function getDeckForStudy(deckId) {
   const uid = firebase.auth().currentUser.uid;
-  const userCardsStudiedRef = db.collection('users').doc(uid)
-                                .collection('studiedDecks').where('deckId', '==', deckId);
-                                
+  const userCardsStudiedRef = db.collection('spacedRepData')
+    .where('userId', '==', uid).where('deckId', '==', deckId);
 
   return Promise.all([
     getDeck(deckId),
@@ -66,7 +66,9 @@ export function getDeckForStudy(deckId) {
     // turn collection of cards in cardsStudiedSnapshot into an object for easier checking.
     let cardsToBeDeleted = {};
     cardsStudiedSnapshot.forEach((card) => {
-      cardsToBeDeleted[card.id] = card.data();
+      let cardData = card.data();
+      cardData.id = card.id;
+      cardsToBeDeleted[card.data().cardId] = cardData;
     });
 
     // loop through content cards.
@@ -107,9 +109,7 @@ export function getDeckForStudy(deckId) {
     // delete cards in cardsToBeDeleted, they weren't in content.
     let batch = db.batch();
     Object.keys(cardsToBeDeleted).forEach((id) => {
-      let badCardRef = db.collection('users').doc(uid)
-                         .collection('studiedDecks').doc(deckId)
-                         .collection('cards').doc(id);
+      let badCardRef = db.collection('spacedRepData').doc(id);
       batch.delete(badCardRef);                         
     });
 
@@ -160,12 +160,9 @@ export function getConceptList(listId) {
 
 export function getConceptListForStudy(listId) {
   const uid = firebase.auth().currentUser.uid;
-
   let contentRef = db.collection('lists').doc(listId);
-  let dataRef = db.collection('users').doc(uid)
-                  .collection('studiedLists')
-                  .where('listId', '==', listId);
-
+  let dataRef = db.collection('selfExData')
+                  .where('userId', '==', uid).where('listId', '==', listId);
 
   return Promise.all([
     getConceptList(listId),
@@ -173,9 +170,10 @@ export function getConceptListForStudy(listId) {
   ]).then(([ list, dataSnapshot ]) => {
     let conceptsToBeDeleted = {};
     dataSnapshot.forEach((concept) => {
-      conceptsToBeDeleted[concept.id] = concept.data();
+      let conceptData = concept.data();
+      conceptData.id = concept.id;
+      conceptsToBeDeleted[concept.data().conceptId] = conceptData;
     });
-
     let concepts = [];
     let conceptsToBeKept = {};
     list.concepts.forEach((concept) => {
@@ -186,8 +184,7 @@ export function getConceptListForStudy(listId) {
 
     let batch = db.batch();
     Object.keys(conceptsToBeDeleted).forEach((id) => {
-      let badCardRef = db.collection('users').doc(uid)
-                         .collection('studiedLists').doc(id);
+      let badCardRef = db.collection('selfExData').doc(id);
       batch.delete(badCardRef);
     });
 
@@ -201,14 +198,6 @@ export function getConceptListForStudy(listId) {
     });
   })
 }
-
-/*
-  - get user db information
-  - get user profile pic link
-  - get user's decks
-  - get user's concept lists
-*/
-
 
 export function getUserProfileInfo(uid) {
   return db.collection('users').doc(uid).get();
@@ -342,7 +331,6 @@ export function createDeckCurrentUser(deckName, cards) {
     count: (cards && cards.length) || 0
   }
   return db.collection('decks').add(data).then((deckRef) => {
-    console.log(deckRef);
     // very temporary algolia index solution
     fetch('/api/addalgolia', {
       method: 'POST',
@@ -443,10 +431,14 @@ export function createConcept(question, answer, listId) {
 // end create functions
 
 // begin update functions
-export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInterval, quality) {
+export function updateCardPersonalData(dataId, deckId, cardId, oldEasinessFactor, oldInterval, quality) {
   const uid = firebase.auth().currentUser.uid;
-  const cardRef = db.collection('users').doc(uid)
-                    .collection('studiedDecks').doc(cardId);
+  let cardRef;
+  if (dataId) {
+    cardRef = db.collection('spacedRepData').doc(dataId);
+  } else {
+    cardRef = db.collection('spacedRepData').doc();
+  }
 
   const  [ newEasinessFactor, newInterval ] = smAlgorithm(oldEasinessFactor, oldInterval, quality);
   const newNextReviewed = new Date();
@@ -458,15 +450,21 @@ export function updateCardPersonalData(deckId, cardId, oldEasinessFactor, oldInt
     nextReviewed: newNextReviewed,
     isDue: false,
     percentOverdue: 0,
-    deckId: deckId
+    deckId: deckId,
+    userId: uid,
+    cardId: cardId
+
   }, { merge: true });
 }
 
-export function updateCardPersonalDataLearner(deckId, cardId, newInterval, newEasinessFactor) {
+export function updateCardPersonalDataLearner(dataId, deckId, cardId, newInterval, newEasinessFactor) {
   const uid = firebase.auth().currentUser.uid;
-  const cardRef = db.collection('users').doc(uid)
-                    .collection('studiedDecks').doc(cardId);
-
+  let cardRef;
+  if (dataId) {
+    cardRef = db.collection('spacedRepData').doc(dataId);
+  } else {
+    cardRef = db.collection('spacedRepData').doc();
+  }
   const newNextReviewed = new Date();
   newNextReviewed.setDate(newNextReviewed.getDate() + newInterval);
 
@@ -476,7 +474,9 @@ export function updateCardPersonalDataLearner(deckId, cardId, newInterval, newEa
     nextReviewed: newNextReviewed,
     isDue: false,
     percentOverdue: 0,
-    deckId: deckId
+    deckId: deckId,
+    userId: uid,
+    cardId: cardId
   }, { merge: true });
 }
 
@@ -506,19 +506,24 @@ export function updateConcept(listId, conceptId, question, answer) {
   });
 }
 
-export function updateConceptPersonalData(listId, cardId, answer) {
+export function updateConceptPersonalData(dataId, listId, conceptId, answer) {
   if (answer.length > 4000) {
     return Promise.reject(new Error('Answer is too long.'));
   }
 
   const uid = firebase.auth().currentUser.uid;
-  const dataRef = db.collection('users').doc(uid)
-                    .collection('studiedLists').doc(cardId);
-
+  let dataRef;
+  if (dataId) {
+    dataRef = db.collection('selfExData').doc(dataId);
+  } else {
+    dataRef = db.collection('selfExData').doc();
+  }
 
   return dataRef.set({
     answer: answer,
-    listId: listId
+    listId: listId,
+    conceptId: conceptId,
+    userId: uid
   }, {merge: true});
 }
 

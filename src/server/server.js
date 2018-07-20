@@ -123,13 +123,16 @@ app.post('/api/deletedeck', (req, res) => {
       if (req.body.uid != userId) {
         res.sendStatus(403);
       } else {
-        const cardsPath = `decks/${req.body.deckId}/cards`;
-        const deckPath = `decks/${req.body.deckId}`;
+        const deckId = req.body.deckId;
+        const cardsPath = `decks/${deckId}/cards`;
+        const deckPath = `decks/${deckId}`;
+        const cardsDataRef = db.collection('spacedRepData').where('deckId', '==', deckId);
         Promise.all([
           deleteCollection(cardsPath, 100),
+          deleteCollection(cardsDataRef, 100, cardsDataRef),
           deleteDocument(deckPath)
         ]).then((results) => {
-          deletealgolia('decks', req.body.deckId);
+          deletealgolia('decks', deckId);
           res.sendStatus(200);
         }).catch((err) => {
           console.log(err);
@@ -149,13 +152,16 @@ app.post('/api/deletelist', (req, res) => {
       if (req.body.uid != userId) {
         res.sendStatus(403);
       } else {
-        const conceptsPath = `lists/${req.body.listId}/concepts`;
-        const listPath = `lists/${req.body.listId}`;
+        const listId = req.body.listId;
+        const conceptsPath = `lists/${listId}/concepts`;
+        const conceptsDataRef = db.collection('selfExData').where('listId', '==', listId);
+        const listPath = `lists/${listId}`;
         Promise.all([
           deleteCollection(conceptsPath, 100),
+          deleteCollection(conceptsDataRef, 100, conceptsDataRef),
           deleteDocument(listPath),
         ]).then((results) => {
-          deletealgolia('lists', req.body.listId);
+          deletealgolia('lists', listId);
           res.sendStatus(200);
         }).catch((err) => {
           console.log(err);
@@ -181,9 +187,14 @@ function deleteDocument(documentPath) {
   })
 }
 
-function deleteCollection(collectionPath, batchSize) {
-  var collectionRef = db.collection(collectionPath);
-  var query = collectionRef.orderBy('__name__').limit(batchSize);
+function deleteCollection(collectionPath, batchSize, collectionRef) {
+  var colRef;
+  if (collectionRef) {
+    colRef = collectionRef;
+  } else {
+    colRef = db.collection(collectionPath);
+  }
+  var query = colRef.orderBy('__name__').limit(batchSize);
 
   return new Promise((resolve, reject) => {
     deleteQueryBatch(query, batchSize, resolve, reject);

@@ -67,7 +67,7 @@ class Nav extends React.Component {
                 value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: `${routes.searchRoute}${routes.searchRouteResultsSub}`,
+                  pathname: `${routes.searchRouteResults}`,
                   search: `?mode=decks&q=${this.state.searchQuery}`
                 }}>
                 <button style={{display: 'none'}} type='submit'>Search</button>

@@ -247,7 +247,7 @@ class Deck extends React.Component {
 
             <div className='soft-blue-background'>
             <div>
-              <Link id = 'study-deck' to={`${routes.studyDeckRoute}/${id}`}>
+              <Link id = 'study-deck' to={`${routes.studyRouteDeck}/${id}`}>
                 <button className = 'primary-button'>study this deck</button>
               </Link>
             </div>

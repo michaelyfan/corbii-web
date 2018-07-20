@@ -120,12 +120,12 @@ class App extends React.Component {
               path={`${routes.viewConceptListRoute}/:id`}
               component={ConceptList} />
             <PrivateRoute
-              path={`${routes.studyDeckRoute}/:id`}
+              path={`${routes.studyRouteDeck}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyDeck} />
             <PrivateRoute
-              path={`${routes.studyConceptListRoute}/:id`}
+              path={`${routes.studyRouteConceptList}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyConcept} />

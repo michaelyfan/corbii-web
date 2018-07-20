@@ -102,7 +102,8 @@ class StudyCard extends React.Component {
     } else {
       const { card, cardData } = this.props;
       const { interval, easinessFactor } = cardData;
-      updateCardPersonalData(this.props.deckId, card.id, easinessFactor, interval, quality);
+      const dataId = cardData ? (cardData[card.id] ? cardData[card.id].id : null) : null;
+      updateCardPersonalData(dataId, this.props.deckId, card.id, easinessFactor, interval, quality);
       this.props.changeIndex(false);
     }
     this.setState(() => ({
@@ -214,12 +215,14 @@ class StudyDeck extends React.Component {
         }
       });
     } else if (quality == 2) { 
-      const { id, arrayTodo, index } = this.state;
-      updateCardPersonalDataLearner(id, arrayTodo[index].id, 1, easinessFactor || null); // note quality doesn't matter here
+      const { id, arrayTodo, index, personalData } = this.state;
+      const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
+      updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 1, easinessFactor || null); // note quality doesn't matter here
       this.changeIndex(false);
     } else { // quality == 3
-      const { id, arrayTodo, index } = this.state;
-      updateCardPersonalDataLearner(id, arrayTodo[index].id, 3, easinessFactor || null); // note quality doesn't matter here
+      const { id, arrayTodo, index, personalData } = this.state;
+      const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
+      updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 3, easinessFactor || null); // note quality doesn't matter here
       this.changeIndex(false);
     }
 

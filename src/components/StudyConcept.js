@@ -24,8 +24,9 @@ class SingleConcept extends React.Component {
   handleSubmitAnswer(e) {
     e.preventDefault();
 
-    const { content, listId } = this.props;
-    updateConceptPersonalData(listId, content.id, this.state.text).then(() => {
+    const { content, listId, data } = this.props;
+    const dataId = data ? (data[content.id] ? data[content.id].id : null) : null;
+    updateConceptPersonalData(dataId, listId, content.id, this.state.text).then(() => {
       this.props.getList();
     }).catch((err) => {
       console.error(err);

@@ -1,20 +1,28 @@
 
 const routes = {
   homeRoute: '/',
+  
   faqRoute: '/FAQ',
-  searchRoute: '/search',
-  searchRouteResultsSub: '/s',
-  // searchDecksRoute: '/search/decks',
-  // searchUsersRoute: '/search/users',
-  // searchListsRoute: '/search/lists',
+  
+  searchRoute: '/search', 
+  searchRouteResults: '/search/s', // has queries and shit
+
   dashboardRoute: '/dashboard',
+  
   profileRoute: '/profile',
+  
   createRoute: '/create',
-  viewDeckRoute: '/deck',
-  viewConceptListRoute: '/conceptlist',
-  studyDeckRoute: '/study/deck',
-  studyConceptListRoute: '/study/conceptlist',
-  viewUserRoute: '/user',
+  
+  viewDeckRoute: '/deck', // has params
+  
+  viewConceptListRoute: '/conceptlist', //has params
+  
+  studyRoute: '/study',
+  studyRouteDeck: '/study/deck',
+  studyRouteConceptList: '/study/conceptlist',
+  
+  viewUserRoute: '/user', // has params
+  
   deniedRoute: '/denied'
 }
 

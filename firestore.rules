@@ -1,23 +1,8 @@
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-
       allow read: if true;
-
       allow create: if request.auth.uid == userId;
-
-        match /studiedDecks/{deckId} {
-          allow read: if true;
-          allow create, update, delete: if request.auth.uid == userId;
-        }
-
-        match /studiedLists/{cardId} {
-          allow read: if true;
-          allow create, update: if request.auth.uid == userId
-                                && request.resource.data.answer.size() <= 4000;
-          allow delete: if request.auth.uid == userId;
-        }
-
     }
 
     match /decks/{deckId} {
@@ -55,8 +40,18 @@ service cloud.firestore {
 
         allow delete: if request.auth.uid == get(/databases/$(database)/documents/lists/$(listId)).data.creatorId;
       }
+    }
 
+    match /spacedRepData/{dataId} {
+      allow read: if true;
+      allow create: if request.auth.uid == request.resource.data.userId;
+      allow update, delete: if request.auth.uid == resource.data.userId;
+    }
+
+    match /selfExData/{dataId} {
+      allow read: if true; 
+      allow create: if request.auth.uid == request.resource.data.userId;
+      allow update, delete: if request.auth.uid == resource.data.userId;
     }
   }
 }
-
