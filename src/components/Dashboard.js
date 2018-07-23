@@ -65,7 +65,9 @@ class Dashboard extends React.Component {
               <br />
               <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 2}))}}>my classrooms</button>
               <br />
-              <button className = 'dash-nav' id = 'profile-settings' onClick={() => {this.setState(() => ({active: 3}))}}>profile settings</button>
+              <Link to={routes.profileRoute}>
+                <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
+              </Link>
             </div>
           </div>
 
