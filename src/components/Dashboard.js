@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DeckList from './DeckList';
 import ConceptListList from './ConceptListList';
+import Profile from './Profile';
 import { Link } from 'react-router-dom';
 import firebase from '../utils/firebase';
 import routes from '../routes/routes';
@@ -15,7 +16,7 @@ class Dashboard extends React.Component {
 
     this.state = {
       name: '', 
-      isList: false
+      active: 0
     }
   }
 
@@ -25,6 +26,19 @@ class Dashboard extends React.Component {
       this.setState(() => ({name: firebase.auth().currentUser.displayName}));
     } else {
       console.log(sassyMessage);
+    }
+  }
+
+  renderSwitch() {
+    switch(this.state.active) {
+      case 0:
+        return <DeckList />;
+      case 1:
+        return <ConceptListList />;
+      case 2:
+        return 'not done yet';
+      case 3:
+        return <Profile />;
     }
   }
 
@@ -45,21 +59,18 @@ class Dashboard extends React.Component {
               <Link to={routes.createRoute}>
                 <button className = 'dash-nav'>create deck or concept list</button>
               </Link>
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({isList: false}))}}>my decks</button>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 0}))}}>my decks</button>
               <br />
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({isList: true}))}}>my concept lists</button>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 1}))}}>my concept lists</button>
               <br />
-              <button className = 'dash-nav'>my classrooms</button>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 2}))}}>my classrooms</button>
               <br />
-              <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
+              <button className = 'dash-nav' id = 'profile-settings' onClick={() => {this.setState(() => ({active: 3}))}}>profile settings</button>
             </div>
           </div>
 
           <div className = 'active-view'>
-              { this.state.isList 
-                ? <ConceptListList />
-                : <DeckList />
-              }
+            {this.renderSwitch(this.state.active)}
           </div>
         </div>
       </div>
