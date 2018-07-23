@@ -1,48 +1,30 @@
 
 Frontend:
 - make designs mobile-responsive
-- find a version of Print Clearly that doesn't add whitespace to its []\^ characters
-  - this is what was causing the weird input issue with [ ] \ ^ characters
-- implement good-looking error messages, no statusText or alert() boxes
-  - maybe toasts?
-    - https://www.npmjs.com/package/react-toastify
-- implement more attractive file upload for Profile
+- why do these keys: [ ] \ freak out the text inputs?
+- implement loading icons
+- implement toasts for feedback and error feedback for user
+  - https://www.npmjs.com/package/react-toastify
 - use something better looking than <input type='file' ...
-- add a favicon
 - keyboard shortcuts
-- compress (lossless) all resources as much as possible
 - have Create be the interface when a user wants to edit a deck
-  - this is very hard.
-- right now routes without params (such as just /study) lead to 404 page, should it direct to somewhere else?
-- handle deck not found, conceptlist not found, user not found pages
-  - e.g. user navigates via address bar to a url with an incorrect param
-- conceptlist arrows shift entire textbox
-  - consider greyed out conceptlist arrows
-- conceptlist input stays constant throughout inputs
 
 Backend:
 - why are the loading times so ridiculous?
 - automatically updating isDue field in Firestore instead of updating on retrieval
-- Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
+- Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
+- add Algolia calls for concept lists.
 - implement structure necessary for a study history
 
 Fullstack:
-- make sure the timestamps account for time zones (probably?)
-- think of a more elegant solution to the new user's profile pic bug. (see Michael)
+- handle different time zones
+- implement maximum lengths for card entries (like 1000 characters)
 - use a webpack solution better than copy-webpack-plugin
 - implement pictures into the decks
+- think of a more elegant solution to the new user's profile pic bug. (see Michael)
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
-  - lookup bad smells common in reactjs and in javascript
-  - try to limit duplicate code as much as possible
-- run everything through eslint eventually
-- run everything through some sort of code checker
-- run security testing
-
-
-Maximum input lengths:
-  - deck and conceptlist titles: 150 characters
-  - deck cards (front, back): 1000 characters
-  - conceptlist questions: 200 characters
-  - conceptlist answers: 4000 characters
+  - 
+- run everything through eslint eventually (before pushing to production)
+- implement pictures into the decks
