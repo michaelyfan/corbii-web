@@ -8,6 +8,8 @@ Frontend:
 - use something better looking than <input type='file' ...
 - keyboard shortcuts
 - have Create be the interface when a user wants to edit a deck
+- "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
+
 
 Backend:
 - why are the loading times so ridiculous?
