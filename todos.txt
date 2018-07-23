@@ -22,11 +22,6 @@ Frontend:
 
 Backend:
 - why are the loading times so ridiculous?
-- how to handle deletion of personal data when deck/conceptlist is deleted?
-  - automatically clear out personal data after x time of unuse?
-  - make separate root-level collections of cards and concepts for personal data.
-    - each card and concept has userId, deckId, same cardId
-    - use queries
 - automatically updating isDue field in Firestore instead of updating on retrieval
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
@@ -36,7 +31,7 @@ Fullstack:
 - make sure the timestamps account for time zones (probably?)
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
 - use a webpack solution better than copy-webpack-plugin
-- implement picture support for the decks
+- implement pictures into the decks
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
   - lookup bad smells common in reactjs and in javascript
