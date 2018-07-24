@@ -15,18 +15,21 @@
 
 #header-logo {
   width: 200px;
+  max-width: 100%;
   height: auto;
 }
 
 #searchbar {
   font-family: 'Print Clearly';
-  font-size: 30pt;
+  font-size: 30px;
+  font-size: 5vw;
   width: 200px;
+  max-width: 100%;
   border: none;
   background-color: #003466;
   caret-color: white;
   color: white;
-  padding-top: 13px;
+  padding-top: 10px;
 }
 
 #searchbar::placeholder {
@@ -45,6 +48,7 @@
 #navbar-usercard button {
   padding: 5px;
   font-size: 22px;
+  font-size: 2vw;
 }
 
 #navbar-usercard img {
@@ -52,6 +56,15 @@
   width: 85px;
   height: 85px;
   object-fit: cover;
+}
+
+@media screen and (max-width: 800px) {
+  #navbar-usercard img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
 }
 
 .nav-signin {
