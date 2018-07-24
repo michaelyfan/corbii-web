@@ -6,11 +6,21 @@ Frontend:
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
 - use something better looking than <input type='file' ...
-- keyboard shortcuts
+- keyboard shortcuts/hotkeys
+  - numbers for selecting familiarity options
+    - 1 for the "I don't know this card at all" option, goes up to 6 from there
+  - space should flip card
+- delete operations such as deleting cards or decks should be preceded by some form of confirmation
+- implement progress bars, or at least some way to see how many cards are left 
 - have Create be the interface when a user wants to edit a deck
+- "I think the title is too big on the study page. What users care about here is the card and the buttons a lot more than knowing which deck they’re studying" -Hank
+- "clicking the title [of the deck/list while studying] should take you back to the deck" - Hank
+- "In the learner function, if you mark soon, the next options should be soon or not soon (right now it is red or green, it should be red or orange to stay consistent)" - Hank
+- "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
 
 Backend:
 - why are the loading times so ridiculous?
+- show intervals next to card studying options
 - automatically updating isDue field in Firestore instead of updating on retrieval
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
@@ -18,6 +28,7 @@ Backend:
 - implement structure necessary for a study history
 
 Fullstack:
+- TEACHER FEATURES
 - handle different time zones
 - implement maximum lengths for card entries (like 1000 characters)
 - use a webpack solution better than copy-webpack-plugin
