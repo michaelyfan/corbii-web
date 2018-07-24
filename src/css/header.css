@@ -21,10 +21,8 @@
 
 #searchbar {
   font-family: 'Print Clearly';
-  font-size: 30px;
-  font-size: 5vw;
+  font-size: 40px;
   width: 200px;
-  max-width: 100%;
   border: none;
   background-color: #003466;
   caret-color: white;
@@ -48,7 +46,6 @@
 #navbar-usercard button {
   padding: 5px;
   font-size: 22px;
-  font-size: 2vw;
 }
 
 #navbar-usercard img {
@@ -58,14 +55,6 @@
   object-fit: cover;
 }
 
-@media screen and (max-width: 800px) {
-  #navbar-usercard img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-  }
-}
 
 .nav-signin {
   font-family: Nunito Bold;
@@ -77,4 +66,23 @@
 #header-login {
   color: #FFFFFF;
   margin-right: 30px;
+}
+
+
+@media screen and (max-width: 800px) {
+  #navbar-usercard img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+  }
+
+  #navbar-usercard button {
+    font-size: 1.5vw;
+  }
+
+  #searchbar {
+    font-size: 4.5vw;
+    max-width: 100%;
+  }
 }

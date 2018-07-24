@@ -175,3 +175,14 @@
   padding-right: 60px;
   color: #A8B4C2;
 }
+
+
+@media screen and (max-width: 800px) {
+  #slogan {
+    font-size: 17vw;
+  }
+
+  #you {
+    font-size: 11vw;
+  }
+}
