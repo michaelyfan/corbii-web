@@ -22,12 +22,29 @@
   color: #A8B4C2;
 }
 
+.add-card {
+    padding-left: 40px;
+}
+
+.needs-padding {
+  border-color: #003466;
+  border-style: none none double none;
+  border-width: 5px;
+}
+
+.deck-info {
+  border-color: #003466;
+  border-style: none none double none;
+  border-width: 5px;
+}
+
 .flashcard {
   display: flex;
   justify-content: center;
   margin-top: 10px;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
   align-items: center;
+  padding-left: 35px;  
 }
 
 #concept-card {

@@ -419,7 +419,7 @@ class Create extends React.Component {
   render() {
     return (
       <div>
-        <div className = 'create-deck'>
+        <div className = 'deck-info'>
           <input type='text'
             maxLength='150'
             className = 'deck-title'
@@ -438,7 +438,6 @@ class Create extends React.Component {
               : 'deck title'
            } 
           </p>
-          <div className = 'hr'><hr /></div>
         </div>
 
         <div className = 'button-wrapper'>

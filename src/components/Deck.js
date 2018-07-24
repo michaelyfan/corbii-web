@@ -44,7 +44,7 @@ class Card extends React.Component {
     const { id, front, back, handleDeleteCard } = this.props;
 
     return (
-      <div className='flashcard'>
+      <div className='flashcard bottom-padding'>
         <div className='flashcard'>
           <div className='flashcard-text edit-card'>
             <p className='low'>front</p>
@@ -113,7 +113,6 @@ function DeckTitle(props) {
   return (
     <div>
       <p className = 'deck-title edit-title'>{deckName}</p>
-      <p className = 'small-caption'>deck title</p>
       <p className = 'small-caption'>Created by {creatorName}</p>
     </div>
   )
@@ -235,14 +234,13 @@ class Deck extends React.Component {
       ? <BigLoading />
       : (
           <div>
-            <div>
+            <div className = 'deck-info'>
               <Link to={routes.dashboardRoute}>
                 <button className = 'back-to-deck'>back to dashboard</button>
               </Link>
               <DeckTitle
                 creatorName={creatorName}
                 deckName={deckName} />
-              <div className = 'hr'><hr /></div>
             </div>
 
             <div className='soft-blue-background'>
@@ -257,8 +255,8 @@ class Deck extends React.Component {
               userIsOwner
                 && 
                   <form onSubmit={this.handleAddCard}>
-                    <div>
-                      <p id = 'add-a-card'>add a card:</p>
+                    <p id = 'add-a-card'>add a card:</p>
+                    <div className = 'needs-padding'>
                       <div className = 'flashcard add-card'>
                         <TextareaAutosize
                           placeholder='front information'
@@ -295,9 +293,6 @@ class Deck extends React.Component {
             </div>
           </div>
         )
-    // return (
-      
-    // )
   }
 }
 
