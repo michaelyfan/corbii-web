@@ -203,4 +203,14 @@
     padding-right: 30px;
     padding-left: 10px;
   }
+
+  #our-techniques {
+    font-size: 17vw;
+  }
+
+  .slideshow-carousel {
+    max-width: 100%;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
 }

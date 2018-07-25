@@ -25,3 +25,9 @@
   padding-right: 3px;
   padding-left: 3px;
 }
+
+@media screen and (max-width: 800px) {
+  .footer-link {
+    font-size: 4vw;
+  }
+}
