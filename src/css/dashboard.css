@@ -121,3 +121,40 @@ button.modify-stuff:hover {
   margin-top: 60px;
   margin-bottom: 10px;
 }
+
+@media screen and (max-width: 800px) {
+  #dashboard-welcome {
+    font-size: 10vw;
+  }
+
+  #username {
+    font-size: 8vw;
+  }
+
+  .dashboard-menu {
+    width: 30%;
+  }
+
+  .dash-nav {
+    font-size: 4vw;
+    padding-left: 15px;
+  }
+
+  .stuff-title {
+    font-size: 9vw;
+  }
+
+  .modify-stuff {
+    font-size: 3.5vw;
+  }
+
+  .deck-row {
+    padding-left: 10px;
+  }
+
+  .your-stuff {
+    font-size: 9vw;
+    padding-left: 20px;
+  }
+
+}

@@ -47,7 +47,7 @@ class Dashboard extends React.Component {
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
           <h3 className = 'header-title' id = 'dashboard-welcome'>Welcome, 
-            <span className = 'emphasized-words'> { this.state.name } </span>
+            <span className = 'emphasized-words' id = 'username'> { this.state.name } </span>
           </h3>
         </div>
 
