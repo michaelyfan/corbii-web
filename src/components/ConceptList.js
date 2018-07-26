@@ -44,7 +44,7 @@ class Concept extends React.Component {
 
     return (
       <div className='flashcard'>
-        <div className='flashcard'>
+        <div className='flashcard' id ='less-padding'>
           <div className='flashcard-text edit-card'>
             <p className='low'>question</p>
             {
@@ -83,7 +83,7 @@ class Concept extends React.Component {
                   </span>
             : null
         }
-        <span className = 'modify-stuff' id = 'line'>&nbsp; | </span>
+        <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
         { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteConcept(id)}}>delete</button>}
       </div>
       
@@ -189,41 +189,40 @@ class ConceptList extends React.Component {
       ? <BigLoading />
       : (
           <div>
-            <div>
+            <div className = 'deck-info'>
               <Link to={routes.dashboardRoute}>
                 <button className = 'back-to-deck'>back to dashboard</button>
               </Link>
               <p className = 'deck-title edit-title'>{this.state.listName}</p>
               <p className = 'small-caption'>concept list title</p>
-              <div className = 'hr'><hr /></div>
             </div>
 
             <div className='soft-blue-background'>
-              {
-                this.state.userIsOwner
-                  ? <form onSubmit={this.handleAddConcept}>
-                      <div>
-                        <p id = 'add-a-concept'>add a concept:</p>
-                        <div className = 'flashcard add-card'>
-                          <input
-                            maxLength='200'
-                            placeholder='question or concept'
-                            className = 'flashcard-text'
-                            id = 'add-question'
-                            type='text'
-                            autoComplete='off'
-                            value={this.state.addConceptQuestionName}
-                            onChange={this.handleChangeAddConceptQuestion} />
-                          <button type='submit' className = 'add'>add</button>
+              <Link id = 'study-list' to={`${routes.studyRouteConceptList}/${this.state.id}`}>
+                <button className = 'primary-button'>study this list</button>
+              </Link>
+              <div className = 'needs-padding'>
+                {
+                  this.state.userIsOwner
+                    ? <form onSubmit={this.handleAddConcept}>
+                        <div>
+                          <p id = 'add-a-concept'>add a concept:</p>
+                          <div className = 'flashcard add-card'>
+                            <input
+                              maxLength='200'
+                              placeholder='question or concept'
+                              className = 'flashcard-text'
+                              id = 'add-question'
+                              type='text'
+                              autoComplete='off'
+                              value={this.state.addConceptQuestionName}
+                              onChange={this.handleChangeAddConceptQuestion} />
+                            <button type='submit' className = 'add'>add</button>
+                          </div>
                         </div>
-                      </div>
-                    </form>
-                  : null
-              }
-              <div>
-                <Link id = 'study-list' to={`${routes.studyRouteConceptList}/${this.state.id}`}>
-                  <button className = 'primary-button'>study this list</button>
-                </Link>
+                      </form>
+                    : null
+                }
               </div>
 
               {this.state.concepts.map((concept) => 

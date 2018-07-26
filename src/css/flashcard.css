@@ -339,6 +339,10 @@
     font-size: 5vw;
   }
 
+  #add-a-concept {
+    font-size: 5vw;
+  }
+
   .add {
     font-size: 4.5vw;
     margin-left: 0px;
@@ -362,6 +366,13 @@
     font-size: 4vw;
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+
+  #add-question {
+    max-width: 250px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 40px;
   }
 
 }
