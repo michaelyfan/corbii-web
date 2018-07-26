@@ -45,7 +45,7 @@ class Card extends React.Component {
 
     return (
       <div className='flashcard'>
-        <div className='flashcard'>
+        <div className='flashcard' id = 'less-padding'>
           <div className='flashcard-text edit-card'>
             <p className='low'>front</p>
             {

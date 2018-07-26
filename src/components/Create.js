@@ -124,6 +124,7 @@ class CreateConceptCard extends React.Component {
         <input type='text' 
           maxLength='200'
           className = 'flashcard-text'
+          id = 'create-a-concept'
           index = 'concept-card'
           key='question'
           value={this.state.question}

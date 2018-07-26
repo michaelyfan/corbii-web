@@ -277,6 +277,10 @@
   color: #003466;
 }
 
+#create-a-concept {
+  width: 500px;
+}
+
 @media screen and (max-width: 850px) {
   .deck-title {
     font-size: 10vw;
@@ -311,4 +315,53 @@
   .add-more-card {
     padding-top: 15px;
   }
+
+  #create-a-concept {
+    max-width: 300px;
+  }
+
+  .back-to-deck {
+    font-size: 4vw;
+    padding-left: 15px;
+    padding-top: 7px;
+  }
+
+  .edit-title {
+    margin-top: -30px;
+    margin-bottom: 8px;
+  }
+
+  .small-caption {
+    font-size: 2.5vw;
+  }
+
+  #add-a-card {
+    font-size: 5vw;
+  }
+
+  .add {
+    font-size: 4.5vw;
+    margin-left: 0px;
+  }
+
+  .low {
+    font-size: 2vw;
+    margin-top: 2px;
+    margin-bottom: 4px;
+  }
+
+  .modify-stuff {
+    font-size: 3vw;
+  }
+
+  #less-padding {
+    padding-left: 0px;
+  }
+
+  .update-card {
+    font-size: 4vw;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
 }
