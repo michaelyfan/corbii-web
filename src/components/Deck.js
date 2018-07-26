@@ -74,7 +74,6 @@ class Card extends React.Component {
 
 
         <div className='side-menu'>
-
           { 
             this.props.userIsOwner
              && <div>
@@ -91,7 +90,6 @@ class Card extends React.Component {
                   <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteCard(id)}}>delete</button>
                 </div>
           }
-
         </div>
       </div>
       

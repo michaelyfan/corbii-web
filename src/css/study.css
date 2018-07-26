@@ -150,3 +150,20 @@
   width:70px;
   margin-bottom: 15px;
 }
+
+@media screen and (max-width: 850px) {
+  .front-text {
+    padding-top: 0px;
+  }
+
+  #rating-question {
+    font-size: 4vw;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 8px;
+  }
+
+  .rating-prompt {
+    font-size: 3vw;
+  }
+}
