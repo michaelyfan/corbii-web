@@ -166,4 +166,16 @@
   .rating-prompt {
     font-size: 3vw;
   }
+
+  .self-exp-box {
+    border: 2px solid #A8B4C2;
+    max-width: 300px;
+    padding-left: 15px;
+    padding-top: 10px;
+    resize: none;
+  }
+
+  .question-answer {
+    margin: 5px 0px 5px 0px;
+  }
 }
