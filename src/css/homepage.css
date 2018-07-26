@@ -213,4 +213,20 @@
     padding-bottom: 20px;
     padding-top: 20px;
   }
+
+  #start-learning {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .primary-button {
+    font-size: 7vw;
+  }
+
+  .secondary-button {
+    font-size: 7vw;
+  }
+
 }
