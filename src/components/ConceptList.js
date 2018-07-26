@@ -71,21 +71,23 @@ class Concept extends React.Component {
           </div>
         </div>
 
-        { 
-          this.props.userIsOwner
-            ? this.state.isUpdate
-                ? <span className = 'edit-options'>
-                    <button className = 'modify-stuff editing' onClick={this.handleUpdateConcept}>update</button>
-                    <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
-                  </span>            
-                : <span className = 'edit-button'>
-                    <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
-                  </span>
-            : null
-        }
-        <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
-        { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteConcept(id)}}>delete</button>}
+        <div className='side-menu'>
+          { 
+            this.props.userIsOwner
+              ? this.state.isUpdate
+                  ? <span className = 'edit-options'>
+                      <button className = 'modify-stuff editing' onClick={this.handleUpdateConcept}>update</button>
+                      <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
+                    </span>            
+                  : <span className = 'edit-button'>
+                      <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
+                    </span>
+              : null
+          }
+          <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
+          { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteConcept(id)}}>delete</button>}
       </div>
+     </div>
       
     )
   }
