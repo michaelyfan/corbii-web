@@ -17,7 +17,7 @@ class NewCardOptions extends React.Component {
             <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
           </div>
           <div className = 'center-button'>
-            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(1, true)}}>i know this card</button>
+            <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i know this card</button>
           </div>
         </div>
     } else if (lastSelectedQuality == 1) { // 'not soon' selected
@@ -116,7 +116,7 @@ class StudyCard extends React.Component {
     return (
       <div>
         <div className = 'study-card'>        
-          <div className= 'flashcard-text'>
+          <div className= 'flashcard-text studying'>
             <p className = 'front-text'>
               { this.state.isFlipped
                   ? card && card.back
@@ -305,7 +305,7 @@ class StudyDeck extends React.Component {
     return (
       <div>
         <div>
-          <p className = 'deck-title'>{name}</p>
+          <p className = 'deck-title' id = 'smaller-title'>{name}</p>
           <p className = 'small-caption'>Created by {creatorName}</p>
           { isDone 
             ? <div>
