@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
 import { BigLoading } from './Loading';
+import BackToDashboardButton from './BackToDashboardButton';
 
 class Card extends React.Component {
   constructor(props) {
@@ -233,9 +234,7 @@ class Deck extends React.Component {
       : (
           <div>
             <div className = 'deck-info'>
-              <Link to={routes.dashboardRoute}>
-                <button className = 'back-to-deck'>back to dashboard</button>
-              </Link>
+              <BackToDashboardButton />
               <DeckTitle
                 creatorName={creatorName}
                 deckName={deckName} />
