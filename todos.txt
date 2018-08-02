@@ -33,6 +33,5 @@ Fullstack:
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
-  - 
 - run everything through eslint eventually (before pushing to production)
 - implement pictures into the decks

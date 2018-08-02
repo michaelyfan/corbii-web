@@ -192,9 +192,7 @@ class ConceptList extends React.Component {
       : (
           <div>
             <div className = 'deck-info'>
-              <Link to={routes.dashboardRoute}>
-                <button className = 'back-to-deck'>back to dashboard</button>
-              </Link>
+              <BackToDashboardButton />
               <p className = 'deck-title edit-title'>{this.state.listName}</p>
               <p className = 'small-caption'>concept list title</p>
             </div>
