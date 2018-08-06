@@ -1,6 +1,7 @@
 
 Frontend:
-- why do these keys: [ ] \ freak out the text inputs?
+- find a non-bugged version of Print Clearly
+  - this is what's causing the []\ problem with text inputs
 - implement loading icons
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
