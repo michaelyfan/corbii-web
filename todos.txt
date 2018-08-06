@@ -18,7 +18,7 @@ Frontend:
 Backend:
 - why are the loading times so ridiculous?
 - show intervals next to card studying options
-- automatically updating isDue field in Firestore instead of updating on retrieval
+- automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
 - add Algolia calls for concept lists.
