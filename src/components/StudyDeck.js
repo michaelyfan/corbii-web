@@ -4,10 +4,16 @@ import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCard
 import { shiftInArray } from '../utils/tools';
 import routes from '../routes/routes';
 import queryString from 'query-string';
+import { Link, NavLink, withRouter } from 'react-router-dom';
 
 class NewCardOptions extends React.Component {
   render() {
     const lastSelectedQuality = this.props.card ? this.props.card.lastSelectedQuality : null;
+    const rateMap = {
+      'one': '1',
+      'two': '2',
+      'three': '3'
+    };
 
     let options;
     if (lastSelectedQuality == 0) { // 'very soon' selected
@@ -305,7 +311,9 @@ class StudyDeck extends React.Component {
     return (
       <div>
         <div>
-          <p className = 'deck-title' id = 'smaller-title'>{name}</p>
+          <Link to= {routes.dashboardRoute}>
+            <p className = 'deck-title' id = 'smaller-title'>{name}</p>
+          </Link>
           <p className = 'small-caption'>Created by {creatorName}</p>
           { isDone 
             ? <div>
