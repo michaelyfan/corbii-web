@@ -84,24 +84,24 @@ class App extends React.Component {
           <Nav photoURL={photoURL} signedIn={signedIn} doGetProfilePic={this.doGetProfilePic} />
           <Switch>
             <Route 
-              exact path={routes.homeRoute} 
+              exact path={routes.home} 
               render={(props) => 
                 <Homepage {...props} 
                   signedIn={signedIn}
                   doGetProfilePic={this.doGetProfilePic} />} />
             <Route
-              path={routes.faqRoute}
+              path={routes.faq}
               component={FAQ} />
             <Route
-              path={routes.searchRoute}
+              path={routes.search}
               component={Search} />
             <PrivateRoute 
-              exact path={routes.dashboardRoute}
+              exact path={routes.dashboard}
               signedIn={signedIn}
               loading={loading}
               component={Dashboard} />
             <PrivateRoute
-              exact path={routes.profileRoute}
+              exact path={routes.profile}
               signedIn={signedIn}
               loading={loading}
               render={(props) => 
@@ -109,31 +109,31 @@ class App extends React.Component {
                   doGetProfilePic={this.doGetProfilePic}
                   photoURL={photoURL} />} />
             <PrivateRoute
-              path={routes.createRoute}
+              path={routes.create}
               signedIn={signedIn}
               loading={loading}
               component={Create} />
             <Route
-              path={`${routes.viewDeckRoute}/:id`}
+              path={`${routes.viewDeck}/:id`}
               component={Deck} />
             <Route
-              path={`${routes.viewConceptListRoute}/:id`}
+              path={`${routes.viewConceptList}/:id`}
               component={ConceptList} />
             <PrivateRoute
-              path={`${routes.studyRouteDeck}/:id`}
+              path={`${routes.studyDeck}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyDeck} />
             <PrivateRoute
-              path={`${routes.studyRouteConceptList}/:id`}
+              path={`${routes.studyConceptList}/:id`}
               signedIn={signedIn}
               loading={loading}
               component={StudyConcept} />
             <Route
-              path={`${routes.viewUserRoute}/:id`}
+              path={`${routes.viewUser}/:id`}
               component={User} />
             <Route
-              path={`${routes.deniedRoute}`}
+              path={`${routes.denied}`}
               component={DeniedNoAuth} />              
             <Route component={NotFound} />
           </Switch>

@@ -279,7 +279,7 @@ class StudyDeck extends React.Component {
   override() {
     if (this.state.arrayLeft.length <= 0) {
       alert('You have no more cards remaining.');
-      this.props.history.push(routes.dashboardRoute);
+      this.props.history.push(routes.dashboard);
     } else {
       this.setState((prevState) => {
         let newArrayTodo;

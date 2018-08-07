@@ -377,7 +377,7 @@ class Create extends React.Component {
       alert('One or more of your concepts is empty.');
     } else {
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
-        this.props.history.push(routes.dashboardRoute);
+        this.props.history.push(routes.dashboard);
       }).catch((err) => {
         console.error(err);
       });  
@@ -391,7 +391,7 @@ class Create extends React.Component {
       alert('One or more of your card entries is empty.');
     } else {  
       createDeckCurrentUser(this.state.title, cards).then(() => {
-        this.props.history.push(routes.dashboardRoute);
+        this.props.history.push(routes.dashboard);
       }).catch((err) => {
         console.error(err);
       });

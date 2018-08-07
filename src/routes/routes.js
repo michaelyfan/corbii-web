@@ -1,29 +1,29 @@
 
 const routes = {
-  homeRoute: '/',
+  home: '/',
   
-  faqRoute: '/FAQ',
+  faq: '/FAQ',
   
-  searchRoute: '/search', 
-  searchRouteResults: '/search/s', // has queries and shit
+  search: '/search', 
+  searchResults: '/search/s', // has queries and shit
 
-  dashboardRoute: '/dashboard',
+  dashboard: '/dashboard',
   
-  profileRoute: '/profile',
+  profile: '/profile',
   
-  createRoute: '/create',
+  create: '/create',
   
-  viewDeckRoute: '/deck', // has params
+  viewDeck: '/deck', // has params
   
-  viewConceptListRoute: '/conceptlist', //has params
+  viewConceptList: '/conceptlist', //has params
   
-  studyRoute: '/study',
-  studyRouteDeck: '/study/deck',
-  studyRouteConceptList: '/study/conceptlist',
+  study: '/study',
+  studyDeck: '/study/deck',
+  studyConceptList: '/study/conceptlist',
   
-  viewUserRoute: '/user', // has params
+  viewUser: '/user', // has params
   
-  deniedRoute: '/denied'
+  denied: '/denied'
 }
 
 export default routes;

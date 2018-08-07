@@ -17,7 +17,7 @@ const customStyles = {
   }
 };
  
-// Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
+// This binds the modal to the appElement (http://reactcommunity.org/react-modal/accessibility/)
 Modal.setAppElement('#root')
  
 
@@ -46,17 +46,23 @@ class LoginModalPersist extends React.Component {
     this.loginCallback = this.loginCallback.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const { signedIn, redirectTo } = this.props;
-    if (signedIn != prevProps.signedIn) {
-      if (signedIn && this.state.shouldRedirect) {
-        this.props.history.push(redirectTo);
-        this.closeModal();
-      }
+    const { shouldRedirect } = this.state;
+    if (signedIn != prevProps.signedIn || shouldRedirect != prevState.shouldRedirect) {
       this.setState(() => ({
         displayStyle: signedIn ? 'none' : 'block'
       }))
+
+      if (signedIn && shouldRedirect) {
+        this.props.history.push(redirectTo);
+        this.closeModal();
+        this.setState(() => ({
+          shouldRedirect: false
+        }))
+      }
     }
+    
   }
 
   openModal() {
@@ -68,7 +74,6 @@ class LoginModalPersist extends React.Component {
   }
 
   loginCallback() {
-    this.props.history.push(this.props.redirectTo);
     this.setState(() => ({shouldRedirect: true}));
   }
  

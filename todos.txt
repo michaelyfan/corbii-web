@@ -1,6 +1,8 @@
 
 Frontend:
-- why do these keys: [ ] \ freak out the text inputs?
+- style Deck and ConceptList with buttons that rename and delete the whole deck
+- find a non-bugged version of Print Clearly
+  - this is what's causing the characters '[',']','\', etc to bug out the text inputs
 - implement loading icons
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
@@ -18,7 +20,7 @@ Frontend:
 Backend:
 - why are the loading times so ridiculous?
 - show intervals next to card studying options
-- automatically updating isDue field in Firestore instead of updating on retrieval
+- automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
 - add Algolia calls for concept lists.

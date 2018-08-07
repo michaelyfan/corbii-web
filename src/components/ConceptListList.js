@@ -90,7 +90,7 @@ class ConceptListRow extends React.Component {
               </div>
             : <div>
                 <Link 
-                  to={`${routes.viewConceptListRoute}/${id}`}>
+                  to={`${routes.viewConceptList}/${id}`}>
                   <button className = 'stuff-title'>{name}</button>
                 </Link>
                 <div className = 'stuff-menu'>

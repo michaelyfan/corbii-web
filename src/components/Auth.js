@@ -23,12 +23,16 @@ class Auth extends React.Component {
           if (authResult.additionalUserInfo.isNewUser) {
             createNewDbUser().then(() => {
               doGetProfilePic();
+              if (loginSuccessCallback) {
+                loginSuccessCallback();
+              }
             }).catch((err) => {
               console.log(err);
             })
-          }
-          if (loginSuccessCallback) {
-            loginSuccessCallback();
+          } else {
+            if (loginSuccessCallback) {
+              loginSuccessCallback();
+            }
           }
         },
         signInFailure: (error) => {
