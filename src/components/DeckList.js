@@ -91,7 +91,7 @@ class DeckRow extends React.Component {
                   </form> 
                 </div>
               : <div>
-                  <Link to={`${routes.viewDeckRoute}/${id}`}>
+                  <Link to={`${routes.viewDeck}/${id}`}>
                     <button className = 'stuff-title'>{name}</button>
                   </Link>
                   <div className = 'stuff-menu'>

@@ -9,7 +9,7 @@ import { searchUsers, searchDecks, searchLists, getProfilePic } from '../utils/a
 function DeckSearchResult(props) {
   return (
     <div className='result-box'>
-      <Link to={`${routes.viewDeckRoute}/${props.id}`}>
+      <Link to={`${routes.viewDeck}/${props.id}`}>
         <p className = 'deck-text' id = 'deck-name'>{props.name}</p>
       </Link>
       <p className = 'deck-text' id = 'deck-owner'>{props.creator}</p>
@@ -49,7 +49,7 @@ class UserSearchResult extends React.Component {
       <div className='user-search-result'>
         <img src={this.state.profilePic} />
         <h3>{name}</h3>
-        <Link to={`${routes.viewUserRoute}/${id}`}>
+        <Link to={`${routes.viewUser}/${id}`}>
           <button>
             View
           </button>
@@ -69,7 +69,7 @@ function ListSearchResult(props) {
   const { id, name, creator, count } = props;
   return (
     <div className='result-box'>
-      <Link to={`${routes.viewConceptListRoute}/${id}`}>
+      <Link to={`${routes.viewConceptList}/${id}`}>
         <p className = 'deck-text' id = 'deck-name'>{name}</p>
       </Link>
       <p className = 'deck-text' id = 'deck-owner'>{creator}</p>

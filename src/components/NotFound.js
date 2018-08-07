@@ -9,7 +9,7 @@ function NotFound(props) {
         <img className = 'uhoh' src='/src/resources/404.jpg' />
         <h1 className = 'denied' id = 'whoops'>uh oh! looks like this page doesn't exist.</h1>
       </div>
-      <Link to={routes.homeRoute}>
+      <Link to={routes.home}>
         <div className = 'center-button'>
           <button className = 'primary-button'>
             return home

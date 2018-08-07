@@ -23,7 +23,7 @@ class Nav extends React.Component {
     const user = firebase.auth().currentUser;
     if (user) {
       firebase.auth().signOut().then(() => {
-        this.props.history.push(routes.homeRoute);
+        this.props.history.push(routes.home);
       }).catch((err) => {
         console.log(err);
       })
@@ -49,8 +49,8 @@ class Nav extends React.Component {
           <div>
             <Link to={
               signedIn
-                ? routes.dashboardRoute
-                : routes.homeRoute
+                ? routes.dashboard
+                : routes.home
             }>
               <img id = 'header-logo' src='/src/resources/header-logo.png' />
             </Link>
@@ -67,7 +67,7 @@ class Nav extends React.Component {
                 value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: `${routes.searchRouteResults}`,
+                  pathname: `${routes.searchResults}`,
                   search: `?mode=decks&q=${this.state.searchQuery}`
                 }}>
                 <button style={{display: 'none'}} type='submit'>Search</button>
@@ -78,7 +78,7 @@ class Nav extends React.Component {
 
         <div id= 'navbar-usercard'>
           {photoURL 
-            && <Link to={routes.profileRoute}>
+            && <Link to={routes.profile}>
                   <img className='nav-profile-img' src={photoURL} />
                </Link>}
 

@@ -4,7 +4,7 @@ import routes from '../routes/routes';
 
 export default function BackToDashboardButton(props) {
   return (
-    <Link to={routes.dashboardRoute}>
+    <Link to={routes.dashboard}>
       <button className = 'back-to-deck'>back to dashboard</button>
     </Link>
   )

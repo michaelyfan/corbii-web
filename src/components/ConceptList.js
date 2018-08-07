@@ -198,7 +198,7 @@ class ConceptList extends React.Component {
             </div>
 
             <div className='soft-blue-background'>
-              <Link id = 'study-list' to={`${routes.studyRouteConceptList}/${this.state.id}`}>
+              <Link id = 'study-list' to={`${routes.studyConceptList}/${this.state.id}`}>
                 <button className = 'primary-button'>study this list</button>
               </Link>
               <div className = 'needs-padding'>
