@@ -2,6 +2,7 @@
   font-family: Print Clearly;
   src: url('/src/resources/fonts/PrintClearly.TTF');
 }
+
 @font-face {
   font-family: Nunito;
   src: url('/src/resources/fonts/Nunito.ttf');
@@ -10,6 +11,11 @@
 @font-face {
   font-family: Nunito Bold;
   src: url('/src/resources/fonts/Nunito-Bold.ttf');
+}
+
+@font-face {
+  font-family: Print Clearly Bold;
+  src: url('/src/resources/fonts/PrintClearly-Bold.ttf');
 }
 
 a {

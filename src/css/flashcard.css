@@ -269,6 +269,10 @@
   padding-left: 20px; 
 }
 
+.center-subtitle {
+  justify-content: center;
+}
+
 #add-question::placeholder {
   text-align: left;
 }
@@ -279,6 +283,21 @@
 
 #create-a-concept {
   width: 500px;
+}
+
+.change-title {
+  padding: 0px 0px 5px 0px;
+  background-color: #FFFFFF;
+  color: #A8B4C2;
+}
+
+.change-title:hover {
+  color: #003466;
+}
+
+.delete-deck {
+  padding: 10px 50px 10px 50px;
+  margin-bottom: 25px;
 }
 
 @media screen and (max-width: 850px) {
@@ -328,7 +347,7 @@
 
   .edit-title {
     margin-top: -30px;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
   }
 
   .small-caption {

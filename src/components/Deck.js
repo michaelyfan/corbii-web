@@ -112,7 +112,10 @@ function DeckTitle(props) {
   return (
     <div>
       <p className = 'deck-title edit-title'>{deckName}</p>
-      <p className = 'small-caption'>Created by {creatorName}</p>
+      <div className = 'inline-display center-subtitle'>
+        <p className = 'small-caption'>created by {creatorName} | </p>
+        <button className = 'small-caption change-title'> &nbsp;change deck title </button>
+      </div>
     </div>
   )
 }
@@ -307,6 +310,10 @@ class Deck extends React.Component {
                   handleDeleteCard={this.handleDeleteCard} 
                   key={card.id} />
               )}
+
+              <div className = 'inline-display center-subtitle'>
+                <button className = 'red delete-deck'> delete this deck </button>
+              </div>
             </div>
           </div>
         )
