@@ -75,32 +75,9 @@ class DeckRow extends React.Component {
         {
           isLoading
             ? <Loading />
-            : isUpdate
-              ? <div>
-                  <form id = 'next-line' onSubmit={this.handleUpdateDeck}>
-                    <input 
-                      maxLength='150'
-                      className = 'stuff-title change-title'
-                      type='text' 
-                      value={newDeckName} 
-                      onChange={this.handleChangeNewDeckName} />
-                    <br />
-                    <button type='submit' className = 'modify-stuff needs-padding'>update</button>
-                    <span className = 'modify-stuff'>&nbsp; | </span>
-                    <button className = 'modify-stuff' onClick={this.handleToggleUpdate}>cancel</button>
-                  </form> 
-                </div>
-              : <div>
-                  <Link to={`${routes.viewDeck}/${id}`}>
-                    <button className = 'stuff-title'>{name}</button>
-                  </Link>
-                  <div className = 'stuff-menu'>
-                    <button className = 'modify-stuff buffer' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>change name</button>
-                    <span className = 'modify-stuff'>&nbsp; | </span>
-                    <button className = 'modify-stuff' onClick={() => {this.handleDeleteDeck(id)}}>&nbsp; delete</button>
-                  </div>
-                </div>
-          
+            : <Link to={`${routes.viewDeck}/${id}`}>
+                <button className = 'stuff-title'>{name}</button>
+              </Link>
         }
       </div>
     )
