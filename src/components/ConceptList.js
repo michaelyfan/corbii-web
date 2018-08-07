@@ -3,9 +3,10 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
-import { getConceptList, createConcept, deleteConcept, updateConcept } from '../utils/api';
+import { getConceptList, createConcept, deleteConcept, updateConcept, getUserProfileInfo } from '../utils/api';
 import routes from '../routes/routes';
 import { BigLoading } from './Loading';
+import BackToDashboardButton from './BackToDashboardButton';
 
 class Concept extends React.Component {
   constructor(props) {
@@ -112,7 +113,8 @@ class ConceptList extends React.Component {
       id: '',
       userIsOwner: false,
       addConceptQuestionName: '',
-      isLoading: true
+      isLoading: true,
+      creatorName: ''
     }
 
     this.handleAddConcept = this.handleAddConcept.bind(this);
@@ -130,13 +132,17 @@ class ConceptList extends React.Component {
     let list;
     try {
       const list = await getConceptList(id);
+      const { listName, creatorId, concepts } = list;
       const currentUser = firebase.auth().currentUser;
+      let profileInfo = await getUserProfileInfo(creatorId);
+      let creatorName = profileInfo.data().name;
       this.setState(() => ({
         listName: list.listName,
         id: id,
         userIsOwner: currentUser != null && list.creatorId === firebase.auth().currentUser.uid,
         concepts: list.concepts,
-        isLoading: false
+        isLoading: false,
+        creatorName: creatorName,
       }));
     } catch (err) {
       console.error(err);
@@ -194,7 +200,10 @@ class ConceptList extends React.Component {
             <div className = 'deck-info'>
               <BackToDashboardButton />
               <p className = 'deck-title edit-title'>{this.state.listName}</p>
-              <p className = 'small-caption'>concept list title</p>
+              <div className = 'inline-display center-subtitle'>
+                <p className = 'small-caption'>created by {this.state.creatorName} | </p>
+                <button className = 'small-caption change-title'> &nbsp;change list title </button>
+              </div>
             </div>
 
             <div className='soft-blue-background'>
@@ -235,6 +244,10 @@ class ConceptList extends React.Component {
                   handleDeleteConcept={this.handleDeleteConcept} 
                   key={concept.id} />
               )}
+
+              <div className = 'inline-display center-subtitle'>
+                <button className = 'red delete-deck'> delete this concept list </button>
+            </div>
             </div>
           </div>
         )
