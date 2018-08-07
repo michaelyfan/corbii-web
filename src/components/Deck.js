@@ -122,75 +122,33 @@ DeckTitle.propTypes = {
   creatorName: PropTypes.string.isRequired
 }
 
-class Deck extends React.Component {
-
+class AddCardForm extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      deckName: '',
-      cards: [],
-      id: '',
-      creatorName: '',
-      creatorId: '',
-      userIsOwner: false,
       addCardFrontName: '',
-      addCardBackName: '',
-      isLoading: true
+      addCardBackName: ''
     }
 
     this.handleAddCard = this.handleAddCard.bind(this);
-    this.handleDeleteCard = this.handleDeleteCard.bind(this);
     this.handleChangeAddCardFront = this.handleChangeAddCardFront.bind(this);
     this.handleChangeAddCardBack = this.handleChangeAddCardBack.bind(this);
-    this.doUpdateCard = this.doUpdateCard.bind(this);
-  }
-
-  componentDidMount() {
-    this.updateDeck();
-  }
-
-  async updateDeck() {
-    const { id } = this.props.match.params;
-    try {
-      let deck = await getDeck(id);
-      const { deckName, creatorId, cards } = deck;
-      let profileInfo = await getUserProfileInfo(creatorId);
-      let creatorName = profileInfo.data().name;
-      const currentUser = firebase.auth().currentUser;
-      this.setState(() => ({
-        deckName: deckName,
-        id: id,
-        creatorId: creatorId,
-        creatorName: creatorName,
-        userIsOwner: currentUser != null && creatorId === firebase.auth().currentUser.uid,
-        cards: cards,
-        isLoading: false
-      }));
-    } catch(err) {
-      console.error(err);
-    }
-  }
-
-  async handleDeleteCard(cardId) {
-    try {
-      await deleteCard(this.state.id, cardId);
-    } catch(err) {
-      console.log(err);
-    }
-    
-    this.updateDeck();
   }
 
   handleAddCard(e) {
     e.preventDefault();
-    const cardFront = this.state.addCardFrontName.trim();
-    const cardBack = this.state.addCardBackName.trim();
+    const { addCardFrontName, addCardBackName } = this.state;
+    const { callback, deckId } = this.props;
+    const cardFront = addCardFrontName.trim();
+    const cardBack = addCardBackName.trim();
 
     if (cardFront && cardBack) {
-      createCard(cardFront, cardBack, this.state.id)
+      createCard(cardFront, cardBack, deckId)
         .then(() => {
-          this.updateDeck();
+          if (callback) {
+            callback();
+          }
           this.setState(() => ({
             addCardBackName: '',
             addCardFrontName: ''
@@ -199,7 +157,6 @@ class Deck extends React.Component {
         .catch((err) => {
           console.error(err);
         })
-
     } else {
       alert("'One of your inputs is empty. Check your inputs and try again.'");
     }
@@ -219,6 +176,94 @@ class Deck extends React.Component {
     }));
   }
 
+  render() {
+    const { addCardFrontName, addCardBackName } = this.state;
+    return (
+        <form onSubmit={this.handleAddCard}>
+          <p id = 'add-a-card'>add a card:</p>
+          <div className = 'needs-padding'>
+            <div className = 'flashcard add-card'>
+              <TextareaAutosize
+                placeholder='front information'
+                className = 'flashcard-text'
+                type='text'
+                autoComplete='off'
+                value={addCardFrontName}
+                onChange={this.handleChangeAddCardFront} />
+              <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+              <TextareaAutosize
+                placeholder='back information'
+                className = 'flashcard-text'
+                type='text'
+                autoComplete='off'
+                value={addCardBackName}
+                onChange={this.handleChangeAddCardBack} />
+              <button type='submit' className = 'add'>add</button>
+            </div>
+          </div>
+        </form>
+    )
+  }
+}
+
+AddCardForm.propTypes = {
+  callback: PropTypes.func,
+  deckId: PropTypes.string.isRequired
+}
+
+class Deck extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      deckName: '',
+      cards: [],
+      id: '',
+      creatorName: '',
+      userIsOwner: false,
+      isLoading: true
+    }
+
+    this.handleDeleteCard = this.handleDeleteCard.bind(this);
+    this.doUpdateCard = this.doUpdateCard.bind(this);
+    this.updateDeck = this.updateDeck.bind(this);
+  }
+
+  componentDidMount() {
+    this.updateDeck();
+  }
+
+  async updateDeck() {
+    const { id } = this.props.match.params;
+    try {
+      let deck = await getDeck(id);
+      const { deckName, creatorId, cards } = deck;
+      let profileInfo = await getUserProfileInfo(creatorId);
+      let creatorName = profileInfo.data().name;
+      const currentUser = firebase.auth().currentUser;
+      this.setState(() => ({
+        deckName: deckName,
+        id: id,
+        creatorName: creatorName,
+        userIsOwner: currentUser != null && creatorId === firebase.auth().currentUser.uid,
+        cards: cards,
+        isLoading: false
+      }));
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async handleDeleteCard(cardId) {
+    try {
+      await deleteCard(this.state.id, cardId);
+    } catch(err) {
+      console.log(err);
+    }
+    this.updateDeck();
+  }
+
   doUpdateCard(cardId, front, back) {
     updateCard(this.state.id, cardId, front, back).then(() => {
       this.updateDeck();
@@ -228,7 +273,8 @@ class Deck extends React.Component {
   }
 
   render() {
-    const { isLoading, deckName, creatorName, addCardFrontName, addCardBackName, id, cards, userIsOwner } = this.state;
+    const { isLoading, deckName, creatorName, id, cards, userIsOwner } = this.state;
+
     return isLoading
       ? <BigLoading />
       : (
@@ -247,35 +293,9 @@ class Deck extends React.Component {
               </Link>
             </div>
 
-
-            {
-              userIsOwner
-                && 
-                  <form onSubmit={this.handleAddCard}>
-                    <p id = 'add-a-card'>add a card:</p>
-                    <div className = 'needs-padding'>
-                      <div className = 'flashcard add-card'>
-                        <TextareaAutosize
-                          placeholder='front information'
-                          className = 'flashcard-text'
-                          type='text'
-                          autoComplete='off'
-                          value={addCardFrontName}
-                          onChange={this.handleChangeAddCardFront} />
-                        <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
-                        <TextareaAutosize
-                          placeholder='back information'
-                          className = 'flashcard-text'
-                          type='text'
-                          autoComplete='off'
-                          value={addCardBackName}
-                          onChange={this.handleChangeAddCardBack} />
-                        <button type='submit' className = 'add'>add</button>
-                      </div>
-                    </div>
-                  </form>
-            }
-
+            {userIsOwner && <AddCardForm 
+                              deckId={id}
+                              callback={this.updateDeck} /> }
             
               {cards.map((card) => 
                 <Card 
