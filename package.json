@@ -35,6 +35,7 @@
     "react": "^16.4.1",
     "react-autosize-textarea": "^4.0.0",
     "react-dom": "^16.4.1",
+    "react-file-input": "^0.2.5",
     "react-firebaseui": "^3.0.4",
     "react-hotkeys": "^1.1.4",
     "react-modal": "^3.4.5",
