@@ -27,7 +27,7 @@ class Homepage extends React.Component {
     return (
       <div>
         <div className = "account-block">
-          <h1 className = "header-title" id = "slogan">learning as smart as&nbsp;
+          <h1 className = "header-title" id = "slogan">learning as smart as &nbsp;
             <span className = "emphasized-words" id = "you">you</span> 
           </h1>
           <br />
@@ -42,7 +42,7 @@ class Homepage extends React.Component {
           <button className = "secondary-button" type = "button" onClick={() => {alert('Teacher functionality coming soon!')}}>
             i am an educator
           </button>
-          <h3 id = 'log-in-subheader'> Already have an account?&nbsp; 
+          <h3 id = 'log-in-subheader'> Already have an account? &nbsp; 
           
           <LoginModal 
             header = "log in" 

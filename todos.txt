@@ -1,8 +1,6 @@
 
 Frontend:
 - style Deck and ConceptList with buttons that rename and delete the whole deck
-- find a non-bugged version of Print Clearly
-  - this is what's causing the characters '[',']','\', etc to bug out the text inputs
 - implement loading icons
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
