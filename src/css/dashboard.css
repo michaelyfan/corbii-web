@@ -20,9 +20,9 @@
   font-family: Print Clearly;
   font-size: 60px;
   color: #003466;
-  padding-left: 35px;
+  padding-left: 20px;
   padding-bottom: 5px;
-  margin: 0 0  0;
+  margin: 0;
   border-color: #003466;
   border-style: double none double none;
   border-width: 5px;
@@ -45,7 +45,7 @@
 
 .deck-row {
   background-color: #E9F2FF;
-  padding: 0 30px 10px 30px;
+  padding: 0 30px 0px 15px;
   margin: 0px;
 }
 
