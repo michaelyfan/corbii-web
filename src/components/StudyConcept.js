@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getConceptListForStudy, updateConceptPersonalData } from '../utils/api';
+import { Link, NavLink, withRouter } from 'react-router-dom';
+import routes from '../routes/routes';
 
 
 class SingleConcept extends React.Component {
@@ -121,7 +123,11 @@ class StudyConcept extends React.Component {
 
     return (
       <div>
-        <p className = 'deck-title'>{ listName }</p>
+        <div className = 'center-button'>
+          <Link to={`${routes.viewConceptList}/${listId}`} className = 'deck-title-view'>
+            {listName}
+          </Link>
+        </div>
         <div className = 'disp-inline center-button'>
           { index > 0 && 
             <img src = '/src/resources/prev-arrow.png'
