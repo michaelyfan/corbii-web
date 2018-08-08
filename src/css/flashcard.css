@@ -1,3 +1,43 @@
+.custom-ui {
+  background-color: #003466;
+  border: double 5px #FFFFFF;
+  padding: 20px 40px 20px 40px;
+}
+
+.delete-deck-confirm {
+  font-family: Print Clearly;
+  color: #FFFFFF;
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+#small-confirm {
+  font-size: 25px;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.no-button {
+  font-family: Nunito Bold;
+  color: #FFFFFF;
+  background-color: #A8B4C2;
+  font-size: 28px;
+  padding: 7px 30px 7px 30px;
+  margin: 0px 10px 0px 10px;
+}
+
+.yes-button {
+  font-family: Nunito Bold;
+  color: #003466;
+  background-color: #E0E9F5;
+  font-size: 28px;
+  padding: 7px 28px 7px 28px;
+  margin: 0px 10px 0px 10px;
+}
+
+
 .button-wrapper {
   display: flex;
   justify-content: center;

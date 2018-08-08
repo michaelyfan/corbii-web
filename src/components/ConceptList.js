@@ -7,6 +7,8 @@ import { getConceptList, createConcept, deleteConcept, updateConcept, getUserPro
 import routes from '../routes/routes';
 import { BigLoading } from './Loading';
 import BackToDashboardButton from './BackToDashboardButton';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 class Concept extends React.Component {
   constructor(props) {
@@ -121,6 +123,7 @@ class ConceptList extends React.Component {
     this.handleDeleteConcept = this.handleDeleteConcept.bind(this);
     this.handleChangeAddConceptQuestion = this.handleChangeAddConceptQuestion.bind(this);
     this.doUpdateConcept = this.doUpdateConcept.bind(this);
+    this.submitDelete = this.submitDelete.bind(this);
   }
 
   componentDidMount() {
@@ -192,6 +195,26 @@ class ConceptList extends React.Component {
     })
   }
 
+  submitDelete() {
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1 className = 'delete-deck-confirm'>are you sure you want to delete this concept list?</h1>
+            <h1 className = 'delete-deck-confirm' id = 'small-confirm'>this action cannot be undone.</h1>
+            <div className = 'inline-display center-subtitle'>
+              <button className = 'no-button'onClick={onClose}>no</button>
+              <button className = 'yes-button' onClick={() => {
+                this.handleDeleteList();
+                onClose()
+              }}>yes</button>
+            </div>
+          </div>
+        )
+      }
+    })
+  }
+
   render() {
     return this.state.isLoading
       ? <BigLoading />
@@ -246,7 +269,7 @@ class ConceptList extends React.Component {
               )}
 
               <div className = 'inline-display center-subtitle'>
-                <button className = 'red delete-deck'> delete this concept list </button>
+                <button className = 'red delete-deck' onClick = {this.submitDelete}> delete this concept list </button>
             </div>
             </div>
           </div>

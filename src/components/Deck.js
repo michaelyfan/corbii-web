@@ -8,6 +8,8 @@ import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
 import { BigLoading } from './Loading';
 import BackToDashboardButton from './BackToDashboardButton';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 class Card extends React.Component {
   constructor(props) {
@@ -231,6 +233,7 @@ class Deck extends React.Component {
     this.handleDeleteCard = this.handleDeleteCard.bind(this);
     this.doUpdateCard = this.doUpdateCard.bind(this);
     this.updateDeck = this.updateDeck.bind(this);
+    this.submitDelete = this.submitDelete.bind(this);
   }
 
   componentDidMount() {
@@ -275,6 +278,26 @@ class Deck extends React.Component {
     })
   }
 
+  submitDelete() {
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1 className = 'delete-deck-confirm'>are you sure you want to delete this deck?</h1>
+            <h1 className = 'delete-deck-confirm' id = 'small-confirm'>this action cannot be undone.</h1>
+            <div className = 'inline-display center-subtitle'>
+              <button className = 'no-button'onClick={onClose}>no</button>
+              <button className = 'yes-button' onClick={() => {
+                this.handleDeleteDeck();
+                onClose()
+              }}>yes</button>
+            </div>
+          </div>
+        )
+      }
+    })
+  }
+
   render() {
     const { isLoading, deckName, creatorName, id, cards, userIsOwner } = this.state;
 
@@ -312,7 +335,12 @@ class Deck extends React.Component {
               )}
 
               <div className = 'inline-display center-subtitle'>
-                <button className = 'red delete-deck'> delete this deck </button>
+                <button 
+                  className = 'red delete-deck'
+                  onClick = {this.submitDelete}
+                > 
+                    delete this deck
+                </button>
               </div>
             </div>
           </div>

@@ -34,6 +34,7 @@
     "query-string": "^6.1.0",
     "react": "^16.4.1",
     "react-autosize-textarea": "^4.0.0",
+    "react-confirm-alert": "^2.0.5",
     "react-dom": "^16.4.1",
     "react-file-input": "^0.2.5",
     "react-firebaseui": "^3.0.4",
