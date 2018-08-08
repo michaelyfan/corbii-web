@@ -1,93 +1,25 @@
 import React from 'react';
-import { getCurrentUserDecks, deleteDeckFromCurrentUser, updateCurrentUserDeck } from '../utils/api';
+import { getCurrentUserDecks } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 import routes from '../routes/routes';
 import { Loading, BigLoading } from './Loading';
 
-class DeckRow extends React.Component {
-  constructor(props) {
-    super(props);
+function DeckRow(props) {
+  const { name, id } = props;
 
-    this.state = {
-      isUpdate: false,
-      newDeckName: props.name.slice(0),
-      isLoading: false
-    };
-
-    this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
-    this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
-    this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
-    this.handleToggleUpdate = this.handleToggleUpdate.bind(this);
-  }
-
-  handleChangeNewDeckName(e) {
-    const value = e.target.value;
-    this.setState(() => ({
-      newDeckName: value
-    }));
-  }
-
-  handleUpdateDeck() {
-    this.setState(() => ({
-      isLoading: true
-    }), () => {
-      updateCurrentUserDeck(this.props.id, this.state.newDeckName).then(() => {
-        this.props.getDecks().then(() => {
-          this.setState(() => ({
-            isUpdate: false,
-            isLoading: false
-          }))
-        });
-      }).catch((err) => {
-        console.log(err);
-        alert(err);
-      })
-    })
-    
-  }
-
-  handleDeleteDeck(deckId) {
-    this.setState(() => ({
-      isLoading: true
-    }), () => {
-      deleteDeckFromCurrentUser(deckId).then(() => {
-        this.props.getDecks();
-      }).catch((err) => {
-        console.log(err);
-        alert(err);
-      })
-    })
-  }
-
-  handleToggleUpdate() {
-    this.setState((prevState) => ({
-      isUpdate: !prevState.isUpdate
-    })) 
-  }
-
-  render() {
-    const { name, id } = this.props;
-    const { isLoading, isUpdate, newDeckName } = this.state;
-
-    return (
-      <div className='deck-row'>
-        {
-          isLoading
-            ? <Loading />
-            : <Link to={`${routes.viewDeck}/${id}`}>
-                <button className = 'stuff-title'>{name}</button>
-              </Link>
-        }
-      </div>
-    )
-  }
+  return (
+    <div className='deck-row'>
+      <Link to={`${routes.viewDeck}/${id}`}>
+        <button className = 'stuff-title'>{name}</button>
+      </Link>
+    </div>
+  )
 }
 
 DeckRow.propTypes = {
   name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  getDecks: PropTypes.func.isRequired
+  id: PropTypes.string.isRequired
 }
 
 class DeckList extends React.Component {
@@ -114,20 +46,18 @@ class DeckList extends React.Component {
       console.error(err);
     })
   }
-
+  
   render() {
     return (
       <div>
         <div>
           <h3 className = 'your-stuff'>your decks</h3>
           {this.state.deckArr.map((deck) => (
-                      
-                      <DeckRow 
-                        name={deck.name} 
-                        key={deck.id} 
-                        id={deck.id} 
-                        getDecks={this.getDecks} />
-                    ))}
+            <DeckRow 
+              name={deck.name} 
+              key={deck.id} 
+              id={deck.id} />
+          ))}
         </div>
         
         

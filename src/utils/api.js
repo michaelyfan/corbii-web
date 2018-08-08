@@ -710,6 +710,7 @@ export function deleteConcept(listId, conceptId) {
 }
 
 export function deleteDeckFromCurrentUser(deckId) {
+  console.log('hello', deckId)
   return firebase.auth().currentUser.getIdToken(true).then((token) => {
     const data = {
       token: token,

@@ -15,6 +15,7 @@ Frontend:
 Backend:
 - why are the loading times so ridiculous?
 - show intervals next to card studying options
+- optimize deleting decks. Account for large deck sizes. 
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
@@ -28,6 +29,7 @@ Fullstack:
 - use a webpack solution better than copy-webpack-plugin
 - implement pictures into the decks
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
+- deck and conceptlist have a bunch of duplicate code, could you merge them into one component...?
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
 - run everything through eslint eventually (before pushing to production)
