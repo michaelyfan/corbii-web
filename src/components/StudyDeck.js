@@ -9,11 +9,6 @@ import { Link, NavLink, withRouter } from 'react-router-dom';
 class NewCardOptions extends React.Component {
   render() {
     const lastSelectedQuality = this.props.card ? this.props.card.lastSelectedQuality : null;
-    const rateMap = {
-      'one': '1',
-      'two': '2',
-      'three': '3'
-    };
 
     let options;
     if (lastSelectedQuality == 0) { // 'very soon' selected
@@ -311,9 +306,11 @@ class StudyDeck extends React.Component {
     return (
       <div>
         <div>
-          <Link to = {routes.dashboard}>
-            <p className = 'deck-title' id = 'smaller-title'>{name}</p>
-          </Link>
+          <div className = 'center-button'>
+            <Link to={`${routes.viewDeck}/${id}`} className = 'deck-title-view' id = 'smaller-title'>
+              {name}
+            </Link>
+          </div>
           <p className = 'small-caption'>Created by {creatorName}</p>
           { isDone 
             ? <div>
