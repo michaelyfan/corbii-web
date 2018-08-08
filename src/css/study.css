@@ -5,6 +5,10 @@
   padding-bottom: 10px;
 }
 
+div[tabindex="-1"]:focus {
+    outline: 0;
+}
+
 .studying {
   width: 400px;
   height: 200px;
@@ -184,7 +188,7 @@
     max-width: 300px;
     padding-left: 15px;
     padding-top: 10px;
-    resize: none;
+    text-decoration: none;
   }
 
   .question-answer {
