@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
-import { getConceptList, createConcept, deleteConcept, updateConcept, getUserProfileInfo } from '../utils/api';
+import { getConceptList, createConcept, deleteConcept, updateConcept, getUserProfileInfo, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import routes from '../routes/routes';
 import { BigLoading } from './Loading';
 import BackToDashboardButton from './BackToDashboardButton';
@@ -104,6 +104,80 @@ Concept.propTypes = {
   doUpdateConcept: PropTypes.func.isRequired
 }
 
+class Title extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isUpdate: false,
+      originalListName: props.listName.slice(0),
+      newListName: props.listName.slice(0)
+    }
+
+    this.handleToggleUpdate = this.handleToggleUpdate.bind(this);
+    this.handleUpdateList = this.handleUpdateList.bind(this);
+    this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
+  }
+
+  handleChangeNewDeckName(e) {
+    const value = e.target.value;
+    this.setState(() => ({
+      newListName: value
+    }));
+  }
+
+  handleToggleUpdate() {
+    this.setState((prevState) => ({
+      isUpdate: !prevState.isUpdate
+    })) 
+  }
+
+  handleUpdateList() {
+    updateCurrentUserList(this.props.listId, this.state.newListName).then(() => {
+      this.setState((prevState) =>({
+        originalListName: prevState.newListName,
+        isUpdate: false
+      }))
+    }).catch((err) => {
+      console.log(err);
+      alert(err);
+    })
+  }
+
+  render() {
+    const { isUpdate, originalListName, newListName } = this.state;
+    const { listName, creatorName } = this.props;
+    return (
+      <div>
+        {isUpdate
+          ? <input type='text'
+              maxLength='150'
+              className = 'deck-title'
+              value = {newListName}
+              onChange = {this.handleChangeNewDeckName}
+              placeholder = 'title your deck here' 
+            />
+          : <p className = 'deck-title edit-title'>{originalListName}</p>}
+        <div className = 'inline-display center-subtitle'>
+          <p className = 'small-caption'>created by {creatorName} | </p>
+          {isUpdate
+            ? <span>
+                <button onClick={this.handleUpdateList} className = 'small-caption change-title'>&nbsp;update</button>
+                <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
+              </span>
+            : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change list title</button> }
+        </div>
+      </div>
+    )
+  }
+}
+
+Title.propTypes = {
+  listName: PropTypes.string.isRequired,
+  creatorName: PropTypes.string.isRequired,
+  listId: PropTypes.string.isRequired
+}
+
 class ConceptList extends React.Component {
 
   constructor(props) {
@@ -124,6 +198,7 @@ class ConceptList extends React.Component {
     this.handleChangeAddConceptQuestion = this.handleChangeAddConceptQuestion.bind(this);
     this.doUpdateConcept = this.doUpdateConcept.bind(this);
     this.submitDelete = this.submitDelete.bind(this);
+    this.handleDeleteList = this.handleDeleteList.bind(this);
   }
 
   componentDidMount() {
@@ -195,6 +270,15 @@ class ConceptList extends React.Component {
     })
   }
 
+  handleDeleteList() {
+    deleteListFromCurrentUser(this.state.id).then(() => {
+      this.props.history.push(routes.dashboard);
+    }).catch((err) => {
+      console.log(err);
+      alert(err);
+    })
+  }
+
   submitDelete() {
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -216,26 +300,26 @@ class ConceptList extends React.Component {
   }
 
   render() {
+    const { listName, id, creatorName, userIsOwner, addConceptQuestionName, concepts } = this.state;
     return this.state.isLoading
       ? <BigLoading />
       : (
           <div>
             <div className = 'deck-info'>
               <BackToDashboardButton />
-              <p className = 'deck-title edit-title'>{this.state.listName}</p>
-              <div className = 'inline-display center-subtitle'>
-                <p className = 'small-caption'>created by {this.state.creatorName} | </p>
-                <button className = 'small-caption change-title'> &nbsp;change list title </button>
-              </div>
+              <Title 
+                creatorName={creatorName}
+                listName={listName}
+                listId={id} />
             </div>
 
             <div className='soft-blue-background'>
-              <Link id = 'study-list' to={`${routes.studyConceptList}/${this.state.id}`}>
+              <Link id = 'study-list' to={`${routes.studyConceptList}/${id}`}>
                 <button className = 'primary-button'>study this list</button>
               </Link>
               <div className = 'needs-padding'>
                 {
-                  this.state.userIsOwner
+                  userIsOwner
                     ? <form onSubmit={this.handleAddConcept}>
                         <div>
                           <p id = 'add-a-concept'>add a concept:</p>
@@ -247,7 +331,7 @@ class ConceptList extends React.Component {
                               id = 'add-question'
                               type='text'
                               autoComplete='off'
-                              value={this.state.addConceptQuestionName}
+                              value={addConceptQuestionName}
                               onChange={this.handleChangeAddConceptQuestion} />
                             <button type='submit' className = 'add'>add</button>
                           </div>
@@ -257,9 +341,9 @@ class ConceptList extends React.Component {
                 }
               </div>
 
-              {this.state.concepts.map((concept) => 
+              {concepts.map((concept) => 
                 <Concept 
-                  userIsOwner={this.state.userIsOwner}
+                  userIsOwner={userIsOwner}
                   id={concept.id} 
                   question={concept.question} 
                   answer={concept.answer} 

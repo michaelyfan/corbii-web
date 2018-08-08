@@ -1,5 +1,5 @@
 import React from 'react';
-import { getDeck, getUserProfileInfo, createCard, deleteCard, updateCard } from '../utils/api';
+import { getDeck, getUserProfileInfo, createCard, updateCard, updateCurrentUserDeck, deleteDeckFromCurrentUser, deleteCard } from '../utils/api';
 import firebase from '../utils/firebase';
 import queryString from 'query-string';
 import { Link } from 'react-router-dom';
@@ -109,22 +109,79 @@ Card.propTypes = {
 }
 
 
-function DeckTitle(props) {
-  const { deckName, creatorName } = props;
-  return (
-    <div>
-      <p className = 'deck-title edit-title'>{deckName}</p>
-      <div className = 'inline-display center-subtitle'>
-        <p className = 'small-caption'>created by {creatorName} | </p>
-        <button className = 'small-caption change-title'> &nbsp;change deck title </button>
+class DeckTitle extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isUpdate: false,
+      originalDeckName: props.deckName.slice(0),
+      newDeckName: props.deckName.slice(0)
+    }
+
+    this.handleToggleUpdate = this.handleToggleUpdate.bind(this);
+    this.handleUpdateDeck = this.handleUpdateDeck.bind(this);
+    this.handleChangeNewDeckName = this.handleChangeNewDeckName.bind(this);
+  }
+
+  handleChangeNewDeckName(e) {
+    const value = e.target.value;
+    this.setState(() => ({
+      newDeckName: value
+    }));
+  }
+
+  handleToggleUpdate() {
+    this.setState((prevState) => ({
+      isUpdate: !prevState.isUpdate
+    })) 
+  }
+
+  handleUpdateDeck() {
+    updateCurrentUserDeck(this.props.deckId, this.state.newDeckName).then(() => {
+      this.setState((prevState) =>({
+        originalDeckName: prevState.newDeckName,
+        isUpdate: false
+      }))
+    }).catch((err) => {
+      console.log(err);
+      alert(err);
+    })
+  }
+
+  render() {
+    const { isUpdate, originalDeckName, newDeckName } = this.state;
+    const { deckName, creatorName } = this.props;
+    return (
+      <div>
+        {isUpdate
+          ? <input type='text'
+              maxLength='150'
+              className = 'deck-title'
+              value = {newDeckName}
+              onChange = {this.handleChangeNewDeckName}
+              placeholder = 'title your deck here' 
+            />
+          : <p className = 'deck-title edit-title'>{originalDeckName}</p>}
+        <div className = 'inline-display center-subtitle'>
+          <p className = 'small-caption'>created by {creatorName} | </p>
+          {isUpdate
+            ? <span>
+                <button onClick={this.handleUpdateDeck} className = 'small-caption change-title'>&nbsp;update</button>
+                <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
+              </span>
+            : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change deck title</button> }
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 DeckTitle.propTypes = {
   deckName: PropTypes.string.isRequired,
-  creatorName: PropTypes.string.isRequired
+  creatorName: PropTypes.string.isRequired,
+  deckId: PropTypes.string.isRequired
 }
 
 class AddCardForm extends React.Component {
@@ -234,6 +291,7 @@ class Deck extends React.Component {
     this.doUpdateCard = this.doUpdateCard.bind(this);
     this.updateDeck = this.updateDeck.bind(this);
     this.submitDelete = this.submitDelete.bind(this);
+    this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
   }
 
   componentDidMount() {
@@ -278,6 +336,19 @@ class Deck extends React.Component {
     })
   }
 
+  handleDeleteDeck() {
+    this.setState(() => ({
+      isLoading: true
+    }), () => {
+      deleteDeckFromCurrentUser(this.state.id).then(() => {
+        this.props.history.push(routes.dashboard);
+      }).catch((err) => {
+        console.log(err);
+        alert(err);
+      })
+    })
+  }
+
   submitDelete() {
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -309,7 +380,8 @@ class Deck extends React.Component {
               <BackToDashboardButton />
               <DeckTitle
                 creatorName={creatorName}
-                deckName={deckName} />
+                deckName={deckName}
+                deckId={id} />
             </div>
 
             <div className='soft-blue-background'>
@@ -334,12 +406,10 @@ class Deck extends React.Component {
                   key={card.id} />
               )}
 
+
               <div className = 'inline-display center-subtitle'>
-                <button 
-                  className = 'red delete-deck'
-                  onClick = {this.submitDelete}
-                > 
-                    delete this deck
+                <button className = 'red delete-deck' onClick = {this.submitDelete}> 
+                  delete this deck
                 </button>
               </div>
             </div>

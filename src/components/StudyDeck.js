@@ -311,7 +311,7 @@ class StudyDeck extends React.Component {
     return (
       <div>
         <div>
-          <Link to= {routes.dashboardRoute}>
+          <Link to = {routes.dashboard}>
             <p className = 'deck-title' id = 'smaller-title'>{name}</p>
           </Link>
           <p className = 'small-caption'>Created by {creatorName}</p>

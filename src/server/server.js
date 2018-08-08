@@ -94,17 +94,14 @@ app.post('/api/updatealgolia', (req, res) => {
 
 function deletealgolia(type, objectID) {
   if (type == null) {
-    res.status(400).send({
-      message: 'A type must be specified.'
-    })
+    console.error(new Error('A type must be specified.'));
+    return;
   } else if (objectID == null){
-    res.status(400).send({
-      message: 'An objectID must be specified.'
-    })
+    console.error(new Error('An objectID must be specified.'));
+    return;
   } else if (type != 'decks' && type !='users' && type != 'lists') {
-    res.status(400).send({
-      message: 'Invalid type.'
-    })
+    console.error(new Error('Invalid type.'));
+    return;
   }
 
   const index = algoliaClient.initIndex(type);
@@ -124,12 +121,13 @@ app.post('/api/deletedeck', (req, res) => {
         res.sendStatus(403);
       } else {
         const deckId = req.body.deckId;
+        console.log(deckId);
         const cardsPath = `decks/${deckId}/cards`;
         const deckPath = `decks/${deckId}`;
         const cardsDataRef = db.collection('spacedRepData').where('deckId', '==', deckId);
         Promise.all([
           deleteCollection(cardsPath, 100),
-          deleteCollection(cardsDataRef, 100, cardsDataRef),
+          // deleteCollection(cardsDataRef, 100, cardsDataRef),
           deleteDocument(deckPath)
         ]).then((results) => {
           deletealgolia('decks', deckId);
@@ -188,13 +186,13 @@ function deleteDocument(documentPath) {
 }
 
 function deleteCollection(collectionPath, batchSize, collectionRef) {
-  var colRef;
+  let colRef;
   if (collectionRef) {
     colRef = collectionRef;
   } else {
     colRef = db.collection(collectionPath);
   }
-  var query = colRef.orderBy('__name__').limit(batchSize);
+  let query = colRef.limit(batchSize);
 
   return new Promise((resolve, reject) => {
     deleteQueryBatch(query, batchSize, resolve, reject);
