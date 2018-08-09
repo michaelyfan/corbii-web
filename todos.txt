@@ -13,7 +13,8 @@ Frontend:
 - "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
 
 Backend:
-- why are the loading times so ridiculous?
+- add robots file to disallow web scrapers (or something?)
+- the override algorithm is wrrrrrrrrrrong
 - show intervals next to card studying options
 - optimize deleting decks. Account for large deck sizes. 
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
@@ -25,7 +26,7 @@ Backend:
 Fullstack:
 - TEACHER FEATURES
 - handle different time zones
-- implement maximum lengths for card entries (like 1000 characters)
+- look at owen and hank bug testing notes
 - use a webpack solution better than copy-webpack-plugin
 - implement pictures into the decks
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
