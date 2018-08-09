@@ -32,6 +32,7 @@
     "moment": "^2.22.2",
     "mousetrap": "^1.6.2",
     "query-string": "^6.1.0",
+    "rc-progress": "^2.2.5",
     "react": "^16.4.1",
     "react-autosize-textarea": "^4.0.0",
     "react-confirm-alert": "^2.0.5",

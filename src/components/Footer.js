@@ -6,10 +6,9 @@ class Footer extends React.Component {
   render() {
     return (
       <div className = 'footer'>
-        <div><Link to={routes.home} className = 'footer-link'>home</Link></div>
-        <div><Link to={routes.dashboard} className = 'footer-link'>my decks </Link></div>
-        <div><Link to={routes.faq} className = 'footer-link'> faq </Link></div>
-        <div><Link to={routes.search} className = 'footer-link' id = 'footer-search'> search </Link></div>
+        <div><Link to={routes.dashboard} className = 'footer-link'>home</Link></div>
+        <div><Link to={routes.faq} className = 'footer-link'> faq</Link></div>
+        <div><Link to={routes.search} className = 'footer-link' id = 'footer-search'>search</Link></div>
         <div className = 'footer-social'>
           <a href = 'https://www.instagram.com/corbiitech/'>
             <img src = '/src/resources/footer/ig.png' />
