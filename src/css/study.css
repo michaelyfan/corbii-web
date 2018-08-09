@@ -22,6 +22,11 @@ div[tabindex="-1"]:focus {
   font-size: 35px;
 }
 
+.progress-bar {
+  width: 25%;
+  padding-left: 37.5%;
+}
+
 #smaller-title {
   font-size: 55px;
 }

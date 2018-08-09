@@ -7,6 +7,7 @@ import routes from '../routes/routes';
 import queryString from 'query-string';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import {HotKeys} from 'react-hotkeys';
+import { Line } from 'rc-progress';
 
 class NewCardOptions extends React.Component {
     constructor(props) {
@@ -262,6 +263,7 @@ class StudyDeck extends React.Component {
       arrayLeft: [],
       personalData: {},
       isDone: false,
+      initialLength: 0,
     }
 
     this.changeIndex = this.changeIndex.bind(this);
@@ -289,17 +291,16 @@ class StudyDeck extends React.Component {
           shiftInArray(arrayTodo, index, index + 5);
         }
         return {
-          arrayTodo: arrayTodo
+          arrayTodo: arrayTodo,
         }
       });
     } else if (quality == 1) {
-      this.setState((prevState) => {
-        
+      this.setState((prevState) => { 
         const { arrayTodo, index } = prevState;
         arrayTodo[index].lastSelectedQuality = 1;
         shiftInArray(arrayTodo, prevState.index, arrayTodo.length - 1);
         return {
-          arrayTodo: arrayTodo
+          arrayTodo: arrayTodo,
         }
       });
     } else if (quality == 2) { 
@@ -337,7 +338,8 @@ class StudyDeck extends React.Component {
         arrayLeft: arrayLeft,
         personalData: personalData,
         id: id,
-        isDone: arrayDue.concat(arrayNew).length === 0
+        isDone: arrayDue.concat(arrayNew).length === 0,
+        initialLength: arrayDue.concat(arrayNew).length,
       }));
     }).catch((err) => {
       console.error(err);
@@ -386,10 +388,13 @@ class StudyDeck extends React.Component {
 
 
   render() {
-    const { name, creator, creatorName, arrayTodo, index, personalData, id, isDone } = this.state;
+    const { name, creator, creatorName, arrayTodo, index, personalData, id, isDone, initialLength } = this.state;
 
     const card = arrayTodo[index] || {};
+    let percentage = (index / initialLength) * 100;
     const cardData = personalData ? personalData[card.id] : null;
+    console.log('percentage', percentage);
+    console.log('initial length', initialLength);
     return (
       <div>
         <div>
@@ -399,6 +404,13 @@ class StudyDeck extends React.Component {
             </Link>
           </div>
           <p className = 'small-caption'>Created by {creatorName}</p>
+          <Line 
+            className = 'progress-bar' 
+            percent={percentage} 
+            strokeWidth="3"
+            trailWidth='3'
+            strokeColor="#003466" 
+          />
           { isDone 
             ? <div>
                 <p className = 'youre-finished'>you're finished!</p>
@@ -407,12 +419,14 @@ class StudyDeck extends React.Component {
                 </div>
                 <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
               </div>
-            : <StudyCard 
-                deckId={id}
-                card={card}
-                changeIndex={this.changeIndex}
-                learner={this.learner}
-                cardData={cardData} />
+            : <div>
+                <StudyCard 
+                  deckId={id}
+                  card={card}
+                  changeIndex={this.changeIndex}
+                  learner={this.learner}
+                  cardData={cardData} />
+              </div>
           }
         </div>
       </div>
