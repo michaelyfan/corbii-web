@@ -169,7 +169,7 @@
 }
 
 .deck-title {
-  font-family: Print Clearly;
+  font-family: Nunito;
   font-size: 60pt;
   width: 100%;
   border: none;
@@ -184,8 +184,8 @@
 }
 
 .deck-title-view {
-  font-family: Print Clearly;
-  font-size: 60pt;
+  font-family: Nunito;
+  font-size: 50pt;
   border: none;
   display: inline-block;
   margin: 0 auto;
@@ -201,8 +201,8 @@
 }
 
 .edit-title {
-  margin-top: -50px;
-  margin-bottom: 15px;
+  margin-top: -40px;
+  margin-bottom: 0px;
 }
 
 .deck-title, select, textarea {
@@ -219,7 +219,7 @@
   color: #003466;
   font-size: 14px;
   margin: 0;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
 }
 
 .edit-card {
@@ -340,7 +340,7 @@
 }
 
 .change-title {
-  padding: 0px 0px 5px 0px;
+  padding: 0px 0px 10px 0px;
   background-color: #FFFFFF;
   color: #A8B4C2;
 }
