@@ -3,10 +3,6 @@ Frontend:
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
 - use something better looking than <input type='file' ...
-- keyboard shortcuts/hotkeys
-  - numbers for selecting familiarity options
-    - 1 for the "I don't know this card at all" option, goes up to 6 from there
-  - space should flip card
 - have Create be the interface when a user wants to edit a deck
 - "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
 
