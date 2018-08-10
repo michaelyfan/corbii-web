@@ -3,7 +3,7 @@ import React from 'react';
 export default function FAQ() {
   return (
     <div className='faq'>
-      <h2 className = 'faq-question'>What are we?</h2>
+      <h2 className = 'faq-question'>What is Corbii?</h2>
       <h5 className = 'faq-answer'>
         Corbii is a learning webapp that uses research-backed techniques to make your learning more effective and more efficient.
       </h5>
@@ -22,6 +22,10 @@ export default function FAQ() {
       teachers can create a space for student learning and collaboration, and share study tools and key concepts with their students. When students
       use these tools to study, detailed data and metrics about their accuracy and commonly missed concepts and flashcards are recorded and made accessible
       to teachers, so they can know what concepts students understand and which to review.</h5>
+      <h2 className = 'faq-question'>Does Corbii support keyboard shortcuts?</h2>
+      <h5 className = 'faq-answer'>Yes! While studying, you can use the spacebar to flip flashcards to reaveal the research-back
+      of  the card you are studying. When Corbii asks for your comfort level, you can use the number keys (1-6) to select your
+      rating.</h5>
     </div>
   )
 }
