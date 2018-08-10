@@ -2,9 +2,13 @@
 Frontend:
 - implement toasts for feedback and error feedback for user
   - https://www.npmjs.com/package/react-toastify
+  	- ************	we have the other alerts now? do we still need these?
 - use something better looking than <input type='file' ...
 - have Create be the interface when a user wants to edit a deck
 - "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
+- make profile settings option stick to bottom of side bar
+- make footer stick to bottom of site
+- fix search ui (is it working??)
 
 Backend:
 - add robots file to disallow web scrapers (or something?)

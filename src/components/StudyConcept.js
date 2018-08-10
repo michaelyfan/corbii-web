@@ -47,7 +47,7 @@ class SingleConcept extends React.Component {
             <textarea 
               className = 'self-exp-box'
               onChange={this.handleChangeText} 
-              rows='10' 
+              rows='5' 
               cols='70'>
             </textarea>
           </div>
@@ -56,7 +56,7 @@ class SingleConcept extends React.Component {
             <button className = 'primary-button' type='submit'>save</button>
           </div>
         </form>
-        <p className = 'question-answer'>previous answer:
+        <p className = 'question-answer' id = 'saved-answer'>previous answer:
           <span className = 'content-info'>{data ? data.answer : 'none'}</span>
         </p>
       </div>
