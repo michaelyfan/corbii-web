@@ -29,6 +29,7 @@ Fullstack:
 - implement pictures into the decks
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
 - deck and conceptlist have a bunch of duplicate code, could you merge them into one component...?
+- highly reusable title component
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
 - run everything through eslint eventually (before pushing to production)

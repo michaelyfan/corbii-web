@@ -9,152 +9,187 @@ import { Link, NavLink, withRouter } from 'react-router-dom';
 import {HotKeys} from 'react-hotkeys';
 import { Line } from 'rc-progress';
 
-class NewCardOptions extends React.Component {
-    constructor(props) {
-    super(props);
+function NewCardOptions(props) {
 
-    this.state = {
-      active: false,
-    };
+  const { lastSelectedQuality, submitCard } = props;
+
+  let options;
+  if (lastSelectedQuality == 0) { // 'very soon' selected
+    options = 
+      <div className = 'accuracy-center'>
+        <div className = 'center-button'>
+          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true)}}>i do not know this card</button>
+        </div>
+        <div className = 'center-button'>
+          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i know this card</button>
+        </div>
+      </div>
+  } else if (lastSelectedQuality == 1) { // 'not soon' selected
+    options = 
+      <div className = 'accuracy-center'>
+        <div className = 'center-button'>
+          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true)}}>i do not know this card</button>
+        </div>
+        <div className = 'center-button'>
+          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i am unsure about this card</button>
+        </div>
+        <div className = 'center-button'>  
+          <button className = 'accuracy-button green' onClick={() => {submitCard(2, true)}}>i know this card</button>
+        </div>
+      </div>
+  } else { // first time seeing card
+    options = 
+      <div className = 'accuracy-center'>
+        <div className = 'center-button'>
+          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true)}}>i do not know this card</button>
+        </div>
+        <div className = 'center-button'>
+          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i am unsure about this card</button>
+        </div>
+        <div className = 'center-button'>  
+          <button className = 'accuracy-button green' onClick={() => {submitCard(3, true)}}>i definitely know this card</button>
+        </div>
+      </div>
   }
 
-   setActive(state) {
-    this.setState({ active: true });
-    this.refs.option.focus();
-  }
+  return (
+    <div className = 'option-menu center-button'>
+      {options}
+    </div>
+  )
+}
 
-  componentDidMount() {
-    this.focusDiv();
-  }
+function NotNewCardOptions(props) {
+  const { submitCard } = props;
 
-  componentDidUpdate() {
-    if(this.state.active) {
-      this.focusDiv();
-    }
-  }
+  return (
+    <div>
+      <p className = 'rating-prompt' id = 'rating-question'> on a scale of one to six, how comfortable are you with this card?</p>
+      <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
+      <div className = 'rating-buttons'>
+        <button className = 'accuracy-button maroon number-scale' onClick={() => {submitCard(0, true)}}>1</button>
+        <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(0, true)}}>2</button>
+        <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(0, true)}}>3</button>
+        <button className = 'accuracy-button yellow number-scale' onClick={() => {submitCard(3, false)}}>4</button>
+        <button className = 'accuracy-button lime number-scale' onClick={() => {submitCard(4, false)}}>5</button>
+        <button className = 'accuracy-button green number-scale' onClick={() => {submitCard(5, false)}}>6</button>
+      </div>
+    </div>
+  )
+}
 
-  focusDiv() {
-    ReactDOM.findDOMNode(this.refs.option).focus();
-  }
-
+class CardOptions extends React.Component {
   render() {
-    const newKeyMap = {
-      'one': '1',
-      'two': '2',
-      'three': '3',
-    }
+    const { isFlipped, isLearnerCard, submitCard, lastSelectedQuality, flip } = this.props;
 
-    let newHandlers;
-    if (lastSelectedQuality == 0) {
-      newHandlers = {
-        'one': (event) => {this.props.submitCard(0, true)},
-        'two': (event) => {this.props.submitCard(1, true)}
-      }
-    } else if (lastSelectedQuality == 1) {
-      newHandlers = {
-        'one': (event) => {this.props.submitCard(0, true)},
-        'two': (event) => {this.props.submitCard(1, true)},
-        'three': (event) => {this.props.submitCard(2, true)}
+    let keyMap;
+    let keyHandlers;
+    let options;
+    if (isFlipped) {
+      if (isLearnerCard) {
+        keyMap = {
+          'one': '1',
+          'two': '2',
+          'three': '3',
+        }
+        if (lastSelectedQuality == 0) {
+          keyHandlers = {
+            'one': (event) => {submitCard(0, true)},
+            'two': (event) => {submitCard(1, true)}
+          }
+        } else if (lastSelectedQuality == 1) {
+          keyHandlers = {
+            'one': (event) => {submitCard(0, true)},
+            'two': (event) => {submitCard(1, true)},
+            'three': (event) => {submitCard(2, true)}
+          }
+        } else {
+          keyHandlers = {
+            'one': (event) => {submitCard(0, true)},
+            'two': (event) => {submitCard(1, true)},
+            'three': (event) => {submitCard(3, true)}
+          }
+        }
+        options = <NewCardOptions 
+                    submitCard={submitCard}
+                    lastSelectedQuality={lastSelectedQuality} />
+      } else {
+        keyMap = {
+          'one': '1',
+          'two': '2',
+          'three': '3',
+          'four': '4',
+          'five': '5',
+          'six': '6',
+        }
+        keyHandlers = {
+          'one': (event) => {submitCard(0, true)},
+          'two': (event) => {submitCard(0, true)},
+          'three': (event) => {submitCard(0, true)},
+          'four': (event) => {submitCard(3, false)},
+          'five': (event) => {submitCard(4, false)},
+          'six': (event) => {submitCard(5, false)}
+        }
+        options = <NotNewCardOptions submitCard={submitCard} />
       }
     } else {
-      newHandlers = {
-        'one': (event) => {this.props.submitCard(0, true)},
-        'two': (event) => {this.props.submitCard(1, true)},
-        'three': (event) => {this.props.submitCard(3, true)}
+      keyMap = {
+        'flip-card': 'space'
       }
-    }
-      
-    const lastSelectedQuality = this.props.card ? this.props.card.lastSelectedQuality : null;
-
-    let options;
-    if (lastSelectedQuality == 0) { // 'very soon' selected
-      options = 
-        <div className = 'accuracy-center'>
-          <div className = 'center-button'>
-            <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
-          </div>
-          <div className = 'center-button'>
-            <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i know this card</button>
-          </div>
+      keyHandlers = {
+        'flip-card': flip
+      }
+      options = (
+        <div className='center-button'>
+          <button className = 'primary-button' 
+            id = 'flip-card' 
+            onClick={flip}>
+            flip card
+          </button>
         </div>
-    } else if (lastSelectedQuality == 1) { // 'not soon' selected
-      options = 
-        <div className = 'accuracy-center'>
-          <div className = 'center-button'>
-            <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
-          </div>
-          <div className = 'center-button'>
-            <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i am unsure about this card</button>
-          </div>
-          <div className = 'center-button'>  
-            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(2, true)}}>i know this card</button>
-          </div>
-        </div>
-    } else { // first time seeing card
-      options = 
-        <div className = 'accuracy-center'>
-          <div className = 'center-button'>
-            <button className = 'accuracy-button red' onClick={() => {this.props.submitCard(0, true)}}>i do not know this card</button>
-          </div>
-          <div className = 'center-button'>
-            <button className = 'accuracy-button yellow' onClick={() => {this.props.submitCard(1, true)}}>i am unsure about this card</button>
-          </div>
-          <div className = 'center-button'>  
-            <button className = 'accuracy-button green' onClick={() => {this.props.submitCard(3, true)}}>i definitely know this card</button>
-          </div>
-        </div>
+      )
     }
 
     return (
-      <HotKeys keyMap = {newKeyMap} handlers = {newHandlers}>
-        <div className = 'option-menu center-button'  ref='option'>
-          {options}
-        </div>
-      </HotKeys>
-    )
-  }
-}
-
-class NotNewCardOptions extends React.Component {
-  render() {
-    const oldKeyMap = {
-      'one': '1',
-      'two': '2',
-      'three': '3',
-      'four': '4',
-      'five': '5',
-      'six': '6',
-    }
-
-    const oldHandlers = {
-      'one': (event) => {this.props.submitCard(0, true)},
-      'two': (event) => {this.props.submitCard(0, true)},
-      'three': (event) => {this.props.submitCard(0, true)},
-      'four': (event) => {this.props.submitCard(3, false)},
-      'five': (event) => {this.props.submitCard(4, false)},
-      'six': (event) => {this.props.submitCard(5, false)}
-    }
-
-    return (
-      <HotKeys keyMap = {oldKeyMap} handlers = {oldHandlers}>
+      <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
         <div>
-          <p className = 'rating-prompt' id = 'rating-question'> on a scale of one to six, how comfortable are you with this card?</p>
-          <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
-          <div className = 'rating-buttons'>
-            <button className = 'accuracy-button maroon number-scale' onClick={() => {this.props.submitCard(0, true)}}>1</button>
-            <button className = 'accuracy-button red number-scale' onClick={() => {this.props.submitCard(0, true)}}>2</button>
-            <button className = 'accuracy-button orange number-scale' onClick={() => {this.props.submitCard(0, true)}}>3</button>
-            <button className = 'accuracy-button yellow number-scale' onClick={() => {this.props.submitCard(3, false)}}>4</button>
-            <button className = 'accuracy-button lime number-scale' onClick={() => {this.props.submitCard(4, false)}}>5</button>
-            <button className = 'accuracy-button green number-scale' onClick={() => {this.props.submitCard(5, false)}}>6</button>
-          </div>
-        </div>
+          {options}
+        </div>              
       </HotKeys>
     )
   }
 }
 
-class StudyCard extends React.Component {
+CardOptions.propTypes = {
+  isFlipped: PropTypes.bool.isRequired,
+  submitCard: PropTypes.func.isRequired,
+  flip: PropTypes.func.isRequired,
+  lastSelectedQuality: PropTypes.number,
+  isLearnerCard: PropTypes.bool
+}
+
+function CardContent(props) {
+  const { isFlipped, card } = props;
+  return (
+    <div className = 'study-card'>        
+      <div className= 'flashcard-text studying'>
+        <p className = 'front-text'>
+          { isFlipped
+              ? card && card.back
+              : card && card.front
+          }
+        </p>
+      </div>
+    </div>
+  )
+}
+
+CardContent.propTypes = {
+  card: PropTypes.object,
+  isFlipped: PropTypes.bool.isRequired
+}
+
+class CardWrapper extends React.Component {
   constructor(props) {
     super(props);
 
@@ -180,9 +215,11 @@ class StudyCard extends React.Component {
     } else {
       const { card, cardData } = this.props;
       const { interval, easinessFactor } = cardData;
-      const dataId = cardData ? (cardData[card.id] ? cardData[card.id].id : null) : null;
+      const dataId = cardData 
+                      ? (cardData[card.id] ? cardData[card.id].id : null) 
+                      : null;
       updateCardPersonalData(dataId, this.props.deckId, card.id, easinessFactor, interval, quality);
-      this.props.changeIndex(false);
+      this.props.incrementIndex();
     }
     this.setState(() => ({
       isFlipped: false
@@ -192,59 +229,28 @@ class StudyCard extends React.Component {
   render() {
     const { cardData, card } = this.props;
 
-    const flipKeyMap = {
-      'flip-card': 'space'
-    }
-
-    const flipHandlers = {
-      'flip-card': (event) => {this.flip()}
-    }
+    const isLearnerCard = !cardData || card.isLearner;
 
     return (
       <div>
-        <div className = 'study-card'>        
-          <div className= 'flashcard-text studying'>
-            <p className = 'front-text'>
-              { this.state.isFlipped
-                  ? card && card.back
-                  : card && card.front
-              }
-            </p>
-          </div>
-        </div>
-        <div>
-          {
-            this.state.isFlipped 
-              ? <div>
-                  { !cardData || card.isLearner
-                      ? <NewCardOptions 
-                          submitCard={this.submitCard}
-                          card={card} />
-                      : <NotNewCardOptions submitCard={this.submitCard} />
-                  }
-                </div>
-              : <HotKeys keyMap = {flipKeyMap} handlers = {flipHandlers}>
-                  <div className = 'center-button'>
-                    <button 
-                      className = 'primary-button' 
-                      id = 'flip-card' 
-                      onClick={this.flip}>
-                        flip card
-                    </button>
-                  </div>
-                </HotKeys>
-          }
-        </div>
+        <CardContent isFlipped={this.state.isFlipped} card={card} />
+        <CardOptions 
+          isFlipped={this.state.isFlipped} 
+          isLearnerCard={isLearnerCard}
+          lastSelectedQuality={card ? card.lastSelectedQuality : null}
+          submitCard={this.submitCard}
+          flip={this.flip} />
+
       </div>
     )
   }
 }
 
-StudyCard.propTypes = {
+CardWrapper.propTypes = {
   card: PropTypes.object, 
   cardData: PropTypes.object,
   deckId: PropTypes.string.isRequired,
-  changeIndex: PropTypes.func.isRequired,
+  incrementIndex: PropTypes.func.isRequired,
   learner: PropTypes.func.isRequired
 }
 
@@ -255,18 +261,15 @@ class StudyDeck extends React.Component {
 
     this.state = {
       name: '',
-      creator: '',
       creatorName: '',
       id: '',
       index: 0,
       arrayTodo: [],
       arrayLeft: [],
-      personalData: {},
-      isDone: false,
-      initialLength: 0,
+      personalData: {}
     }
 
-    this.changeIndex = this.changeIndex.bind(this);
+    this.incrementIndex = this.incrementIndex.bind(this);
     this.override = this.override.bind(this);
     this.learner = this.learner.bind(this);
   }
@@ -278,6 +281,7 @@ class StudyDeck extends React.Component {
       2: 1 day
       3: I know
     */
+    
     if (quality < 0 || quality > 3) {
       throw new Error('Invalid quality');
     } else if (quality == 0) {
@@ -307,12 +311,12 @@ class StudyDeck extends React.Component {
       const { id, arrayTodo, index, personalData } = this.state;
       const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
       updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 1, easinessFactor || null); // note quality doesn't matter here
-      this.changeIndex(false);
+      this.incrementIndex();
     } else { // quality == 3
       const { id, arrayTodo, index, personalData } = this.state;
       const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
       updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 3, easinessFactor || null); // note quality doesn't matter here
-      this.changeIndex(false);
+      this.incrementIndex();
     }
 
   }
@@ -324,40 +328,32 @@ class StudyDeck extends React.Component {
   getDeck() {
     const { id } = this.props.match.params;
     getDeckForStudy(id).then((result) => {
-      return getUserProfileInfo(result.creator).then((result2) => {
+      return getUserProfileInfo(result.creatorId).then((result2) => {
         result.creatorName = result2.data().name;
         return result;
       });
     }).then((result) => {
-      const { name, creator, creatorName, arrayDue, arrayNew, arrayLeft, personalData } = result;
+      const { name, creatorName, arrayDue, arrayNew, arrayLeft, personalData } = result;
       this.setState(() => ({
         name: name,
-        creator: creator,
         creatorName: creatorName,
         arrayTodo: arrayDue.concat(arrayNew),
         arrayLeft: arrayLeft,
         personalData: personalData,
-        id: id,
-        isDone: arrayDue.concat(arrayNew).length === 0,
-        initialLength: arrayDue.concat(arrayNew).length,
+        id: id
       }));
     }).catch((err) => {
       console.error(err);
     });
   }
 
-  changeIndex(isDecrement) {
-    if (isDecrement) {
-      this.setState((prevState) => ({index: prevState.index - 1}));
-    } else {
-      this.setState((prevState) => {
-        const newIndex = prevState.index + 1;
-        return {
-          index: newIndex,
-          isDone: newIndex >= prevState.arrayTodo.length
-        };
-      });  
-    }
+  incrementIndex() {
+    this.setState((prevState) => {
+      const newIndex = prevState.index + 1;
+      return {
+        index: newIndex
+      };
+    });  
   }
 
   override() {
@@ -379,8 +375,7 @@ class StudyDeck extends React.Component {
         return {
           index: 0,
           arrayTodo: newArrayTodo,
-          arrayLeft: newArrayLeft,
-          isDone: false
+          arrayLeft: newArrayLeft
         }
       });
     }
@@ -388,22 +383,24 @@ class StudyDeck extends React.Component {
 
 
   render() {
-    const { name, creator, creatorName, arrayTodo, index, personalData, id, isDone, initialLength } = this.state;
+    const { name, creatorName, arrayTodo, index, personalData, id } = this.state;
 
+    const isDone = (index >= arrayTodo.length);
     const card = arrayTodo[index] || {};
-    let percentage = (index / initialLength) * 100;
     const cardData = personalData ? personalData[card.id] : null;
-    console.log('percentage', percentage);
-    console.log('initial length', initialLength);
+    let percentage = (index / arrayTodo.length) * 100;
+
     return (
       <div>
         <div>
+
           <div className = 'center-button'>
             <Link to={`${routes.viewDeck}/${id}`} className = 'deck-title-view' id = 'smaller-title'>
               {name}
             </Link>
           </div>
           <p className = 'small-caption'>Created by {creatorName}</p>
+
           <Line 
             className = 'progress-bar' 
             percent={percentage} 
@@ -411,7 +408,9 @@ class StudyDeck extends React.Component {
             trailWidth='3'
             strokeColor="#003466" 
           />
-          { isDone 
+
+
+          { isDone
             ? <div>
                 <p className = 'youre-finished'>you're finished!</p>
                 <div className = 'center-button'>
@@ -420,10 +419,10 @@ class StudyDeck extends React.Component {
                 <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
               </div>
             : <div>
-                <StudyCard 
+                <CardWrapper 
                   deckId={id}
                   card={card}
-                  changeIndex={this.changeIndex}
+                  incrementIndex={this.incrementIndex}
                   learner={this.learner}
                   cardData={cardData} />
               </div>

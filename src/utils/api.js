@@ -116,7 +116,7 @@ export function getDeckForStudy(deckId) {
     return batch.commit().then(() => {
       return {
         name: deck.deckName,
-        creator: deck.creatorId,
+        creatorId: deck.creatorId,
         arrayDue: arrayDue,
         arrayNew: arrayNew,
         arrayLeft: arrayLeft,
