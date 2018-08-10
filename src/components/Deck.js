@@ -56,6 +56,7 @@ class Card extends React.Component {
                 ? <TextareaAutosize 
                     type='text'
                     value={this.state.frontChangeValue}
+                    maxLength='1000'
                     onChange={this.handleFrontChange}
                     className = 'update-card' />
                 : <p className = 'editable-card'>{front}</p>
@@ -67,6 +68,7 @@ class Card extends React.Component {
               this.state.isUpdate && this.props.userIsOwner
                 ? <TextareaAutosize 
                     type='text'
+                    maxLength='1000'
                     value={this.state.backChangeValue}
                     onChange={this.handleBackChange} 
                     className = 'update-card'/>
@@ -249,12 +251,14 @@ class AddCardForm extends React.Component {
                 placeholder='front information'
                 className = 'flashcard-text'
                 type='text'
+                maxLength='1000'
                 autoComplete='off'
                 value={addCardFrontName}
                 onChange={this.handleChangeAddCardFront} />
               <img className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
               <TextareaAutosize
                 placeholder='back information'
+                maxLength='1000'
                 className = 'flashcard-text'
                 type='text'
                 autoComplete='off'

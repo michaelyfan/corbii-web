@@ -60,18 +60,6 @@ class Concept extends React.Component {
                 : <p className = 'editable-card'>{question}</p>
             }
           </div>
-          <div className = 'flashcard-text edit-card'>
-            <p className='low'>provided answer</p>
-            {
-              this.state.isUpdate && this.props.userIsOwner
-                ? <textarea
-                    type='text'
-                    value={this.state.answerChangeValue} 
-                    onChange={this.handleAnswerChange} 
-                    className = 'update-card'/>
-                : <p className = 'editable-card'>{answer}</p>
-            }
-          </div>
         </div>
 
         <div className='side-menu'>
@@ -266,7 +254,7 @@ class ConceptList extends React.Component {
     updateConcept(this.state.id, conceptId, question, answer).then(() => {
       this.updateConceptList();
     }).catch((err) => {
-      console.log(err);
+      console.error(err);
     })
   }
 

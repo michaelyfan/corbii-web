@@ -109,7 +109,8 @@ export function getDeckForStudy(deckId) {
     // delete cards in cardsToBeDeleted, they weren't in content.
     let batch = db.batch();
     Object.keys(cardsToBeDeleted).forEach((id) => {
-      let badCardRef = db.collection('spacedRepData').doc(id);
+      const dataId = cardsToBeDeleted[id].id;
+      let badCardRef = db.collection('spacedRepData').doc(dataId);
       batch.delete(badCardRef);                         
     });
 
@@ -184,7 +185,8 @@ export function getConceptListForStudy(listId) {
 
     let batch = db.batch();
     Object.keys(conceptsToBeDeleted).forEach((id) => {
-      let badCardRef = db.collection('selfExData').doc(id);
+      const dataId = conceptsToBeDeleted[id].id;
+      let badCardRef = db.collection('selfExData').doc(dataId);
       batch.delete(badCardRef);
     });
 
@@ -359,9 +361,10 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
     return Promise.reject(new Error('Deck name is too long.'));
   } else {
     for (let i = 0; i < concepts.length; i++) {
-      if (concepts[i].question.length > 200 || concepts[i].answer.length > 4000) {
+      if (concepts[i].question.length > 200) {
         return Promise.reject(new Error('Concept is too long.'));
       }
+      concepts[i].answer = '';
     }
   }
 
@@ -498,7 +501,7 @@ export function updateConcept(listId, conceptId, question, answer) {
     return Promise.reject(new Error('Concept is too long.'));
   }
 
-  const cardRef = `decks/${listId}/cards/${conceptId}`;
+  const cardRef = `lists/${listId}/concepts/${conceptId}`;
 
   return db.doc(cardRef).update({ 
     question: question,

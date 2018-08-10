@@ -11,8 +11,10 @@ Frontend:
 - fix search ui (is it working??)
 
 Backend:
+- determining signin flow with conceptlist and deck (which are pages that don't require signin, but use firebase.auth().currentUser) is wrong. Functional atm, but could cause problems down the line.
 - add robots file to disallow web scrapers (or something?)
-- the override algorithm is wrrrrrrrrrrong
+- implement new override algorithm once Owen and Hank think of it
+- all the bugs with conceptlist :/
 - show intervals next to card studying options
 - optimize deleting decks. Account for large deck sizes. 
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
@@ -25,6 +27,7 @@ Fullstack:
 - TEACHER FEATURES
 - handle different time zones
 - look at owen and hank bug testing notes
+- enforce timestamp ordering for cards
 - use a webpack solution better than copy-webpack-plugin
 - implement pictures into the decks
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)

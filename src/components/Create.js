@@ -56,6 +56,7 @@ class CreateDeckCard extends React.Component {
       <div className = 'flashcard'>
         <TextareaAutosize 
           type='text'
+          maxLength='1000'
           className = 'flashcard-text'
           key='front'
           value={this.state.front}
@@ -67,7 +68,8 @@ class CreateDeckCard extends React.Component {
         </div>
         <TextareaAutosize 
           type='text'
-          className = 'flashcard-text' 
+          className = 'flashcard-text'
+          maxLength='1000'
           key='back'
           value={this.state.back}
           onChange={(e) => {this.handleChange('back', e)}}
@@ -376,6 +378,7 @@ class Create extends React.Component {
     } else if (this.hasEmptyEntries('concepts', concepts)) {
       alert('One or more of your concepts is empty.');
     } else {
+      console.log(concepts);
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
         this.props.history.push(routes.dashboard);
       }).catch((err) => {

@@ -33,7 +33,8 @@ const config = {
       template: 'src/index.html'
     }),
     new CopyWebpackPlugin([
-      {from:'src/resources', to: 'src/resources'}
+      {from:'src/resources', to: 'src/resources'},
+      {from: 'favicon.ico', to: 'favicon.ico'}
     ])
   ],
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
