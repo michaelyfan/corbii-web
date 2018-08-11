@@ -268,7 +268,6 @@ class CreateList extends React.Component {
     this.state = {
       concepts: [{
         question: '',
-        answer: '',
         id: shortid.generate()
       }]
     }
@@ -283,7 +282,6 @@ class CreateList extends React.Component {
       const concepts = prevState.concepts;
       concepts.push({
         question: '',
-        answer: '',
         id: shortid.generate()
       });
       return {

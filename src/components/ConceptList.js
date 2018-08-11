@@ -16,19 +16,17 @@ class Concept extends React.Component {
 
     this.state = {
       isUpdate: false,
-      questionChangeValue: props.question.slice(0),
-      answerChangeValue: props.answer.slice(0)
+      questionChangeValue: props.question.slice(0)
     }
 
     this.handleUpdateConcept = this.handleUpdateConcept.bind(this);
     this.handleQuestionChange = this.handleQuestionChange.bind(this);
-    this.handleAnswerChange = this.handleAnswerChange.bind(this);
   }
 
   handleUpdateConcept() {
     const { doUpdateConcept, id } = this.props;
-    const { questionChangeValue, answerChangeValue } = this.state;
-    doUpdateConcept(id, questionChangeValue, answerChangeValue);
+    const { questionChangeValue } = this.state;
+    doUpdateConcept(id, questionChangeValue);
     this.setState(() => ({isUpdate: false}))
   }
 
@@ -37,13 +35,8 @@ class Concept extends React.Component {
     this.setState(() => ({questionChangeValue: value}));
   }
 
-  handleAnswerChange(e) {
-    const value = e.target.value;
-    this.setState(() => ({answerChangeValue: value}));
-  }
-
   render() {
-    const { id, question, answer, handleDeleteConcept } = this.props;
+    const { id, question, handleDeleteConcept } = this.props;
 
     return (
       <div className='flashcard'>
@@ -88,7 +81,6 @@ Concept.propTypes = {
   userIsOwner: PropTypes.bool.isRequired,
   id: PropTypes.string.isRequired,
   question: PropTypes.string.isRequired,
-  answer: PropTypes.string.isRequired,
   doUpdateConcept: PropTypes.func.isRequired
 }
 
@@ -166,6 +158,75 @@ Title.propTypes = {
   listId: PropTypes.string.isRequired
 }
 
+class AddConceptForm extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      question: ''
+    }
+
+    this.handleAddConcept = this.handleAddConcept.bind(this);
+    this.handleChangeQuestion = this.handleChangeQuestion.bind(this);
+  }
+
+  handleAddConcept(e) {
+    e.preventDefault();
+    const question = this.state.question.trim();
+    const { callback, conceptId } = this.props;
+
+
+
+    if (question) {
+      createConcept(question, '', conceptId).then(() => {
+        callback();
+      }).catch((err) => {
+        console.error(err);
+      })
+    } else {
+      alert("'One of your inputs is empty. Check your inputs and try again.'");
+    }
+  }
+
+  handleChangeQuestion(e) {
+    e.persist();
+
+    this.setState(() => ({
+      question: e.target.value
+    }))
+  }
+
+  render() {
+    const { question } = this.state;
+    return (
+      <div className = 'needs-padding'>
+        <form onSubmit={this.handleAddConcept}>
+          <div>
+            <p id = 'add-a-concept'>add a concept:</p>
+            <div className = 'flashcard add-card'>
+              <input
+                maxLength='200'
+                placeholder='question or concept'
+                type='text'
+                className = 'flashcard-text'
+                id = 'add-question'
+                autoComplete='off'
+                value={question}
+                onChange={this.handleChangeQuestion} />
+              <button type='submit' className = 'add'>add</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    )
+  } 
+}
+
+AddConceptForm.propTypes = {
+  callback: PropTypes.func,
+  conceptId: PropTypes.string.isRequired
+}
+
 class ConceptList extends React.Component {
 
   constructor(props) {
@@ -176,17 +237,15 @@ class ConceptList extends React.Component {
       concepts: [],
       id: '',
       userIsOwner: false,
-      addConceptQuestionName: '',
       isLoading: true,
       creatorName: ''
     }
 
-    this.handleAddConcept = this.handleAddConcept.bind(this);
     this.handleDeleteConcept = this.handleDeleteConcept.bind(this);
-    this.handleChangeAddConceptQuestion = this.handleChangeAddConceptQuestion.bind(this);
     this.doUpdateConcept = this.doUpdateConcept.bind(this);
     this.submitDelete = this.submitDelete.bind(this);
     this.handleDeleteList = this.handleDeleteList.bind(this);
+    this.updateConceptList = this.updateConceptList.bind(this);
   }
 
   componentDidMount() {
@@ -225,33 +284,8 @@ class ConceptList extends React.Component {
     this.updateConceptList();
   }
 
-  handleAddConcept(e) {
-    e.preventDefault();
-    const question = this.state.addConceptQuestionName.trim();
-
-    if (question) {
-      createConcept(question, '', this.state.id)
-        .then(() => {
-          this.updateConceptList();
-        })
-        .catch((err) => {
-          console.error(err);
-        })
-
-    } else {
-      alert("'One of your inputs is empty. Check your inputs and try again.'");
-    }
-  }
-
-  handleChangeAddConceptQuestion(e) {
-    e.persist();
-    this.setState(() => ({
-        addConceptQuestionName: e.target.value
-    }));
-  }
-
-  doUpdateConcept(conceptId, question, answer) {
-    updateConcept(this.state.id, conceptId, question, answer).then(() => {
+  doUpdateConcept(conceptId, question) {
+    updateConcept(this.state.id, conceptId, question).then(() => {
       this.updateConceptList();
     }).catch((err) => {
       console.error(err);
@@ -288,7 +322,7 @@ class ConceptList extends React.Component {
   }
 
   render() {
-    const { listName, id, creatorName, userIsOwner, addConceptQuestionName, concepts } = this.state;
+    const { listName, id, creatorName, userIsOwner, concepts } = this.state;
     return this.state.isLoading
       ? <BigLoading />
       : (
@@ -302,47 +336,28 @@ class ConceptList extends React.Component {
             </div>
 
             <div className='soft-blue-background'>
+
               <Link id = 'study-list' to={`${routes.studyConceptList}/${id}`}>
                 <button className = 'primary-button'>study this list</button>
               </Link>
-              <div className = 'needs-padding'>
-                {
-                  userIsOwner
-                    ? <form onSubmit={this.handleAddConcept}>
-                        <div>
-                          <p id = 'add-a-concept'>add a concept:</p>
-                          <div className = 'flashcard add-card'>
-                            <input
-                              maxLength='200'
-                              placeholder='question or concept'
-                              className = 'flashcard-text'
-                              id = 'add-question'
-                              type='text'
-                              autoComplete='off'
-                              value={addConceptQuestionName}
-                              onChange={this.handleChangeAddConceptQuestion} />
-                            <button type='submit' className = 'add'>add</button>
-                          </div>
-                        </div>
-                      </form>
-                    : null
-                }
-              </div>
+
+              {userIsOwner && <AddConceptForm conceptId={id} callback={this.updateConceptList} />}
 
               {concepts.map((concept) => 
                 <Concept 
                   userIsOwner={userIsOwner}
                   id={concept.id} 
                   question={concept.question} 
-                  answer={concept.answer} 
                   doUpdateConcept={this.doUpdateConcept}
                   handleDeleteConcept={this.handleDeleteConcept} 
                   key={concept.id} />
               )}
 
               <div className = 'inline-display center-subtitle'>
-                <button className = 'red delete-deck' onClick = {this.submitDelete}> delete this concept list </button>
-            </div>
+                <button className = 'red delete-deck' onClick = {this.submitDelete}>
+                  delete this concept list
+                </button>
+              </div>
             </div>
           </div>
         )

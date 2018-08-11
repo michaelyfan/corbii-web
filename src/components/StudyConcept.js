@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getConceptListForStudy, updateConceptPersonalData } from '../utils/api';
+import { getConceptListForStudy, getUserProfileInfo, updateConceptPersonalData } from '../utils/api';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import routes from '../routes/routes';
+import Title from './Title';
 
 
 class SingleConcept extends React.Component {
@@ -27,7 +28,8 @@ class SingleConcept extends React.Component {
     e.preventDefault();
 
     const { content, listId, data } = this.props;
-    const dataId = data ? (data[content.id] ? data[content.id].id : null) : null;
+    const dataId = data ? data.id : null;
+    
     updateConceptPersonalData(dataId, listId, content.id, this.state.text).then(() => {
       this.props.getList();
     }).catch((err) => {
@@ -65,7 +67,10 @@ class SingleConcept extends React.Component {
 }
 
 SingleConcept.propTypes = {
-
+  data: PropTypes.object,
+  content: PropTypes.object,
+  listId: PropTypes.string.isRequired,
+  getList: PropTypes.func.isRequired
 }
 
 class StudyConcept extends React.Component {
@@ -74,6 +79,7 @@ class StudyConcept extends React.Component {
     super(props);
     this.state = {
       listName: '',
+      creatorName: '',
       concepts: [],
       listId: '',
       conceptsAnswers: {},
@@ -91,9 +97,15 @@ class StudyConcept extends React.Component {
   getList() {
     const { id } = this.props.match.params;
     getConceptListForStudy(id).then((result) => {
-      const { name, concepts, conceptsAnswers } = result;
+      return getUserProfileInfo(result.creatorId).then((result2) => {
+        result.creatorName = result2.data().name;
+        return result;
+      });
+    }).then((result) => {
+      const { name, creatorName, concepts, conceptsAnswers } = result;
       this.setState(() => ({
         listName: name,
+        creatorName: creatorName,
         concepts: concepts,
         conceptsAnswers: conceptsAnswers,
         listId: id
@@ -117,17 +129,19 @@ class StudyConcept extends React.Component {
   }
 
   render() {
-    const { index, concepts, conceptsAnswers, listId, listName } = this.state;
-    const conceptContent = concepts[index];
-    const conceptData = conceptContent ? conceptsAnswers[conceptContent.id] : {};
+    const { listName, creatorName, index, concepts, conceptsAnswers, listId } = this.state;
+
+    const conceptContent = concepts[index] || {};
+    const conceptData = conceptsAnswers ? conceptsAnswers[conceptContent.id] : null;
 
     return (
       <div>
-        <div className = 'center-button'>
-          <Link to={`${routes.viewConceptList}/${listId}`} className = 'deck-title-view'>
-            {listName}
-          </Link>
-        </div>
+
+        <Title 
+          text={listName}
+          titleLink={`${routes.viewConceptList}/${listId}`}
+          subtitle={`created by ${creatorName}`} />
+          
         <div className = 'disp-inline center-button'>
           { index > 0 && 
             <img src = '/src/resources/prev-arrow.png'

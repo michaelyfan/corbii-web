@@ -142,13 +142,15 @@ function getPercentOverdue(interval, due_date, current_date) {
 export function getConceptList(listId) {
   let listRef = db.collection('lists').doc(listId);
 
-  return Promise.all([listRef.get(), listRef.collection('concepts').get()]).then(([ list, concepts ]) => {
+  return Promise.all([
+    listRef.get(), 
+    listRef.collection('concepts').get()
+  ]).then(([ list, concepts ]) => {
     let conceptArr = [];
     concepts.forEach((concept) => {
       conceptArr.push({
         id: concept.id,
-        question: concept.data().question,
-        answer: concept.data().answer
+        question: concept.data().question
       })
     });
     return {
@@ -364,7 +366,6 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
       if (concepts[i].question.length > 200) {
         return Promise.reject(new Error('Concept is too long.'));
       }
-      concepts[i].answer = '';
     }
   }
 
@@ -394,10 +395,7 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
       const batch = db.batch();
       concepts.forEach((concept) => {
         const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
-        if (!concept.answer) {
-          concept.answer = '';
-        }
-        batch.set(newCardRef, {question: concept.question, answer: concept.answer});
+        batch.set(newCardRef, {question: concept.question});
       });
       return batch.commit();
     }
@@ -418,15 +416,14 @@ export function createCard(front, back, deckId) {
   });
 }
 
-export function createConcept(question, answer, listId) {
-  if (question.length > 200 || answer.length > 4000) {
+export function createConcept(question, listId) {
+  if (question.length > 200) {
     return Promise.reject(new Error('Concept is too long.'));
   }
-
   const deckRef = db.collection('lists').doc(listId);
+
   return deckRef.collection('concepts').add({
     question: question,
-    answer: answer ? answer : ''
   }).then(() => {
     return updateListCountByOne(listId, true);
   });
@@ -462,6 +459,7 @@ export function updateCardPersonalData(dataId, deckId, cardId, oldEasinessFactor
 
 export function updateCardPersonalDataLearner(dataId, deckId, cardId, newInterval, newEasinessFactor) {
   const uid = firebase.auth().currentUser.uid;
+
   let cardRef;
   if (dataId) {
     cardRef = db.collection('spacedRepData').doc(dataId);
@@ -496,16 +494,15 @@ export function updateCard(deckId, cardId, front, back) {
   });
 }
 
-export function updateConcept(listId, conceptId, question, answer) {
-  if (question.length > 200 || answer.length > 4000) {
+export function updateConcept(listId, conceptId, question) {
+  if (question.length > 200) {
     return Promise.reject(new Error('Concept is too long.'));
   }
 
   const cardRef = `lists/${listId}/concepts/${conceptId}`;
 
   return db.doc(cardRef).update({ 
-    question: question,
-    answer: answer
+    question: question
   });
 }
 

@@ -65,6 +65,11 @@ div.hr {
 .no-display {
   display: none;
 }
+
+.center-something {
+  display: flex;
+  justify-content: center;
+}
 /* End general things */
 
 /* Homepage stuff */

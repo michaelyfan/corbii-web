@@ -8,6 +8,7 @@ import queryString from 'query-string';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import {HotKeys} from 'react-hotkeys';
 import { Line } from 'rc-progress';
+import Title from './Title';
 
 function NewCardOptions(props) {
 
@@ -215,9 +216,8 @@ class CardWrapper extends React.Component {
     } else {
       const { card, cardData } = this.props;
       const { interval, easinessFactor } = cardData;
-      const dataId = cardData 
-                      ? (cardData[card.id] ? cardData[card.id].id : null) 
-                      : null;
+      const dataId = cardData ? cardData.id : null;
+
       updateCardPersonalData(dataId, this.props.deckId, card.id, easinessFactor, interval, quality);
       this.props.incrementIndex();
     }
@@ -383,23 +383,23 @@ class StudyDeck extends React.Component {
 
 
   render() {
-    const { name, creatorName, arrayTodo, index, personalData, id } = this.state;
+    const { name, creatorName, index, arrayTodo, personalData, id } = this.state;
 
     const isDone = (index >= arrayTodo.length);
     const card = arrayTodo[index] || {};
     const cardData = personalData ? personalData[card.id] : null;
     let percentage = (index / arrayTodo.length) * 100;
 
+
+
     return (
       <div>
         <div>
-
-          <div className = 'center-button'>
-            <Link to={`${routes.viewDeck}/${id}`} className = 'deck-title-view' id = 'smaller-title'>
-              {name}
-            </Link>
-          </div>
-          <p className = 'small-caption'>Created by {creatorName}</p>
+          
+          <Title
+            text={name}
+            titleLink={`${routes.viewDeck}/${id}`}
+            subtitle={`created by ${creatorName}`} />
 
           <Line 
             className = 'progress-bar' 

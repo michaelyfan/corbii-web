@@ -389,15 +389,11 @@ class Deck extends React.Component {
             </div>
 
             <div className='soft-blue-background'>
-            <div>
               <Link id = 'study-deck' to={`${routes.studyDeck}/${id}`}>
                 <button className = 'primary-button'>study this deck</button>
               </Link>
-            </div>
 
-            {userIsOwner && <AddCardForm 
-                              deckId={id}
-                              callback={this.updateDeck} /> }
+              { userIsOwner && <AddCardForm deckId={id} callback={this.updateDeck} /> }
             
               {cards.map((card) => 
                 <Card 
@@ -409,7 +405,6 @@ class Deck extends React.Component {
                   handleDeleteCard={this.handleDeleteCard} 
                   key={card.id} />
               )}
-
 
               <div className = 'inline-display center-subtitle'>
                 <button className = 'red delete-deck' onClick = {this.submitDelete}> 

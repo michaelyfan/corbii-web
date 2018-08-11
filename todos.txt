@@ -7,14 +7,18 @@ Frontend:
 - have Create be the interface when a user wants to edit a deck
 - "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
 - make profile settings option stick to bottom of side bar
+- stuff is off-centered when you're viewing a deck or conceptlist that isn't yours
 - make footer stick to bottom of site
 - fix search ui (is it working??)
+- ConceptList.js should use the autoresize text input
+- center StudyConcept.js box, no matter what the arrows are. There is apparently a way to justify single flexbox items:
+  - https://stackoverflow.com/questions/23621650/how-to-justify-a-single-flexbox-item-override-justify-content
 
 Backend:
 - determining signin flow with conceptlist and deck (which are pages that don't require signin, but use firebase.auth().currentUser) is wrong. Functional atm, but could cause problems down the line.
+- when you delete a card or concept, delete data accordingly. You now have the capability to do this. Consider doing it with Cloud Functions.
 - add robots file to disallow web scrapers (or something?)
 - implement new override algorithm once Owen and Hank think of it
-- all the bugs with conceptlist :/
 - show intervals next to card studying options
 - optimize deleting decks. Account for large deck sizes. 
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
@@ -26,14 +30,17 @@ Backend:
 Fullstack:
 - TEACHER FEATURES
 - handle different time zones
-- look at owen and hank bug testing notes
+  - use server time
 - enforce timestamp ordering for cards
-- use a webpack solution better than copy-webpack-plugin
+- maintain array of inputs for conceptlist studying instead of one constant input
+- find a webpack solution better than copy-webpack-plugin
 - implement pictures into the decks
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
-- deck and conceptlist have a bunch of duplicate code, could you merge them into one component...?
 - highly reusable title component
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
 - run everything through eslint eventually (before pushing to production)
 - implement pictures into the decks
+
+Always:
+- look at owen and hank bug testing notes
