@@ -16,6 +16,7 @@ Frontend:
 
 Backend:
 - determining signin flow with conceptlist and deck (which are pages that don't require signin, but use firebase.auth().currentUser) is wrong. Functional atm, but could cause problems down the line.
+- clean up spacedRepData, selfExData root-level collections
 - when you delete a card or concept, delete data accordingly. You now have the capability to do this. Consider doing it with Cloud Functions.
 - add robots file to disallow web scrapers (or something?)
 - implement new override algorithm once Owen and Hank think of it
