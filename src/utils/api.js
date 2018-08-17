@@ -290,22 +290,6 @@ export function getCurrentUserProfileInfo() {
 export function createNewDbUser() {
   const { displayName, email, uid } = firebase.auth().currentUser;
 
-  // temporary algolia indexing soln
-  fetch('/api/addalgolia', {
-    method: 'POST',
-    body: JSON.stringify({
-      type: 'users',
-      object: {
-        objectID: uid,
-        name: displayName,
-        email: email
-      }
-    }),
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  });
-
   return Promise.all([
     db.collection('users').doc(uid).set({
       name: displayName,
@@ -335,17 +319,6 @@ export function createDeckCurrentUser(deckName, cards) {
     count: (cards && cards.length) || 0
   }
   return db.collection('decks').add(data).then((deckRef) => {
-    // very temporary algolia index solution
-    fetch('/api/addalgolia', {
-      method: 'POST',
-      body: JSON.stringify({
-        object: Object.assign({objectID: deckRef.id}, data),
-        type: 'decks'
-      }),
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    });
     if (cards) {
       // consider mixing this batch with the deck creation call
       const batch = db.batch();
@@ -379,17 +352,6 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
   }
 
   return db.collection('lists').add(data).then((listRef) => {
-    // very temporary algolia index solution
-    fetch('/api/addalgolia', {
-      method: 'POST',
-      body: JSON.stringify({
-        object: Object.assign({objectID: listRef.id}, data),
-        type: 'lists'
-      }),
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    });
     if (concepts) {
       // consider mixing this batch with the deck creation call
       const batch = db.batch();
@@ -542,21 +504,6 @@ function updateDeckCountByOne(deckId, isIncrement) {
         count: newCount
       });
 
-      // very temporary algolia index solution
-      fetch('/api/updatealgolia', {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'decks',
-          object: {
-            objectID: deckId,
-            count: newCount
-          }
-        }),
-        headers:{
-          'Content-Type': 'application/json'
-        }
-      });
-
     })
   })
 }
@@ -576,21 +523,6 @@ function updateListCountByOne(listId, isIncrement) {
         count: newCount
       });
 
-      // very temporary algolia index solution
-      fetch('/api/updatealgolia', {
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'lists',
-          object: {
-            count: newCount,
-            objectID: listId
-          }
-        }),
-        headers:{
-          'Content-Type': 'application/json'
-        }
-      });
-
     })
   })
 }
@@ -601,21 +533,6 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
   }
   const userId = firebase.auth().currentUser.uid;
   const deckRef = `decks/${deckId}`;
-
-  // very temporary algolia index solution
-  fetch('/api/updatealgolia', {
-    method: 'POST',
-    body: JSON.stringify({
-      type: 'decks',
-      object: {
-        name: deckName,
-        objectID: deckId
-      }
-    }),
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  });
 
   return db.doc(deckRef).update({name: deckName}).then(() => {
     if (cards) {
@@ -650,21 +567,6 @@ export function updateCurrentUserList(listId, listName, concepts) {
   if (listName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
-
-  // very temporary algolia index solution
-  fetch('/api/updatealgolia', {
-    method: 'POST',
-    body: JSON.stringify({
-      type: 'lists',
-      object: {
-        name: listName,
-        objectID: listId
-      }
-    }),
-    headers:{
-      'Content-Type': 'application/json'
-    }
-  });
 
   return db.doc(listRef).update({name: listName}).then(() => {
     if (concepts) {
@@ -750,7 +652,6 @@ export function searchDecks(query) {
 
   if (query.length > 1000) {
     return Promise.reject(new Error('Query is too long.'));
-    // add algolia check
   }
   return new Promise((resolve, reject) => {
     const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_1);

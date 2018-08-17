@@ -1,10 +1,6 @@
 
 Frontend:
-- implement toasts for feedback and error feedback for user
-  - https://www.npmjs.com/package/react-toastify
-  	- ************	we have the other alerts now? do we still need these?
 - use something better looking than <input type='file' ...
-- have Create be the interface when a user wants to edit a deck
 - "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
 - make profile settings option stick to bottom of side bar
 - stuff is off-centered when you're viewing a deck or conceptlist that isn't yours
@@ -15,33 +11,45 @@ Frontend:
   - https://stackoverflow.com/questions/23621650/how-to-justify-a-single-flexbox-item-override-justify-content
 
 Backend:
+- revise Firestore rules for teachers
+- show intervals next to card studying options
+- (*very* eventually) cache data where possible instead of retrieving every time
 - determining signin flow with conceptlist and deck (which are pages that don't require signin, but use firebase.auth().currentUser) is wrong. Functional atm, but could cause problems down the line.
-- clean up spacedRepData, selfExData root-level collections
 - when you delete a card or concept, delete data accordingly. You now have the capability to do this. Consider doing it with Cloud Functions.
 - add robots file to disallow web scrapers (or something?)
 - implement new override algorithm once Owen and Hank think of it
 - show intervals next to card studying options
 - optimize deleting decks. Account for large deck sizes. 
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
-- should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 - Once Owen incorporates, upgrade Firebase acc, remove Algolia calls on server, and uncomment Cloud Functions
-- add Algolia calls for concept lists.
 - implement structure necessary for a study history
+- should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
+- set up metric alerts on Firebase
 
 Fullstack:
-- TEACHER FEATURES
+- get the actual user/pass input fields working for login. 
+- case 14: a login session exists. It is a teacher. The page starts on the Dashboard. 
+- case 16: a teacher navigates to the Dashboard, or any other non-teacher page.
+- teacher features.
+  - add checks for inputs
+  - implement timecount in seconds
+  - implement secure frontend routes
+  - implement secure Firestore rules
 - handle different time zones
+- use a webpack solution better than copy-webpack-plugin
   - use server time
 - enforce timestamp ordering for cards
 - maintain array of inputs for conceptlist studying instead of one constant input
-- find a webpack solution better than copy-webpack-plugin
 - implement pictures into the decks
 - think of a more elegant solution to the new user's profile pic bug. (see Michael)
-- highly reusable title component
 - refactor, refactor, refactor
   - refactor deck vs. conceptlist flow. Create.js
 - run everything through eslint eventually (before pushing to production)
 - implement pictures into the decks
 
+
 Always:
 - look at owen and hank bug testing notes
+
+
+

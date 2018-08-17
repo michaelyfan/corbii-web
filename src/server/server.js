@@ -1,6 +1,5 @@
 require('dotenv').config();
 const admin = require('firebase-admin');
-const algoliasearch = require('algoliasearch');
 const path = require('path');
 const bodyParser = require('body-parser');
 const express = require("express");
@@ -16,104 +15,11 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-const ALGOLIA_ID = process.env.ALGOLIA_ID;
-const ALGOLIA_ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY;
-const ALGOLIA_INDEX_1 = 'decks';
-const ALGOLIA_INDEX_2 = 'users';
-const ALGOLIA_INDEX_3 = 'lists';
-const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
-
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../../dist')));
 
-app.post('/api/addalgolia', (req, res) => {
-  const type = req.body.type;
-  const object = req.body.object;
-
-  if (type == null) {
-    res.status(400).send({
-      message: 'A type must be specified.'
-    })
-  } else if (object == null){
-    res.status(400).send({
-      message: 'An object must be specified.'
-    })
-  } else if (object.objectID == null) {
-    res.status(400).send({
-      message: 'An object with an objectID must be specified.'
-    })
-  } else if (type != 'decks' && type !='users' && type != 'lists') {
-    res.status(400).send({
-      message: 'Invalid type.'
-    })
-  }
-
-  const index = algoliaClient.initIndex(type);
-  index.addObject(object, (err, content) => {
-    if (err) {
-      console.log(err);
-      res.sendStatus(500);
-    } else {
-      res.sendStatus(200);
-    }
-  });
-});
-
-app.post('/api/updatealgolia', (req, res) => {
-  const type = req.body.type;
-  const object = req.body.object;
-
-  if (type == null) {
-    res.status(400).send({
-      message: 'A type must be specified.'
-    })
-  } else if (object == null){
-    res.status(400).send({
-      message: 'An object must be specified.'
-    })
-  } else if (object.objectID == null) {
-    res.status(400).send({
-      message: 'An object with an objectID must be specified.'
-    })
-  } else if (type != 'decks' && type !='users' && type != 'lists') {
-    res.status(400).send({
-      message: 'Invalid type.'
-    })
-  }
-
-  const index = algoliaClient.initIndex(type);
-  index.partialUpdateObject(object, function(err, content) {
-    if (err) {
-      console.log(err);
-      res.sendStatus(500);
-    } else {
-      res.sendStatus(200);
-    }
-  })
-})
-
-function deletealgolia(type, objectID) {
-  if (type == null) {
-    console.error(new Error('A type must be specified.'));
-    return;
-  } else if (objectID == null){
-    console.error(new Error('An objectID must be specified.'));
-    return;
-  } else if (type != 'decks' && type !='users' && type != 'lists') {
-    console.error(new Error('Invalid type.'));
-    return;
-  }
-
-  const index = algoliaClient.initIndex(type);
-  index.deleteObject(objectID, function(err, content) {
-    if (err) {
-      console.log(err);
-    }
-  });
-}
 
 app.post('/api/deletedeck', (req, res) => {
-
   admin.auth().verifyIdToken(req.body.token)
     .then((decodedToken) => {
       var userId = decodedToken.uid;
@@ -130,7 +36,6 @@ app.post('/api/deletedeck', (req, res) => {
           // deleteCollection(cardsDataRef, 100, cardsDataRef),
           deleteDocument(deckPath)
         ]).then((results) => {
-          deletealgolia('decks', deckId);
           res.sendStatus(200);
         }).catch((err) => {
           console.log(err);
@@ -159,7 +64,6 @@ app.post('/api/deletelist', (req, res) => {
           deleteCollection(conceptsDataRef, 100, conceptsDataRef),
           deleteDocument(listPath),
         ]).then((results) => {
-          deletealgolia('lists', listId);
           res.sendStatus(200);
         }).catch((err) => {
           console.log(err);
