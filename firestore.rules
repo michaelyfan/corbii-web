@@ -53,5 +53,70 @@ service cloud.firestore {
       allow create: if request.auth.uid == request.resource.data.userId;
       allow update, delete: if request.auth.uid == resource.data.userId;
     }
+    
+    match /classrooms/{classroomId} {
+      function userIsTeacher() {
+        return request.auth.uid != null && request.auth.uid == resource.data.teacherId;
+      }
+
+      function userIsTeacherOnCreate() {
+        return request.auth.uid != null && request.auth.uid == request.resource.data.teacherId;
+      }
+
+      function userIsStudent() {
+        return exists(/databases/$(database)/documents/classrooms/$(classroomId)/users/$(request.auth.uid));
+      }
+
+      allow read: if userIsTeacher() || userIsStudent();
+      
+      allow create: if userIsTeacherOnCreate()
+                      && request.auth.uid == request.resource.data.teacherId
+                      && request.resource.data.name != null
+                      && request.resource.data.periods != null
+                      && request.resource.data.name.size() <= 75
+                      && request.resource.data.periods.size() <= 15;
+      allow update: if userIsTeacher();
+      allow delete: if userIsTeacher();
+
+      match /users/{userId} {
+        function userIsTeacherNested() {
+          return request.auth.uid != null && request.auth.uid == get(/databases/$(database)/documents/classrooms/$(classroomId)).data.teacherId;
+        }
+
+
+        allow read: if userIsStudent() || userIsTeacher();
+
+        allow create: if userIsTeacherNested() || request.auth.uid == userId;
+        allow update: if userIsTeacherNested() || request.auth.uid == userId;
+        allow delete: if userIsTeacherNested();
+      }
+    }
+
+    match /classSpacedRepData/{id} {
+      function userIsTeacherOfClass() {
+        return request.auth.uid == get(/databases/$(database)/documents/classrooms/$(resource.data.classroomId)).data.teacherId;
+      }
+
+      function userIsTeacherOfClassOnCreate() {
+        return request.auth.uid == get(/databases/$(database)/documents/classrooms/$(request.resource.data.classroomId)).data.teacherId;
+      }
+
+      function userIsStudentOfClass() {
+        return exists(/databases/$(database)/documents/classrooms/$(resource.data.classroomId)/users/$(request.auth.uid));
+      }
+
+      function userIsStudentOfClassOnCreate() {
+        return exists(/databases/$(database)/documents/classrooms/$(request.resource.data.classroomId)/users/$(request.auth.uid));
+      }
+
+      allow read: if userIsTeacherOfClass();
+
+      allow create: if userIsStudentOfClass()
+        && request.auth.uid == request.resource.data.userId;
+
+      allow update: if false;
+
+      allow delete: return userIsTeacherOfClass() || (userIsStudentOfClass() && resource.data.userId == request.auth.uid);
+    }
   }
 }
