@@ -126,7 +126,7 @@ class Title extends React.Component {
 
   render() {
     const { isUpdate, originalListName, newListName } = this.state;
-    const { listName, creatorName } = this.props;
+    const { listName, creatorName, userIsOwner } = this.props;
     return (
       <div>
         {isUpdate
@@ -140,12 +140,12 @@ class Title extends React.Component {
           : <p className = 'deck-title edit-title'>{originalListName}</p>}
         <div className = 'inline-display center-subtitle'>
           <p className = 'small-caption'>created by {creatorName} | </p>
-          {isUpdate
-            ? <span>
-                <button onClick={this.handleUpdateList} className = 'small-caption change-title'>&nbsp;update</button>
-                <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
-              </span>
-            : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change list title</button> }
+          {userIsOwner && (isUpdate
+                      ? <span>
+                          <button onClick={this.handleUpdateList} className = 'small-caption change-title'>&nbsp;update</button>
+                          <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
+                        </span>
+                      : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change list title</button>) }
         </div>
       </div>
     )
@@ -155,7 +155,8 @@ class Title extends React.Component {
 Title.propTypes = {
   listName: PropTypes.string.isRequired,
   creatorName: PropTypes.string.isRequired,
-  listId: PropTypes.string.isRequired
+  listId: PropTypes.string.isRequired,
+  userIsOwner: PropTypes.bool.isRequired
 }
 
 class AddConceptForm extends React.Component {
@@ -330,6 +331,7 @@ class ConceptList extends React.Component {
             <div className = 'deck-info'>
               <BackToDashboardButton />
               <Title 
+                userIsOwner={userIsOwner}
                 creatorName={creatorName}
                 listName={listName}
                 listId={id} />

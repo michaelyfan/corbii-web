@@ -20,32 +20,32 @@ app.use(express.static(path.join(__dirname, '../../dist')));
 
 
 app.post('/api/deletedeck', (req, res) => {
-  admin.auth().verifyIdToken(req.body.token)
-    .then((decodedToken) => {
-      var userId = decodedToken.uid;
-      if (req.body.uid != userId) {
-        res.sendStatus(403);
-      } else {
-        const deckId = req.body.deckId;
-        console.log(deckId);
-        const cardsPath = `decks/${deckId}/cards`;
-        const deckPath = `decks/${deckId}`;
-        const cardsDataRef = db.collection('spacedRepData').where('deckId', '==', deckId);
-        Promise.all([
-          deleteCollection(cardsPath, 100),
-          // deleteCollection(cardsDataRef, 100, cardsDataRef),
-          deleteDocument(deckPath)
-        ]).then((results) => {
-          res.sendStatus(200);
-        }).catch((err) => {
-          console.log(err);
-          res.sendStatus(500);
-        });
-      }
-    }).catch(function(error) {
-      console.log(error);
-      res.sendStatus(500);
-    });
+  admin.auth().verifyIdToken(req.body.token).then((decodedToken) => {
+    var userId = decodedToken.uid;
+    if (req.body.uid != userId) {
+      res.sendStatus(403);
+    } else {
+      const deckId = req.body.deckId;
+      console.log(deckId);
+      const cardsPath = `decks/${deckId}/cards`;
+      const deckPath = `decks/${deckId}`;
+      const cardsDataRef = db.collection('spacedRepData').where('deckId', '==', deckId);
+      Promise.all([
+        deleteCollection(cardsPath, 100),
+        deleteCollection(cardsDataRef, 100, cardsDataRef),
+        deleteDocument(deckPath)
+      ]).then((results) => {
+        res.sendStatus(200);
+      }).catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+      });
+    }
+  }).catch(function(error) {
+    console.log(error);
+    res.sendStatus(500);
+  });
+
 });
 
 app.post('/api/deletelist', (req, res) => {

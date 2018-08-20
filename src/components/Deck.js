@@ -154,7 +154,7 @@ class DeckTitle extends React.Component {
 
   render() {
     const { isUpdate, originalDeckName, newDeckName } = this.state;
-    const { deckName, creatorName } = this.props;
+    const { deckName, creatorName, userIsOwner } = this.props;
     return (
       <div>
         {isUpdate
@@ -167,13 +167,14 @@ class DeckTitle extends React.Component {
             />
           : <p className = 'deck-title edit-title'>{originalDeckName}</p>}
         <div className = 'inline-display center-subtitle'>
-          <p className = 'small-caption'>created by {creatorName} | </p>
-          {isUpdate
-            ? <span>
-                <button onClick={this.handleUpdateDeck} className = 'small-caption change-title'>&nbsp;update</button>
-                <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
-              </span>
-            : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change deck title</button> }
+          <p className = 'small-caption'>created by {creatorName} |</p>
+          {userIsOwner && (isUpdate
+                      ? <span>
+                          
+                          <button onClick={this.handleUpdateDeck} className = 'small-caption change-title'>&nbsp;update</button>
+                          <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
+                        </span>
+                      : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change deck title</button>) }
         </div>
       </div>
     )
@@ -183,7 +184,8 @@ class DeckTitle extends React.Component {
 DeckTitle.propTypes = {
   deckName: PropTypes.string.isRequired,
   creatorName: PropTypes.string.isRequired,
-  deckId: PropTypes.string.isRequired
+  deckId: PropTypes.string.isRequired,
+  userIsOwner: PropTypes.bool.isRequired
 }
 
 class AddCardForm extends React.Component {
@@ -383,6 +385,7 @@ class Deck extends React.Component {
             <div className = 'deck-info'>
               <BackToDashboardButton />
               <DeckTitle
+                userIsOwner={userIsOwner}
                 creatorName={creatorName}
                 deckName={deckName}
                 deckId={id} />

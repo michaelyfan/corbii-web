@@ -11,10 +11,7 @@ Frontend:
   - https://stackoverflow.com/questions/23621650/how-to-justify-a-single-flexbox-item-override-justify-content
 
 Backend:
-- implement new override algorithm
-- revise Firestore rules for teachers
 - determining signin flow with conceptlist and deck (which are pages that don't require signin, but use firebase.auth().currentUser) is wrong. Functional atm, but could cause problems down the line.
-- optimize deleting decks. Account for large deck sizes. 
 
 - when you delete a card or concept, delete data accordingly. You now have the capability to do this. Consider doing it with Cloud Functions.
   - or not.
