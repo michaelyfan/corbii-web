@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase from '../utils/firebase';
 import { BrowserRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
-import { getCurrentUserProfilePic } from '../utils/api';
+import { getUserOnLogin, getCurrentUserProfilePic, createNewDbUser } from '../utils/api';
 import routes from '../routes/routes';
 import Nav from './Nav';
 import FAQ from './FAQ';
@@ -21,7 +21,6 @@ import DeniedNoAuth from './DeniedNoAuth';
 import { BigLoading } from './Loading';
 
 function PrivateRoute({ component: Component, render, signedIn, loading, ...rest }) {
-  
   return <Route {...rest} render={(props) => (
     loading
       ? <BigLoading />
@@ -41,7 +40,7 @@ class App extends React.Component {
     this.state = {
       photoURL: '',
       loading: true,
-      signedIn: false
+      signedIn: false,
     };
 
     this.doGetProfilePic = this.doGetProfilePic.bind(this);
@@ -50,17 +49,32 @@ class App extends React.Component {
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        this.setState(() => ({
-          signedIn: true,
-          loading: false
-        }));
-        this.doGetProfilePic();
+        getUserOnLogin().then((result) => {
+          if (result.exists) {
+            this.setState(() => ({
+              signedIn: true,
+              loading: false
+            }))
+            this.doGetProfilePic();
+          } else {
+            return createNewDbUser().then(() => {
+              this.setState(() => ({
+                signedIn: true,
+                loading: false
+              }))
+              this.doGetProfilePic();
+            });
+          }
+          
+        }).catch((err) => {
+          console.error(err);
+        });
       } else {
         this.setState(() => ({
           signedIn: false,
           loading: false,
           photoURL: ''
-        }))
+        }));
       }
     });
   }
@@ -73,7 +87,6 @@ class App extends React.Component {
     })
   }
 
-
   render() {
 
     const { signedIn, photoURL, loading } = this.state;
@@ -81,14 +94,14 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <Nav photoURL={photoURL} signedIn={signedIn} doGetProfilePic={this.doGetProfilePic} />
+          <Nav photoURL={photoURL} 
+            signedIn={signedIn} />
           <Switch>
             <Route 
               exact path={routes.home} 
               render={(props) => 
                 <Homepage {...props} 
-                  signedIn={signedIn}
-                  doGetProfilePic={this.doGetProfilePic} />} />
+                  signedIn={signedIn} />} />
             <Route
               path={routes.faq}
               component={FAQ} />
@@ -134,7 +147,7 @@ class App extends React.Component {
               component={User} />
             <Route
               path={`${routes.denied}`}
-              component={DeniedNoAuth} />              
+              component={DeniedNoAuth} />
             <Route component={NotFound} />
           </Switch>
           <Footer />

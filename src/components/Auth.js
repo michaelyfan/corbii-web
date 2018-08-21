@@ -9,7 +9,7 @@ class Auth extends React.Component {
 
 
   render() {
-    const { signedIn, doGetProfilePic, loginSuccessCallback, loginFailureCallback } = this.props;
+    const { signedIn, loginSuccessCallback, loginFailureCallback } = this.props;
     const firebaseUiConfig = {
       signInFlow: 'popup',
       signInOptions: [
@@ -20,19 +20,8 @@ class Auth extends React.Component {
       credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
       callbacks: {
         signInSuccessWithAuthResult: (authResult)  => {
-          if (authResult.additionalUserInfo.isNewUser) {
-            createNewDbUser().then(() => {
-              doGetProfilePic();
-              if (loginSuccessCallback) {
-                loginSuccessCallback();
-              }
-            }).catch((err) => {
-              console.log(err);
-            })
-          } else {
-            if (loginSuccessCallback) {
-              loginSuccessCallback();
-            }
+          if (loginSuccessCallback) {
+            loginSuccessCallback();
           }
         },
         signInFailure: (error) => {
@@ -54,7 +43,6 @@ class Auth extends React.Component {
 
 Auth.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  doGetProfilePic: PropTypes.func.isRequired,
   loginSuccessCallback: PropTypes.func,
   loginFailureCallback: PropTypes.func
 }

@@ -34,7 +34,6 @@ class Homepage extends React.Component {
             <LoginModal 
                 header = 'sign up'
                 signedIn = {this.props.signedIn}
-                doGetProfilePic = {this.props.doGetProfilePic}
                 redirectTo='/dashboard'>
               <button className = "primary-button" type = "button"> i am a student</button>
             </LoginModal>
@@ -47,7 +46,6 @@ class Homepage extends React.Component {
           <LoginModal 
             header = "log in" 
             signedIn = {this.props.signedIn}
-            doGetProfilePic = {this.props.doGetProfilePic}
             redirectTo='/dashboard'
           >
             <button className = 'log-in'>Log in.</button>
@@ -87,8 +85,7 @@ class Homepage extends React.Component {
 }
 
 Homepage.propTypes = {
-  signedIn: PropTypes.bool.isRequired,
-  doGetProfilePic: PropTypes.func.isRequired
+  signedIn: PropTypes.bool.isRequired
 }
 
 export default Homepage;

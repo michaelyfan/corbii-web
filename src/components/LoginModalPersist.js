@@ -78,7 +78,7 @@ class LoginModalPersist extends React.Component {
   }
  
   render() {
-    const { redirectTo, header, signedIn, doGetProfilePic } = this.props;
+    const { redirectTo, header, signedIn } = this.props;
 
     return (
       <span style={{display: this.state.displayStyle}}>
@@ -102,7 +102,6 @@ class LoginModalPersist extends React.Component {
 */}
             <Auth 
               signedIn={signedIn}
-              doGetProfilePic = {doGetProfilePic}
               loginSuccessCallback = {this.loginCallback} />
           </div>
         </Modal>
@@ -113,7 +112,6 @@ class LoginModalPersist extends React.Component {
 
 LoginModalPersist.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  doGetProfilePic: PropTypes.func.isRequired,
   header: PropTypes.string,
   redirectTo: PropTypes.string
 

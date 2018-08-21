@@ -50,7 +50,7 @@ class LoginModal extends React.Component {
   }
  
   render() {
-    const { redirectTo, header, signedIn, doGetProfilePic } = this.props;
+    const { redirectTo, header, signedIn } = this.props;
 
     return (
       <span>
@@ -75,8 +75,7 @@ class LoginModal extends React.Component {
             <button className = 'primary-button' id = 'submit-email'>{header}</button>     
 */}
             <Auth 
-              signedIn={signedIn}
-              doGetProfilePic = {doGetProfilePic} />
+              signedIn={signedIn} />
           </div>
         </Modal>
       </span>
@@ -86,7 +85,6 @@ class LoginModal extends React.Component {
 
 LoginModal.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  doGetProfilePic: PropTypes.func.isRequired,
   header: PropTypes.string,
   redirectTo: PropTypes.string
 

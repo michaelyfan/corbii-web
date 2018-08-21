@@ -42,7 +42,7 @@ class Nav extends React.Component {
   }
 
   render() {
-    const { signedIn, photoURL, doGetProfilePic } = this.props;
+    const { signedIn, photoURL } = this.props;
     return (
       <div className = "header"> 
         <div className = 'flex-header'>
@@ -84,8 +84,7 @@ class Nav extends React.Component {
 
           <LoginModalPersist 
             header = "log in"
-            signedIn = {signedIn}
-            doGetProfilePic = {doGetProfilePic} >
+            signedIn = {signedIn} >
             <button className = 'log-in' id = 'header-login'>log in </button>
           </LoginModalPersist>
 
@@ -105,7 +104,6 @@ class Nav extends React.Component {
 Nav.propTypes = {
   signedIn: PropTypes.bool.isRequired,
   photoURL: PropTypes.string.isRequired,
-  doGetProfilePic: PropTypes.func.isRequired
 }
 
 export default withRouter(Nav);

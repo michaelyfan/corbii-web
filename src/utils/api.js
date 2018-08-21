@@ -26,6 +26,22 @@ const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
 // Begin api functions
+export function getUserOnLogin() {
+  const uid = firebase.auth().currentUser.uid;
+  const userRef = db.collection('users').doc(uid);
+  return userRef.get().then((userDocSnapshot) => {
+    if (userDocSnapshot.exists) {
+      return {
+        exists: true
+      }
+    } else {
+      return {
+        exists: false
+      }
+    }
+  });
+}
+
 export function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
   let cardsRef = deckRef.collection('cards');
