@@ -100,7 +100,7 @@ class App extends React.Component {
             <Route 
               exact path={routes.home} 
               render={(props) => 
-                <Homepage {...props} 
+                <Homepage {...props}
                   signedIn={signedIn} />} />
             <Route
               path={routes.faq}

@@ -4,6 +4,7 @@ Frontend:
 - "If I press new card I think it should automatically select the text box so I can start typing" - Hank Hellstrom
 - make profile settings option stick to bottom of side bar
 - stuff is off-centered when you're viewing a deck or conceptlist that isn't yours
+  - additionally, the "|" character remains when you're viewing a deck or a conceptlist that isn't yours
 - make footer stick to bottom of site
 - fix search ui (is it working??)
 - ConceptList.js should use the autoresize text input
@@ -11,14 +12,12 @@ Frontend:
   - https://stackoverflow.com/questions/23621650/how-to-justify-a-single-flexbox-item-override-justify-content
 
 Backend:
-- determining signin flow with conceptlist and deck (which are pages that don't require signin, but use firebase.auth().currentUser) is wrong. Functional atm, but could cause problems down the line.
-
 - when you delete a card or concept, delete data accordingly. You now have the capability to do this. Consider doing it with Cloud Functions.
   - or not.
-- (*very* eventually) cache data where possible instead of retrieving every time
 - show intervals next to card studying options
 - add robots file to disallow web scrapers (or something?)
 - show intervals next to card studying options
+- (*very* eventually) cache data where possible instead of retrieving every time
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
 - implement structure necessary for a study history
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
@@ -29,13 +28,9 @@ Fullstack:
   - implement actual data pulling
   - add checks for inputs
   - implement study timecount in seconds
-- run everything through eslint eventually (before pushing to production)
+- back to the correct location when reaching a deck (either from search or from dashboard)
 - maintain array of inputs for conceptlist studying instead of one constant input
-- (eventually) before you deploy:
-  - follow this: https://github.com/rotati/wiki/wiki/Deployment-and-QA-Workflow
-  - run everything through eslint
-  - 
-
+- run everything through eslint eventually (before pushing to production)
 - get the actual user/pass input fields working for login. 
 - case 14: a login session exists. It is a teacher. The page starts on the Dashboard. 
 - case 16: a teacher navigates to the Dashboard, or any other non-teacher page.
@@ -44,9 +39,10 @@ Fullstack:
 - enforce timestamp ordering for cards
   - use server time
 - implement pictures into the decks
+- (eventually) before you deploy:
+  - follow this: https://github.com/rotati/wiki/wiki/Deployment-and-QA-Workflow
+  - run everything through eslint
 
 Always:
 - look at owen and hank bug testing notes
-
-
-
+- look at your spending/api use metrics

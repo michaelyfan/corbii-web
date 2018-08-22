@@ -213,7 +213,7 @@ export function getConceptListForStudy(listId) {
         name: list.listName,
         creatorId: list.creatorId,
         concepts: concepts,
-        conceptsAnswers: conceptsToBeKept
+        conceptsData: conceptsToBeKept
       };
     });
   })

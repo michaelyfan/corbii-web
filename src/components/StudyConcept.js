@@ -82,7 +82,7 @@ class StudyConcept extends React.Component {
       creatorName: '',
       concepts: [],
       listId: '',
-      conceptsAnswers: {},
+      conceptsData: {},
       index: 0
     }
 
@@ -102,12 +102,12 @@ class StudyConcept extends React.Component {
         return result;
       });
     }).then((result) => {
-      const { name, creatorName, concepts, conceptsAnswers } = result;
+      const { name, creatorName, concepts, conceptsData } = result;
       this.setState(() => ({
         listName: name,
         creatorName: creatorName,
         concepts: concepts,
-        conceptsAnswers: conceptsAnswers,
+        conceptsData: conceptsData,
         listId: id
       }))
     }).catch((err) => {
@@ -129,10 +129,10 @@ class StudyConcept extends React.Component {
   }
 
   render() {
-    const { listName, creatorName, index, concepts, conceptsAnswers, listId } = this.state;
+    const { listName, creatorName, index, concepts, conceptsData, listId } = this.state;
 
     const conceptContent = concepts[index] || {};
-    const conceptData = conceptsAnswers ? conceptsAnswers[conceptContent.id] : null;
+    const conceptData = conceptsData ? conceptsData[conceptContent.id] : null;
 
     return (
       <div>
