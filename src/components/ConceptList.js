@@ -1,5 +1,4 @@
 import React from 'react';
-import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
@@ -330,42 +329,42 @@ class ConceptList extends React.Component {
     return this.state.isLoading
       ? <BigLoading />
       : (
-          <div>
-            <div className = 'deck-info'>
-              <BackToDashboardButton />
-              <Title 
+        <div>
+          <div className = 'deck-info'>
+            <BackToDashboardButton />
+            <Title 
+              userIsOwner={userIsOwner}
+              creatorName={creatorName}
+              listName={listName}
+              listId={id} />
+          </div>
+
+          <div className='soft-blue-background'>
+
+            <Link id = 'study-list' to={`${routes.studyConceptList}/${id}`}>
+              <button className = 'primary-button'>study this list</button>
+            </Link>
+
+            {userIsOwner && <AddConceptForm conceptId={id} callback={this.updateConceptList} />}
+
+            {concepts.map((concept) => 
+              <Concept 
                 userIsOwner={userIsOwner}
-                creatorName={creatorName}
-                listName={listName}
-                listId={id} />
-            </div>
+                id={concept.id} 
+                question={concept.question} 
+                doUpdateConcept={this.doUpdateConcept}
+                handleDeleteConcept={this.handleDeleteConcept} 
+                key={concept.id} />
+            )}
 
-            <div className='soft-blue-background'>
-
-              <Link id = 'study-list' to={`${routes.studyConceptList}/${id}`}>
-                <button className = 'primary-button'>study this list</button>
-              </Link>
-
-              {userIsOwner && <AddConceptForm conceptId={id} callback={this.updateConceptList} />}
-
-              {concepts.map((concept) => 
-                <Concept 
-                  userIsOwner={userIsOwner}
-                  id={concept.id} 
-                  question={concept.question} 
-                  doUpdateConcept={this.doUpdateConcept}
-                  handleDeleteConcept={this.handleDeleteConcept} 
-                  key={concept.id} />
-              )}
-
-              <div className = 'inline-display center-subtitle'>
-                <button className = 'red delete-deck' onClick = {this.submitDelete}>
-                  delete this concept list
-                </button>
-              </div>
+            <div className = 'inline-display center-subtitle'>
+              <button className = 'red delete-deck' onClick = {this.submitDelete}>
+                delete this concept list
+              </button>
             </div>
           </div>
-        )
+        </div>
+      )
     
   }
 }

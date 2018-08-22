@@ -1,11 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
 import { shiftInArray } from '../utils/tools';
 import routes from '../routes/routes';
-import queryString from 'query-string';
-import { Link, NavLink, withRouter } from 'react-router-dom';
 import {HotKeys} from 'react-hotkeys';
 import { Line } from 'rc-progress';
 import Title from './Title';

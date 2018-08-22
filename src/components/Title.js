@@ -9,19 +9,17 @@ export default function Title(props) {
     <div>
       <div className = 'center-button smaller-title'>
         {titleLink
-          ? <Link to={titleLink} className='deck-title-view'>
-              {text}
-            </Link>
+          ? <Link to={titleLink} className='deck-title-view'>{text}</Link>
           : <p className = 'deck-title-view'>{text}</p>
         }
       </div>
       {subtitle && <p className = 'small-caption'>{subtitle}</p> }
     </div>
-  )
+  );
 }
 
-Title.propTypes ={
+Title.propTypes = {
   titleLink: PropTypes.string,
   text: PropTypes.string.isRequired,
   subtitle: PropTypes.string
-}
+};

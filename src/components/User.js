@@ -1,7 +1,6 @@
 import React from 'react';
-import queryString from 'query-string';
 import { Link } from 'react-router-dom';
-import { getUserAll, getProfilePic } from '../utils/api';
+import { getUserAll } from '../utils/api';
 import routes from '../routes/routes';
 
 function DeckMiniView(props) {
@@ -13,18 +12,18 @@ function DeckMiniView(props) {
         <button>View</button>
       </Link>  
     </div>
-  )
+  );
 }
 
 class User extends React.Component {
 
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       name: '',
       decks: [],
       profilePic: null
-    }
+    };
   }
 
   componentDidMount() {

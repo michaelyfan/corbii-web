@@ -78,7 +78,7 @@ class LoginModalPersist extends React.Component {
   }
  
   render() {
-    const { redirectTo, header, signedIn } = this.props;
+    const { header, signedIn } = this.props;
 
     return (
       <span style={{display: this.state.displayStyle}}>

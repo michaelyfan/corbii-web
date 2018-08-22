@@ -24,7 +24,7 @@ const config = {
     port: 8080,
     open: true,
     proxy: {
-      "/api": "http://localhost:3000"
+      '/api': 'http://localhost:3000'
     },
     historyApiFallback: true,
   },

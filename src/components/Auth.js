@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import firebaseui from 'firebaseui';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from '../utils/firebase';
-import { createNewDbUser } from '../utils/api';
 
 class Auth extends React.Component {
 

@@ -29,7 +29,7 @@ function PrivateRoute({ component: Component, render, signedIn, loading, ...rest
           ? <Component {...props} />
           : render()
         : <Redirect to='/denied' />
-  )} />
+  )} />;
 }
 
 
@@ -54,14 +54,14 @@ class App extends React.Component {
             this.setState(() => ({
               signedIn: true,
               loading: false
-            }))
+            }));
             this.doGetProfilePic();
           } else {
             return createNewDbUser().then(() => {
               this.setState(() => ({
                 signedIn: true,
                 loading: false
-              }))
+              }));
               this.doGetProfilePic();
             });
           }
@@ -81,10 +81,10 @@ class App extends React.Component {
 
   doGetProfilePic() {
     getCurrentUserProfilePic().then((url) => {
-      this.setState(() => ({photoURL: url}))
+      this.setState(() => ({photoURL: url}));
     }).catch((err) => {
       console.error(err);
-    })
+    });
   }
 
   render() {
@@ -153,7 +153,7 @@ class App extends React.Component {
           <Footer />
         </div>
       </Router>
-    )
+    );
   }
 }
 

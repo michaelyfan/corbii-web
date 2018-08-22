@@ -1,7 +1,6 @@
 import React from 'react';
 import { getDeck, getUserProfileInfo, createCard, updateCard, updateCurrentUserDeck, deleteDeckFromCurrentUser, deleteCard } from '../utils/api';
 import firebase from '../utils/firebase';
-import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
