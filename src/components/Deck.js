@@ -153,7 +153,7 @@ class DeckTitle extends React.Component {
 
   render() {
     const { isUpdate, originalDeckName, newDeckName } = this.state;
-    const { deckName, creatorName, userIsOwner } = this.props;
+    const { deckName, creatorName, userIsOwner, numberOfCards } = this.props;
     return (
       <div>
         {isUpdate
@@ -166,7 +166,9 @@ class DeckTitle extends React.Component {
             />
           : <p className = 'deck-title edit-title'>{originalDeckName}</p>}
         <div className = 'inline-display center-subtitle'>
-          <p className = 'small-caption'>created by {creatorName} {userIsOwner && <span>|</span>}</p>
+          <p className = 'small-caption'>created by {creatorName} | 
+          {numberOfCards} {numberOfCards === 1 ? 'card' : 'cards'} 
+          {userIsOwner && <span>|</span>}</p>
           {userIsOwner && (
             isUpdate
               ? <span>
@@ -377,6 +379,7 @@ class Deck extends React.Component {
 
   render() {
     const { isLoading, deckName, creatorName, id, cards, userIsOwner } = this.state;
+    const numberOfCards = cards.length;
 
     return isLoading
       ? <BigLoading />
@@ -388,6 +391,7 @@ class Deck extends React.Component {
                 userIsOwner={userIsOwner}
                 creatorName={creatorName}
                 deckName={deckName}
+                numberOfCards={numberOfCards}
                 deckId={id} />
             </div>
 
