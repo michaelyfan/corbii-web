@@ -26,13 +26,10 @@ app.post('/api/deletedeck', (req, res) => {
       res.sendStatus(403);
     } else {
       const deckId = req.body.deckId;
-      console.log(deckId);
       const cardsPath = `decks/${deckId}/cards`;
       const deckPath = `decks/${deckId}`;
-      const cardsDataRef = db.collection('spacedRepData').where('deckId', '==', deckId);
       Promise.all([
         deleteCollection(cardsPath, 100),
-        deleteCollection(cardsDataRef, 100, cardsDataRef),
         deleteDocument(deckPath)
       ]).then((results) => {
         res.sendStatus(200);
@@ -57,11 +54,10 @@ app.post('/api/deletelist', (req, res) => {
       } else {
         const listId = req.body.listId;
         const conceptsPath = `lists/${listId}/concepts`;
-        const conceptsDataRef = db.collection('selfExData').where('listId', '==', listId);
+        
         const listPath = `lists/${listId}`;
         Promise.all([
           deleteCollection(conceptsPath, 100),
-          deleteCollection(conceptsDataRef, 100, conceptsDataRef),
           deleteDocument(listPath),
         ]).then((results) => {
           res.sendStatus(200);

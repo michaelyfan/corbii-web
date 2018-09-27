@@ -45,13 +45,13 @@ service cloud.firestore {
     match /spacedRepData/{dataId} {
       allow read: if true;
       allow create: if request.auth.uid == request.resource.data.userId;
-      allow update, delete: if request.auth.uid == resource.data.userId;
+      allow update: if request.auth.uid == resource.data.userId;
     }
 
     match /selfExData/{dataId} {
       allow read: if true; 
       allow create: if request.auth.uid == request.resource.data.userId;
-      allow update, delete: if request.auth.uid == resource.data.userId;
+      allow update: if request.auth.uid == resource.data.userId;
     }
     
     match /classrooms/{classroomId} {

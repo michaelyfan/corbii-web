@@ -8,20 +8,18 @@ Frontend:
 - make footer stick to bottom of site
 - fix search ui (is it working??)
 - ConceptList.js should use the autoresize text input
-- center StudyConcept.js box, no matter what the arrows are. There is apparently a way to justify single flexbox items:
+- center StudyConcept.js box, no matter what the arrows are. There is apparently a way to justify single flexbox items, no idea if this is valid:
   - https://stackoverflow.com/questions/23621650/how-to-justify-a-single-flexbox-item-override-justify-content
 
 Backend:
-- when you delete a card or concept, delete data accordingly. You now have the capability to do this. Consider doing it with Cloud Functions.
-  - or not.
-- show intervals next to card studying options
+- optimize card deletion, since right now your deck deletion process inadvertently calls card deletion like a billion times.
+- compress profile pictures that come in.
+- cache data where possible and most efficient instead of retrieving every time
 - add robots file to disallow web scrapers (or something?)
 - show intervals next to card studying options
-- (*very* eventually) cache data where possible instead of retrieving every time
 - automatically updating isDue field in Firestore (somehow...) instead of updating on retrieval
 - implement structure necessary for a study history
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
-- set up budget alerts and spending/api caps on Firebase
 
 Fullstack:
 - teacher features.
