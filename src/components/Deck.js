@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
-import { BigLoading } from './Loading';
-import BackToDashboardButton from './BackToDashboardButton';
+import { BigLoading } from './reusables/Loading';
+import BackToDashboardButton from './reusables/BackToDashboardButton';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 

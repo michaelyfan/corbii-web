@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { getConceptListForStudy, getUserProfileInfo, updateConceptPersonalData } from '../utils/api';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 import routes from '../routes/routes';
-import Title from './Title';
+import Title from './reusables/Title';
 
 
 class SingleConcept extends React.Component {

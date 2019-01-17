@@ -1,8 +1,3 @@
-/*
-  read: get, list
-  write: create, update, delete
-*/
-
 import firebase from './firebase';
 import 'firebase/firestore';
 import alg from './algconfig';
@@ -122,7 +117,7 @@ export function getDeckForStudy(deckId) {
       return item1.percentOverdue - item2.percentOverdue;
     });
 
-    // delete cards in cardsToBeDeleted, they weren't in content.
+    // removes cards in cardsToBeDeleted from the spaced-rep data. these cards were cards that no longer have content associated with them in the database, meaning the user chose to delete them.
     let batch = db.batch();
     Object.keys(cardsToBeDeleted).forEach((id) => {
       const dataId = cardsToBeDeleted[id].id;
@@ -201,6 +196,7 @@ export function getConceptListForStudy(listId) {
       delete conceptsToBeDeleted[concept.id];
     });
 
+    // removes concepts in cardsToBeDeleted from the spaced-rep data. these concepts were concepts that no longer have content associated with them in the database, meaning the user chose to delete them.
     let batch = db.batch();
     Object.keys(conceptsToBeDeleted).forEach((id) => {
       const dataId = conceptsToBeDeleted[id].id;
@@ -613,6 +609,8 @@ export function updateCurrentUserProfilePic(file) {
 // end update functions
 
 // begin delete functions
+
+// removes a card's content documents from the database.
 export function deleteCard(deckId, cardId) {
   const deckRef = db.collection('decks').doc(deckId);
   return deckRef.collection('cards').doc(cardId).delete().then(() => {
@@ -620,6 +618,7 @@ export function deleteCard(deckId, cardId) {
   });
 }
 
+// removes a concept's content documents from the database.
 export function deleteConcept(listId, conceptId) {
   const listRef = db.collection('lists').doc(listId);
   return listRef.collection('concepts').doc(conceptId).delete().then(() => {

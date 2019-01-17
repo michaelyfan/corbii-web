@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
 import { getConceptList, createConcept, deleteConcept, updateConcept, getUserProfileInfo, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import routes from '../routes/routes';
-import { BigLoading } from './Loading';
-import BackToDashboardButton from './BackToDashboardButton';
+import { BigLoading } from './reusables/Loading';
+import BackToDashboardButton from './reusables/BackToDashboardButton';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 

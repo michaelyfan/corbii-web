@@ -2,7 +2,7 @@ import React from 'react';
 import { getCurrentUserConceptLists } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
-import { Loading } from './Loading';
+import { Loading } from './reusables/Loading';
 import routes from '../routes/routes';
 
 

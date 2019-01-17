@@ -18,7 +18,7 @@ const db = admin.firestore();
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../../dist')));
 
-
+// removes a deck's content documents from the database, then removes the deck
 app.post('/api/deletedeck', (req, res) => {
   admin.auth().verifyIdToken(req.body.token).then((decodedToken) => {
     var userId = decodedToken.uid;
@@ -45,6 +45,7 @@ app.post('/api/deletedeck', (req, res) => {
 
 });
 
+// removes a conceptlist's content documents from the database, then removes the conceptlist
 app.post('/api/deletelist', (req, res) => {
   admin.auth().verifyIdToken(req.body.token)
     .then((decodedToken) => {

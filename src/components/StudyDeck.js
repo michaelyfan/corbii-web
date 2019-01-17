@@ -5,7 +5,7 @@ import { shiftInArray } from '../utils/tools';
 import routes from '../routes/routes';
 import {HotKeys} from 'react-hotkeys';
 import { Line } from 'rc-progress';
-import Title from './Title';
+import Title from './reusables/Title';
 
 function NewCardOptions(props) {
 

@@ -99,12 +99,8 @@ exports.onDeckUpdate = functions.firestore.document('decks/{deckId}').onUpdate((
 
 exports.onDeckDelete = functions.firestore.document('decks/{deckId}').onDelete((snap, context) => {
   const deckId = context.params.deckId;
-  const cardsDataRef = db.collection('spacedRepData').where('deckId', '==', deckId);
   const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_1);
-  return Promise.all([
-    deleteCollection(cardsDataRef, 100, cardsDataRef),
-    index.deleteObject(deckId)
-  ]);
+  return index.deleteObject(deckId);
 });
 
 exports.onUserCreate = functions.firestore.document('users/{userId}').onCreate((snap, context) => {
@@ -150,12 +146,8 @@ exports.onListUpdate = functions.firestore.document('lists/{listId}').onUpdate((
 
 exports.onListDelete = functions.firestore.document('lists/{listId}').onDelete((snap, context) => {
   const listId = context.params.listId;
-  const conceptsDataRef = db.collection('selfExData').where('listId', '==', listId);
   const index = algoliaClient.initIndex(ALGOLIA_INDEX_NAME_3);
-  return Promise.all([
-    deleteCollection(conceptsDataRef, 100, conceptsDataRef),
-    index.deleteObject(listId)
-  ]);
+  return index.deleteObject(listId);
 });
 
 exports.onCardDelete = functions.firestore.document('decks/{deckId}/cards/{cardId}').onDelete((snap, context) => {

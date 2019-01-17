@@ -3,7 +3,7 @@ import { getCurrentUserDecks } from '../utils/api';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'
 import routes from '../routes/routes';
-import { Loading, BigLoading } from './Loading';
+import { Loading, BigLoading } from './reusables/Loading';
 
 function DeckRow(props) {
   const { name, id } = props;

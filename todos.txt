@@ -8,11 +8,10 @@ Frontend:
 - make footer stick to bottom of site
 - fix search ui (is it working??)
 - ConceptList.js should use the autoresize text input
-- center StudyConcept.js box, no matter what the arrows are. There is apparently a way to justify single flexbox items, no idea if this is valid:
-  - https://stackoverflow.com/questions/23621650/how-to-justify-a-single-flexbox-item-override-justify-content
+- center StudyConcept.js box, no matter what the arrows are
 
 Backend:
-- optimize card deletion, since right now your deck deletion process inadvertently calls card deletion like a billion times.
+- implement new override algorithm
 - compress profile pictures that come in.
 - cache data where possible and most efficient instead of retrieving every time
 - add robots file to disallow web scrapers (or something?)
@@ -22,6 +21,11 @@ Backend:
 - should I deploy as a Node app and use a server, or deploy as a static app and use Cloud Functions?
 
 Fullstack:
+1/7/2019
+- might have to revamp teacher features. components should separate concerns (shouldn't have to handle teacher and student simultaneously) and I'm not a fan of all the mixing i thought up in the summertime. Will be more tedious to make separate components for teachers, but, following the advice of Tyler McGinnis, those components will be easier to delete which implies they're ultimately more scalable. And it'll be way easier to understand and sift through.
+
+- move todos to README.md
+
 - teacher features.
   - implement actual data pulling
   - add checks for inputs
@@ -40,7 +44,3 @@ Fullstack:
 - (eventually) before you deploy:
   - follow this: https://github.com/rotati/wiki/wiki/Deployment-and-QA-Workflow
   - run everything through eslint
-
-Always:
-- look at owen and hank bug testing notes
-- look at your spending/api use metrics

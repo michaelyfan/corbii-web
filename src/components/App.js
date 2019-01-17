@@ -18,7 +18,7 @@ import StudyDeck from './StudyDeck';
 import Dashboard from './Dashboard';
 import Create from './Create';
 import DeniedNoAuth from './DeniedNoAuth';
-import { BigLoading } from './Loading';
+import { BigLoading } from './reusables/Loading';
 
 function PrivateRoute({ component: Component, render, signedIn, loading, ...rest }) {
   return <Route {...rest} render={(props) => (
