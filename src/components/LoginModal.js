@@ -50,7 +50,8 @@ class LoginModal extends React.Component {
   }
  
   render() {
-    const { redirectTo, header, signedIn } = this.props;
+    const { redirectTeacherTo, redirectStudentTo, header, signedIn, isTeacher } = this.props;
+    const redirectLocation = isTeacher ? redirectTeacherTo : redirectStudentTo;
 
     return (
       <span>
@@ -66,16 +67,16 @@ class LoginModal extends React.Component {
           contentLabel="log in"
         >
 
-          {signedIn && redirectTo != 'none' && <Redirect to='/dashboard' />}
+          {signedIn && <Redirect to={redirectLocation} />}
 
           <div className = 'modal-content'>
             <h3 className= 'header-title' id = 'log-in-header'>{header}</h3>
+
 {/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
             <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
             <button className = 'primary-button' id = 'submit-email'>{header}</button>     
 */}
-            <Auth 
-              signedIn={signedIn} />
+            <Auth signedIn={signedIn} />
           </div>
         </Modal>
       </span>
@@ -85,14 +86,17 @@ class LoginModal extends React.Component {
 
 LoginModal.propTypes = {
   signedIn: PropTypes.bool.isRequired,
+  isTeacher: PropTypes.bool.isRequired,
+  redirectTeacherTo: PropTypes.string.isRequired,
+  redirectStudentTo: PropTypes.string.isRequired,
   header: PropTypes.string,
-  redirectTo: PropTypes.string
-
 }
 
 LoginModal.defaultProps = {
-  redirectTo: '/dashboard',
-  header: 'log in'
+  header: 'log in',
+  isTeacher: false,
+  redirectTeacherTo: routes.teacherDashboard,
+  redirectStudentTo: routes.dashboard
 }
  
 export default LoginModal;

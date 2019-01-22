@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DeckList from './DeckList';
 import ConceptListList from './ConceptListList';
+import ClassroomList from './teacher-student/ClassroomList';
 import Profile from './Profile';
 import { Link } from 'react-router-dom';
 import firebase from '../utils/firebase';
@@ -36,7 +37,7 @@ class Dashboard extends React.Component {
       case 1:
         return <ConceptListList />;
       case 2:
-        return 'not done yet';
+        return <ClassroomList />;
       case 3:
         return <Profile />;
     }

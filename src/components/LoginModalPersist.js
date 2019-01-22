@@ -47,7 +47,7 @@ class LoginModalPersist extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { signedIn, redirectTo } = this.props;
+    const { signedIn, redirectStudentTo, redirectTeacherTo, isTeacher } = this.props;
     const { shouldRedirect } = this.state;
     if (signedIn != prevProps.signedIn || shouldRedirect != prevState.shouldRedirect) {
       this.setState(() => ({
@@ -55,7 +55,11 @@ class LoginModalPersist extends React.Component {
       }))
 
       if (signedIn && shouldRedirect) {
-        this.props.history.push(redirectTo);
+        if (isTeacher) {
+          this.props.history.push(redirectTeacherTo);
+        } else {
+          this.props.history.push(redirectStudentTo);
+        }
         this.closeModal();
         this.setState(() => ({
           shouldRedirect: false
@@ -78,7 +82,8 @@ class LoginModalPersist extends React.Component {
   }
  
   render() {
-    const { header, signedIn } = this.props;
+    const { redirectTo, header, signedIn } = this.props;
+
 
     return (
       <span style={{display: this.state.displayStyle}}>
@@ -100,7 +105,7 @@ class LoginModalPersist extends React.Component {
             <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
             <button className = 'primary-button' id = 'submit-email'>{header}</button>     
 */}
-            <Auth 
+            <Auth
               signedIn={signedIn}
               loginSuccessCallback = {this.loginCallback} />
           </div>
@@ -112,13 +117,15 @@ class LoginModalPersist extends React.Component {
 
 LoginModalPersist.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  header: PropTypes.string,
-  redirectTo: PropTypes.string
-
+  isTeacher: PropTypes.bool.isRequired,
+  redirectStudentTo: PropTypes.string.isRequired,
+  redirectTeacherTo: PropTypes.string.isRequired,
+  header: PropTypes.string
 }
 
 LoginModalPersist.defaultProps = {
-  redirectTo: '/dashboard',
+  redirectStudentTo: routes.dashboard,
+  redirectTeacherTo: routes.teacherDashboard,
   header: 'log in'
 }
  

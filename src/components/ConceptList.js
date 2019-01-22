@@ -329,6 +329,7 @@ class ConceptList extends React.Component {
     return this.state.isLoading
       ? <BigLoading />
       : (
+
         <div>
           <div className = 'deck-info'>
             <BackToDashboardButton />

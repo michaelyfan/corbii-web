@@ -356,11 +356,28 @@ class Create extends React.Component {
     this.state = {
       isList: false,
       title: '',
+      isForClassroom: false,
+      periods: '1,2,3,4,5,6,7,8',
+      classroomId: ''
     }
 
     this.handleChangeTitle = this.handleChangeTitle.bind(this);
     this.handleCreateList = this.handleCreateList.bind(this);
     this.handleCreateDeck = this.handleCreateDeck.bind(this);
+    this.changePeriods = this.changePeriods.bind(this);
+  }
+
+  componentDidMount() {
+    const routeState = this.props.location.state;
+    if (this.props.location.pathname === routes.teacherCreate
+        && routeState
+        && routeState.isForClassroom
+        && routeState.classroomId) {
+      this.setState(() => ({
+        isForClassroom: true,
+        classroomId: routeState.classroomId
+      }))
+    }
   }
 
   handleChangeTitle(e) {
@@ -386,12 +403,20 @@ class Create extends React.Component {
   }
 
   handleCreateDeck(cards) {
-    if (this.state.title.trim() === '') {
+    const { title, isForClassroom, classroomId, periods } = this.state;
+    if (title.trim() === '') {
       alert('Title cannot be empty.');
     } else if (this.hasEmptyEntries('decks', cards)) {
       alert('One or more of your card entries is empty.');
-    } else {  
-      createDeckCurrentUser(this.state.title, cards).then(() => {
+    } else {
+
+      createDeckCurrentUser({
+        deckName: title, 
+        cards: cards,
+        isForClassroom: isForClassroom,
+        classroomId: classroomId,
+        periods: periods.split(',')
+      }).then(() => {
         this.props.history.push(routes.dashboard);
       }).catch((err) => {
         console.error(err);
@@ -416,6 +441,13 @@ class Create extends React.Component {
       }
     }
     return false;
+  }
+
+  changePeriods(e) {
+    e.persist();
+    this.setState(() => ({
+      periods: e.target.value
+    }))
   }
 
   render() {
@@ -452,6 +484,12 @@ class Create extends React.Component {
             }
           </div>
         </div>
+
+        {this.state.isForClassroom
+          && <div>
+              <p>Enter the periods you want to have this deck, separated by commas</p>
+              <input type='text' value={this.state.periods} onChange={this.changePeriods} />
+            </div>}
       </div>
     )
   }

@@ -21,21 +21,6 @@ const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
 // Begin api functions
-export function getUserOnLogin() {
-  const uid = firebase.auth().currentUser.uid;
-  const userRef = db.collection('users').doc(uid);
-  return userRef.get().then((userDocSnapshot) => {
-    if (userDocSnapshot.exists) {
-      return {
-        exists: true
-      }
-    } else {
-      return {
-        exists: false
-      }
-    }
-  });
-}
 
 export function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
@@ -257,7 +242,8 @@ export function getUserAll(uid) {
     getUserProfileInfo(uid),
     getUserDecks(uid),
     getUserConceptLists(uid),
-    getProfilePic(uid)
+    getProfilePic(uid),
+    getUserClassrooms(uid)
   ]).then((results) => {
     const [ user, decks, conceptLists, url ] = results;
     return {
@@ -296,16 +282,122 @@ export function getCurrentUserProfileInfo() {
   const uid = firebase.auth().currentUser.uid;
   return getUserProfileInfo(uid);
 }
+
+export function getDecksInClassroom(classroomId, period) {
+  let colRef;
+  if (period) {
+    colRef = db.collection('decks').where('classroomId', '==', classroomId).where(`periods.${period}`, '==', true);
+  } else {
+    colRef = db.collection('decks').where('classroomId', '==', classroomId);
+  }
+
+  return colRef.get();
+}
+
+
+
+export function getClassroomInfo(classroomId) {
+  const docRef = db.collection('classrooms').doc(classroomId);
+  return docRef.get();
+}
+
+export function getClassroomUser(classroomId, userId) {
+  const docRef = db.collection('classrooms').doc(classroomId)
+                    .collection('users').doc(userId);
+
+  return docRef.get();
+}
+
+export function getClassroomCurrentUser(classroomId) {
+  const uid = firebase.auth().currentUser.uid;
+  
+  return getClassroomUser(classroomId, uid);
+}
+
+export function getClassroomForUser(classroomId) {
+  return getClassroomCurrentUser(classroomId).then((result) => {
+    const period = result.data().period;
+    return Promise.all([
+      getClassroomInfo(classroomId),
+      getDecksInClassroom(classroomId, period)
+    ]).then((result) => {
+      const [ infoSnapshot, decksSnapshot ] = result;
+      let decks = [];
+      decksSnapshot.forEach((deck) => {
+        decks.push(deck);
+      })
+      return {
+        data: infoSnapshot.data(),
+        id: infoSnapshot.id,
+        decks: decks
+      }
+    })
+  })
+}
+
+export function getUserOnLogin() {
+  const uid = firebase.auth().currentUser.uid;
+  const userRef = db.collection('users').doc(uid);
+  return userRef.get().then((userDocSnapshot) => {
+    if (userDocSnapshot.exists) {
+      return {
+        isTeacher: userDocSnapshot.data().isTeacher,
+        exists: true
+      }
+    } else {
+      return {
+        exists: false
+      }
+    }
+  });
+}
+
 // end get functions
 
 // begin create functions
-export function createNewDbUser() {
+
+export function createClassroomUser(code) {
+  const codeParts = code.split('-&');
+  if (codeParts.length != 2) {
+    return new Promise((resolve, reject) => {
+      reject(new Error('invalid code'));
+    })
+  } else {
+    const [ classroomId, period ] = codeParts;
+    const uid = firebase.auth().currentUser.uid;
+    const userRef = db.collection('users').doc(uid);
+    const classroomRef = db.collection('classrooms').doc(classroomId);
+
+    return Promise.all([
+      db.runTransaction((t) => {
+        return t.get(userRef).then((res) => {
+          let classrooms = res.data().classrooms;
+          if (classrooms) {
+            classrooms.push(classroomId);
+          } else {
+            classrooms = [classroomId];
+          }
+          t.update(userRef, {
+            classrooms: classrooms
+          });
+        })
+      }),   
+      classroomRef.collection('users').doc(uid).set({
+        period: period
+      })
+    ]);
+    
+  }
+}
+
+export function createNewDbUser(isTeacher) {
   const { displayName, email, uid } = firebase.auth().currentUser;
 
   return Promise.all([
     db.collection('users').doc(uid).set({
       name: displayName,
-      email: email
+      email: email,
+      isTeacher: isTeacher
     }),
     fetch('https://i.imgur.com/nYDMVCK.jpg')
   ]).then((res) => res[1].blob()).then((res) => {
@@ -313,7 +405,8 @@ export function createNewDbUser() {
   });
 }
 
-export function createDeckCurrentUser(deckName, cards) {
+export function createDeckCurrentUser(params) {
+  const { deckName, cards, isForClassroom, classroomId, periods } = params;
   if (deckName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   } else {
@@ -324,12 +417,22 @@ export function createDeckCurrentUser(deckName, cards) {
     }
   }
   const { uid, displayName } = firebase.auth().currentUser;
-  const data = {
+  let data = {
     name: deckName,
     creatorId: uid,
     creatorName: displayName,
     count: (cards && cards.length) || 0
+  }    
+  if (isForClassroom) {
+    let periodObject = {};
+    periods.forEach((period) => {
+      periodObject[period] = true;
+    })
+    data.isClassroomPrivate = true;
+    data.periods = periodObject;
+    data.classroomId = classroomId;
   }
+
   return db.collection('decks').add(data).then((deckRef) => {
     if (cards) {
       // consider mixing this batch with the deck creation call
@@ -400,6 +503,22 @@ export function createConcept(question, listId) {
     question: question,
   }).then(() => {
     return updateListCountByOne(listId, true);
+  });
+}
+
+export function createClassDataPoint(params) {
+  const { quality, time, cardId, deckId, classroomId, period } = params;
+  const uid = firebase.auth().currentUser.uid;
+
+  return db.collection('classSpacedRepData').add({
+    timestamp: new Date(),
+    quality: quality,
+    time: time,
+    cardId: cardId,
+    deckId: deckId,
+    userId: uid,
+    classroomId: classroomId,
+    period: period
   });
 }
 // end create functions
@@ -606,6 +725,7 @@ export function updateCurrentUserProfilePic(file) {
   const uid = firebase.auth().currentUser.uid;
   return storageRef.child(`profilePics/${uid}`).put(file);
 }
+
 // end update functions
 
 // begin delete functions

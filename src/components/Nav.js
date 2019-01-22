@@ -42,16 +42,13 @@ class Nav extends React.Component {
   }
 
   render() {
-    const { signedIn, photoURL } = this.props;
+    const { signedIn, photoURL, isTeacher, handleStudentClickRegister } = this.props;
+    const imageLink = signedIn ? (isTeacher ? routes.teacherDashboard : routes.dashboard) : routes.home;
     return (
       <div className = "header"> 
         <div className = 'flex-header'>
           <div>
-            <Link to={
-              signedIn
-                ? routes.dashboard
-                : routes.home
-            }>
+            <Link to={imageLink}>
               <img id = 'header-logo' src='/src/resources/header-logo.png' />
             </Link>
           </div>
@@ -84,8 +81,9 @@ class Nav extends React.Component {
 
           <LoginModalPersist 
             header = "log in"
-            signedIn = {signedIn} >
-            <button className = 'log-in' id = 'header-login'>log in </button>
+            signedIn = {signedIn}
+            isTeacher = {isTeacher} >
+            <button className = 'log-in' id = 'header-login' onClick={handleStudentClickRegister}>log in </button>
           </LoginModalPersist>
 
           <div>
@@ -103,7 +101,9 @@ class Nav extends React.Component {
 
 Nav.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  photoURL: PropTypes.string.isRequired,
+  isTeacher: PropTypes.bool.isRequired,
+  handleStudentClickRegister: PropTypes.func.isRequired,
+  photoURL: PropTypes.string
 }
 
 export default withRouter(Nav);

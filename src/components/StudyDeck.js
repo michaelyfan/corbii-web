@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
+import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner, createClassDataPoint } from '../utils/api';
 import { shiftInArray } from '../utils/tools';
 import routes from '../routes/routes';
 import {HotKeys} from 'react-hotkeys';
@@ -76,86 +76,84 @@ function NotNewCardOptions(props) {
   )
 }
 
-class CardOptions extends React.Component {
-  render() {
-    const { isFlipped, isLearnerCard, submitCard, lastSelectedQuality, flip } = this.props;
+function CardOptions(props) {
+  const { isFlipped, isLearnerCard, submitCard, lastSelectedQuality, flip } = props;
 
-    let keyMap;
-    let keyHandlers;
-    let options;
-    if (isFlipped) {
-      if (isLearnerCard) {
-        keyMap = {
-          'one': '1',
-          'two': '2',
-          'three': '3',
-        }
-        if (lastSelectedQuality == 0) {
-          keyHandlers = {
-            'one': (event) => {submitCard(0, true)},
-            'two': (event) => {submitCard(1, true)}
-          }
-        } else if (lastSelectedQuality == 1) {
-          keyHandlers = {
-            'one': (event) => {submitCard(0, true)},
-            'two': (event) => {submitCard(1, true)},
-            'three': (event) => {submitCard(2, true)}
-          }
-        } else {
-          keyHandlers = {
-            'one': (event) => {submitCard(0, true)},
-            'two': (event) => {submitCard(1, true)},
-            'three': (event) => {submitCard(3, true)}
-          }
-        }
-        options = <NewCardOptions 
-                    submitCard={submitCard}
-                    lastSelectedQuality={lastSelectedQuality} />
-      } else {
-        keyMap = {
-          'one': '1',
-          'two': '2',
-          'three': '3',
-          'four': '4',
-          'five': '5',
-          'six': '6',
-        }
+  let keyMap;
+  let keyHandlers;
+  let options;
+  if (isFlipped) {
+    if (isLearnerCard) {
+      keyMap = {
+        'one': '1',
+        'two': '2',
+        'three': '3',
+      }
+      if (lastSelectedQuality == 0) {
         keyHandlers = {
           'one': (event) => {submitCard(0, true)},
-          'two': (event) => {submitCard(0, true)},
-          'three': (event) => {submitCard(0, true)},
-          'four': (event) => {submitCard(3, false)},
-          'five': (event) => {submitCard(4, false)},
-          'six': (event) => {submitCard(5, false)}
+          'two': (event) => {submitCard(1, true)}
         }
-        options = <NotNewCardOptions submitCard={submitCard} />
+      } else if (lastSelectedQuality == 1) {
+        keyHandlers = {
+          'one': (event) => {submitCard(0, true)},
+          'two': (event) => {submitCard(1, true)},
+          'three': (event) => {submitCard(2, true)}
+        }
+      } else {
+        keyHandlers = {
+          'one': (event) => {submitCard(0, true)},
+          'two': (event) => {submitCard(1, true)},
+          'three': (event) => {submitCard(3, true)}
+        }
       }
+      options = <NewCardOptions 
+                  submitCard={submitCard}
+                  lastSelectedQuality={lastSelectedQuality} />
     } else {
       keyMap = {
-        'flip-card': 'space'
+        'one': '1',
+        'two': '2',
+        'three': '3',
+        'four': '4',
+        'five': '5',
+        'six': '6',
       }
       keyHandlers = {
-        'flip-card': flip
+        'one': (event) => {submitCard(0, true)},
+        'two': (event) => {submitCard(0, true)},
+        'three': (event) => {submitCard(0, true)},
+        'four': (event) => {submitCard(3, false)},
+        'five': (event) => {submitCard(4, false)},
+        'six': (event) => {submitCard(5, false)}
       }
-      options = (
-        <div className='center-button'>
-          <button className = 'primary-button' 
-            id = 'flip-card' 
-            onClick={flip}>
-            flip card
-          </button>
-        </div>
-      )
+      options = <NotNewCardOptions submitCard={submitCard} />
     }
-
-    return (
-      <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
-        <div>
-          {options}
-        </div>              
-      </HotKeys>
+  } else {
+    keyMap = {
+      'flip-card': 'space'
+    }
+    keyHandlers = {
+      'flip-card': flip
+    }
+    options = (
+      <div className='center-button'>
+        <button className = 'primary-button' 
+          id = 'flip-card' 
+          onClick={flip}>
+          flip card
+        </button>
+      </div>
     )
   }
+
+  return (
+    <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
+      <div>
+        {options}
+      </div>              
+    </HotKeys>
+  )
 }
 
 CardOptions.propTypes = {
@@ -210,17 +208,23 @@ class CardWrapper extends React.Component {
         easinessFactor = this.props.cardData.easinessFactor;
       }
       this.props.learner(this.props.card.id, quality, easinessFactor);
+      this.setState(() => ({
+        isFlipped: false
+      }));
     } else {
-      const { card, cardData } = this.props;
+      const { card, cardData, isForClassroom, addClassDataPoint } = this.props;
       const { interval, easinessFactor } = cardData;
       const dataId = cardData ? cardData.id : null;
 
       updateCardPersonalData(dataId, this.props.deckId, card.id, easinessFactor, interval, quality);
+      if (isForClassroom) {
+        addClassDataPoint(quality, card.id);
+      }
+      this.setState(() => ({
+        isFlipped: false
+      }));
       this.props.incrementIndex();
     }
-    this.setState(() => ({
-      isFlipped: false
-    }));
   }
 
   render() {
@@ -244,9 +248,13 @@ class CardWrapper extends React.Component {
 }
 
 CardWrapper.propTypes = {
+  classroomId: PropTypes.string,
+  period: PropTypes.string,
   card: PropTypes.object, 
   cardData: PropTypes.object,
   deckId: PropTypes.string.isRequired,
+  isForClassroom: PropTypes.bool.isRequired,
+  addClassDataPoint: PropTypes.func.isRequired,
   incrementIndex: PropTypes.func.isRequired,
   learner: PropTypes.func.isRequired
 }
@@ -263,12 +271,60 @@ class StudyDeck extends React.Component {
       index: 0,
       arrayTodo: [],
       arrayLeft: [],
-      personalData: {}
+      personalData: {},
+      isForClassroom: false
     }
 
     this.incrementIndex = this.incrementIndex.bind(this);
     this.override = this.override.bind(this);
     this.learner = this.learner.bind(this);
+    this.addClassDataPoint = this.addClassDataPoint.bind(this);
+  }
+
+  componentDidMount() {
+    this.getDeck();
+  } 
+
+  getDeck() {
+    const { id } = this.props.match.params;
+    if (this.props.location.pathname.includes(routes.classroomStudy))
+
+    console.log('Going to get the deck');
+    getDeckForStudy(id).then((result) => {
+      console.log('Deck gotten');
+      return getUserProfileInfo(result.creatorId).then((result2) => {
+        result.creatorName = result2.data().name;
+        return result;
+      });
+    }).then((result) => {
+      const { name, creatorName, arrayDue, arrayNew, arrayLeft, personalData } = result;
+      let newState = {
+        name: name,
+        creatorName: creatorName,
+        arrayTodo: arrayDue.concat(arrayNew),
+        arrayLeft: arrayLeft,
+        personalData: personalData,
+        id: id
+      };
+      
+      if (this.props.location.pathname.includes(routes.classroomStudy)) {
+        const routeState = this.props.location.state;
+        if (routeState && routeState.fromClassroom) {
+          newState.isForClassroom = routeState.fromClassroom;
+        } else {
+          alert(`There was an error. Please go back to the dashboard.`);
+          console.error('No location state found despite classstudy route.');
+          return;
+        }
+      }
+
+      this.setState(() => {
+        return newState;
+      });
+
+    }).catch((err) => {
+      console.error(err);
+    });
   }
 
   learner(cardId, quality, easinessFactor) {
@@ -305,43 +361,37 @@ class StudyDeck extends React.Component {
         }
       });
     } else if (quality == 2) { 
-      const { id, arrayTodo, index, personalData } = this.state;
+      const { id, arrayTodo, index, personalData, isForClassroom } = this.state;
       const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
       updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 1, easinessFactor || null); // note quality doesn't matter here
+      if (isForClassroom) {
+        this.addClassDataPoint(1, cardId);
+      }
       this.incrementIndex();
     } else { // quality == 3
-      const { id, arrayTodo, index, personalData } = this.state;
+      const { id, arrayTodo, index, personalData, isForClassroom } = this.state;
       const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
       updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 3, easinessFactor || null); // note quality doesn't matter here
+      if (isForClassroom) {
+        this.addClassDataPoint(3, cardId);
+      }
       this.incrementIndex();
     }
-
   }
 
-  componentDidMount() {
-    this.getDeck();
-  } 
-
-  getDeck() {
-    const { id } = this.props.match.params;
-    getDeckForStudy(id).then((result) => {
-      return getUserProfileInfo(result.creatorId).then((result2) => {
-        result.creatorName = result2.data().name;
-        return result;
-      });
-    }).then((result) => {
-      const { name, creatorName, arrayDue, arrayNew, arrayLeft, personalData } = result;
-      this.setState(() => ({
-        name: name,
-        creatorName: creatorName,
-        arrayTodo: arrayDue.concat(arrayNew),
-        arrayLeft: arrayLeft,
-        personalData: personalData,
-        id: id
-      }));
+  addClassDataPoint(quality, cardId) {
+    const { id } = this.state;
+    const { classroomId, period } = this.props.location.state;
+    createClassDataPoint({
+      quality: quality,
+      time: 9999, // todo
+      cardId: cardId,
+      deckId: id,
+      classroomId: classroomId,
+      period: period
     }).catch((err) => {
       console.error(err);
-    });
+    })
   }
 
   incrementIndex() {
@@ -380,33 +430,36 @@ class StudyDeck extends React.Component {
 
 
   render() {
-    const { name, creatorName, index, arrayTodo, personalData, id } = this.state;
+    const { name, creatorName, arrayTodo, index, personalData, id, isForClassroom } = this.state;
+    const routeState = this.props.location.state;
+    let classroomId, period;
+    if (routeState) {
+      classroomId = routeState.classroomId;
+      period = routeState.period;
+    }
 
     const isDone = (index >= arrayTodo.length);
     const card = arrayTodo[index] || {};
     const cardData = personalData ? personalData[card.id] : null;
     let percentage = (index / arrayTodo.length) * 100;
 
-
-
     return (
       <div>
         <div>
-          
+
           <Title
             text={name}
             titleLink={`${routes.viewDeck}/${id}`}
             subtitle={`created by ${creatorName}`} />
 
+          { isForClassroom && <p className = 'small-caption'>Classroom: {classroomId}</p>}
           <Line 
             className = 'progress-bar' 
             percent={percentage} 
             strokeWidth="3"
             trailWidth='3'
-            strokeColor="#003466" 
+            strokeColor="#003466"
           />
-
-
           { isDone
             ? <div>
                 <p className = 'youre-finished'>you're finished!</p>
@@ -421,7 +474,11 @@ class StudyDeck extends React.Component {
                   card={card}
                   incrementIndex={this.incrementIndex}
                   learner={this.learner}
-                  cardData={cardData} />
+                  cardData={cardData}
+                  isForClassroom={isForClassroom}
+                  classroomId={classroomId}
+                  period={period}
+                  addClassDataPoint={this.addClassDataPoint} />
               </div>
           }
         </div>

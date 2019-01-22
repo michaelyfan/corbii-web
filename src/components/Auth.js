@@ -34,7 +34,9 @@ class Auth extends React.Component {
     return (
       <div>
         {/*Below will be either a separate page or a modal on the '/' path. Modals in React might be harder to animate.*/}
-        {!signedIn && <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
+        {signedIn
+          ? <h2>Loading...</h2>
+          : <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
       </div>
     )
   }

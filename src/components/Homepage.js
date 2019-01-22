@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import { Carousel } from 'react-responsive-carousel';
 import PropTypes from 'prop-types';
+import routes from '../routes/routes';
 
 class Slideshow extends React.Component {
   render() {
@@ -23,35 +24,51 @@ class Slideshow extends React.Component {
 }
 
 class Homepage extends React.Component {
+
   render() {
+    const { signedIn, isTeacher, handleStudentClickRegister, handleTeacherClickRegister } = this.props;
+    const redirectLink = isTeacher ? routes.teacherDashboard : routes.dashboard;
+
     return (
       <div>
+
         <div className = "account-block">
           <h1 className = "header-title" id = "slogan">learning as smart as &nbsp;
             <span className = "emphasized-words" id = "you">you</span> 
           </h1>
           <br />
+          {signedIn && 
+            <h3>
+              You're already signed in. Click <Link to={redirectLink}>here</Link> to view your dashboard.
+            </h3>}
+          <div style={{visibility: signedIn ? 'hidden' : 'visible'}}>
             <LoginModal 
-                header = 'sign up'
-                signedIn = {this.props.signedIn}
-                redirectTo='/dashboard'>
-              <button className = "primary-button" type = "button"> i am a student</button>
+              header = 'sign up'
+              signedIn = {signedIn}
+              isTeacher={isTeacher}>
+              <button className = "primary-button" type = "button" onClick={handleStudentClickRegister}> i am a student</button>
             </LoginModal>
-          <br /><br />
-          <button className = "secondary-button" type = "button" onClick={() => {alert('Teacher functionality coming soon!')}}>
-            i am an educator
-          </button>
-          <h3 id = 'log-in-subheader'> Already have an account? &nbsp; 
+            <br /><br />
+            <LoginModal 
+              header = 'sign up'
+              signedIn = {signedIn}
+              isTeacher={isTeacher}>
+              <button className = "secondary-button" type = "button" onClick={handleTeacherClickRegister}>i am an educator</button>
+            </LoginModal>
+            <h3 id = 'log-in-subheader'> 
+
+              Already have an account?&nbsp; 
+              <LoginModal 
+                header = "log in" 
+                signedIn = {signedIn}
+                isTeacher={isTeacher}
+              >
+                <button className = 'log-in' onClick={handleStudentClickRegister}>Log in.</button>
+              </LoginModal>
+            
+            </h3>
+          </div>
           
-          <LoginModal 
-            header = "log in" 
-            signedIn = {this.props.signedIn}
-            redirectTo='/dashboard'
-          >
-            <button className = 'log-in'>Log in.</button>
-          </LoginModal>
-          
-          </h3>
           <br /><br />
         </div>
 
@@ -85,7 +102,11 @@ class Homepage extends React.Component {
 }
 
 Homepage.propTypes = {
-  signedIn: PropTypes.bool.isRequired
+  signedIn: PropTypes.bool.isRequired,
+  isTeacher: PropTypes.bool.isRequired,
+  handleStudentClickRegister: PropTypes.func.isRequired,
+  handleTeacherClickRegister: PropTypes.func.isRequired
+
 }
 
 export default Homepage;

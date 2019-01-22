@@ -16,9 +16,29 @@ import Profile from './Profile';
 import StudyConcept from './StudyConcept';
 import StudyDeck from './StudyDeck';
 import Dashboard from './Dashboard';
+import TeacherDashboard from './teacher-student/TeacherDashboard';
 import Create from './Create';
 import DeniedNoAuth from './DeniedNoAuth';
+import ClassroomStudentView from './teacher-student/ClassroomStudentView';
 import { BigLoading } from './reusables/Loading';
+
+import ClassroomTeacherView from './teacher-student/ClassroomTeacherView';
+import PeriodTeacherView from './teacher-student/PeriodTeacherView';
+import StudentsTeacherView from './teacher-student/StudentsTeacherView';
+import StudentTeacherView from './teacher-student/StudentTeacherView';
+import DeckTeacherView from './teacher-student/DeckTeacherView';
+
+function TeacherPrivateRoute({ component: Component, render, signedIn, isTeacher, loading, ...rest }) {
+  return <Route {...rest} render={(props) => (
+    loading
+      ? <BigLoading />
+      : signedIn && isTeacher
+        ? Component
+          ? <Component {...props} />
+          : render()  
+        : <Redirect to='/denied' />
+  )} />
+}
 
 function PrivateRoute({ component: Component, render, signedIn, loading, ...rest }) {
   return <Route {...rest} render={(props) => (
@@ -41,9 +61,13 @@ class App extends React.Component {
       photoURL: '',
       loading: true,
       signedIn: false,
+      isTeacher: false,
+      teacherIsRegistering: false
     };
 
     this.doGetProfilePic = this.doGetProfilePic.bind(this);
+    this.handleStudentClickRegister = this.handleStudentClickRegister.bind(this);
+    this.handleTeacherClickRegister = this.handleTeacherClickRegister.bind(this);
   }
 
   componentDidMount() {
@@ -51,21 +75,30 @@ class App extends React.Component {
       if (user) {
         getUserOnLogin().then((result) => {
           if (result.exists) {
-            this.setState(() => ({
-              signedIn: true,
-              loading: false
-            }));
-            this.doGetProfilePic();
-          } else {
-            return createNewDbUser().then(() => {
+            if (result.isTeacher) {
               this.setState(() => ({
                 signedIn: true,
+                isTeacher: true,
                 loading: false
-              }));
+              }))
+            } else {
+              this.setState(() => ({
+                signedIn: true,
+                isTeacher: false,
+                loading: false
+              }))
+            }
+            this.doGetProfilePic();
+          } else {
+            return createNewDbUser(this.state.teacherIsRegistering).then(() => {
+              this.setState(() => ({
+                signedIn: true,
+                isTeacher: this.state.teacherIsRegistering,
+                loading: false
+              }))
               this.doGetProfilePic();
             });
           }
-          
         }).catch((err) => {
           console.error(err);
         });
@@ -73,6 +106,7 @@ class App extends React.Component {
         this.setState(() => ({
           signedIn: false,
           loading: false,
+          isTeacher: false,
           photoURL: ''
         }));
       }
@@ -87,21 +121,38 @@ class App extends React.Component {
     });
   }
 
+  handleStudentClickRegister() {
+    this.setState(() => ({
+      teacherIsRegistering: false
+    }))
+  }
+
+  handleTeacherClickRegister() {
+    this.setState(() => ({
+      teacherIsRegistering: true
+    }))
+  }
+
   render() {
 
-    const { signedIn, photoURL, loading } = this.state;
+    const { signedIn, photoURL, loading, isTeacher } = this.state;
 
     return (
       <Router>
         <div>
           <Nav photoURL={photoURL} 
-            signedIn={signedIn} />
+            signedIn={signedIn} 
+            isTeacher={isTeacher} 
+            handleStudentClickRegister={this.handleStudentClickRegister} />
           <Switch>
             <Route 
               exact path={routes.home} 
               render={(props) => 
-                <Homepage {...props}
-                  signedIn={signedIn} />} />
+                <Homepage {...props} 
+                  signedIn={signedIn}
+                  isTeacher={isTeacher}
+                  handleStudentClickRegister={this.handleStudentClickRegister}
+                  handleTeacherClickRegister={this.handleTeacherClickRegister} />} />
             <Route
               path={routes.faq}
               component={FAQ} />
@@ -145,6 +196,64 @@ class App extends React.Component {
             <Route
               path={`${routes.viewUser}/:id`}
               component={User} />
+            <PrivateRoute
+              exact path={`${routes.classroom}/:id`}
+              signedIn={signedIn}
+              loading={loading}
+              component={ClassroomStudentView} />
+            <PrivateRoute
+              path={`${routes.classroomStudy}/:id`}
+              signedIn={signedIn}
+              loading={loading}
+              component={StudyDeck} />
+            <Route
+              exact path={`${routes.teacher}`}
+              render={() => (
+                <Redirect to={`${routes.home}`} />
+              )} />
+
+            <TeacherPrivateRoute
+              path={`${routes.teacherDashboard}`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={TeacherDashboard} />
+            <TeacherPrivateRoute
+              exact path={`${routes.teacherViewClassroom}/:id`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={ClassroomTeacherView} />
+            <TeacherPrivateRoute
+              path={`${routes.teacherViewClassroom}/:id/:period`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={PeriodTeacherView} />
+            <TeacherPrivateRoute
+              path={`${routes.teacherViewStudents}/:id`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={StudentsTeacherView} />
+            <TeacherPrivateRoute
+              exact path={`${routes.teacherViewStudent}/:id`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={StudentTeacherView} />
+            <TeacherPrivateRoute
+              exact path={`${routes.teacherViewDeck}/:id`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={DeckTeacherView} />
+            <TeacherPrivateRoute
+              exact path={`${routes.teacherCreate}`}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={Create} />
             <Route
               path={`${routes.denied}`}
               component={DeniedNoAuth} />

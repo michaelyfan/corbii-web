@@ -2,7 +2,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
       allow read: if true;
-      allow create: if request.auth.uid == userId;
+      allow create, update: if request.auth.uid == userId;
     }
 
     match /decks/{deckId} {
@@ -84,7 +84,7 @@ service cloud.firestore {
         }
 
 
-        allow read: if userIsStudent() || userIsTeacher();
+        allow read: if userIsStudent() || userIsTeacherNested();
 
         allow create: if userIsTeacherNested() || request.auth.uid == userId;
         allow update: if userIsTeacherNested() || request.auth.uid == userId;
@@ -111,12 +111,13 @@ service cloud.firestore {
 
       allow read: if userIsTeacherOfClass();
 
-      allow create: if userIsStudentOfClass()
+      allow create: if userIsStudentOfClassOnCreate()
         && request.auth.uid == request.resource.data.userId;
 
       allow update: if false;
 
       allow delete: if userIsTeacherOfClass() || (userIsStudentOfClass() && resource.data.userId == request.auth.uid);
     }
+
   }
 }
