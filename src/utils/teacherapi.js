@@ -45,7 +45,9 @@ export function getClassStudents(classroomId) {
  * @param {String} classroomId The ID of the classroom
  * @param {String} period The desired period
  *
- * @return An array of student objects. Each object has attributes 'period' and 'id', both of type {String}.
+ * @return An promise resolving to an array of student objects.
+ *    Each object has attributes 'period' and 'id', both of
+ *    type {String}.
  */
 export function getPeriodStudents(classroomId, period) {
   let colRef = db.collection('classrooms').doc(classroomId).collection('users').where('period', '==', period);
@@ -93,7 +95,9 @@ export function getClassCardAverage(classroomId) {
  * @return The average card rating of a classroom, a number of type int.
  */
 export function getPeriodCardAverage(classroomId, period) {
-  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId).where('period', '==', period);
+  let colRef = db.collection('classSpacedRepData')
+    .where('classroomId', '==', classroomId)
+    .where('period', '==', period);
 
   return colRef.get().then((result) => {
     let accumulation = 0;
@@ -113,15 +117,19 @@ export function getPeriodCardAverage(classroomId, period) {
  *
  * @param {String} classroomId The ID of the classroom
  *
- * @return An array of card objects. Each object has attributes 'classroomId', 'deckId', and 'cardId', all of type String.
+ * @return An array of card objects. Each object has attributes 'classroomId', 'deckId',
+ *    and 'cardId', all of type String.
  */
 export function getClassCardsMissedMost(classroomId) {
-  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId).where('quality', '<', 3);
-
+  // set and get database reference
+  let colRef = db.collection('classSpacedRepData')
+    .where('classroomId', '==', classroomId)
+    .where('quality', '<', 3);
   return colRef.get().then((result) => {
     let badCards = [];
     result.forEach((obj) => {
       badCards.push({
+        quality: obj.data().quality,
         classroomId: obj.data().classroomId,
         deckId: obj.data().deckId,
         cardId: obj.data().cardId

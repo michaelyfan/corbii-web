@@ -22,6 +22,17 @@ db.settings(settings);
 
 // Begin api functions
 
+/**
+ * Gets the contents of a deck.
+ *
+ * @param {String} deckId -- the ID of the desired deck.
+ *
+ * @return a Promise that resolves with an object containing the deck's content. The
+ *    object's attributes are deckName (the deck's name), creatorId (the ID of the
+ *    deck's creator), and cards (an array of card objects). A card object's attributes
+ *    are id (the ID of the card in the deck), front (the card's front content), and
+ *    back (the card's back content).
+ */
 export function getDeck(deckId) {
   let deckRef = db.collection('decks').doc(deckId);
   let cardsRef = deckRef.collection('cards');
@@ -47,79 +58,89 @@ export function getDeck(deckId) {
 
 }
 
+/**
+ * Gets a deck for studying. 
+ *
+ * @param {String} deckId -- the ID of the desired deck.
+ *
+ * @return a Promise that resolves with an object containing the user's data on that
+ *    deck, the name of the deck, the ID of the creator, and TODO: finish
+ *    
+ */
 export function getDeckForStudy(deckId) {
+  // set DB references
   const uid = firebase.auth().currentUser.uid;
   const userCardsStudiedRef = db.collection('spacedRepData')
-    .where('userId', '==', uid).where('deckId', '==', deckId);
+                                .where('userId', '==', uid)
+                                .where('deckId', '==', deckId);
 
+  // get card content and user data from DB
   return Promise.all([
     getDeck(deckId),
     userCardsStudiedRef.get()
-  ]).then(([ deck, cardsStudiedSnapshot ]) => {
+  ]).then(([ deck, data ]) => {
     // deck is content, fully updated.
-    // cardsStudiedSnapshot is personal data. might not exist, and if so might not exist for all content.
+    // data is personal data. might not exist, and if so might not exist for all content.
 
-    // turn collection of cards in cardsStudiedSnapshot into an object for easier checking.
-    let cardsToBeDeleted = {};
-    cardsStudiedSnapshot.forEach((card) => {
-      let cardData = card.data();
-      cardData.id = card.id;
-      cardsToBeDeleted[card.data().cardId] = cardData;
+    // turn collection of cards in data into an object for easier checking
+    // cardDataObj has the structure:
+    //    {
+    //      cardId: {
+    //        easinessFactor: ...,
+    //        interval: ...,
+    //         ...other data attributes from a card data doc...,
+    //        id: dataId
+    //      }
+    //    }
+    let cardDataObj = {};
+    data.forEach((cardDataPoint) => {
+      let cardData = cardDataPoint.data();
+      cardData.id = cardDataPoint.id;
+      cardDataObj[cardDataPoint.data().cardId] = cardData;
     });
 
-    // loop through content cards.
+
+    // Loop through content cards, attach each card's respective data
+    //    to itself as an attribute, and divide into "due", "new", and
+    //    "left" categories
     let arrayDue = [];
     let arrayNew = [];
     let arrayLeft = [];
-    let cardsToBeKept = {};
     deck.cards.forEach((card) => {
-      if (cardsToBeDeleted[card.id]) { // card is not new.
-        const { interval, nextReviewed } = cardsToBeDeleted[card.id];
+      if (cardDataObj[card.id]) { // card is not new.
+        const { interval, nextReviewed } = cardDataObj[card.id];
         const now = new Date();
         const percentOverdue = getPercentOverdue(interval, nextReviewed.toDate(), now);
 
         if (percentOverdue >= 0) { // card is due.
-          cardsToBeDeleted[card.id].isDue = true;
-          cardsToBeDeleted[card.id].percentOverdue = percentOverdue;
-          card.percentOverdue = percentOverdue;
-          arrayDue.push(card); // this pushes CONTENT card with an overdue property
-          cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
-        } 
+          cardDataObj[card.id].isDue = true;
+          cardDataObj[card.id].percentOverdue = percentOverdue;
+          card.data = cardDataObj[card.id];
+          arrayDue.push(card);
+        }
       } else { // card is new
+        card.data = null;
         if (arrayNew.length < 20) {
           arrayNew.push(card);
         } else {
           arrayLeft.push(card);
         }
-        cardsToBeKept[card.id] = cardsToBeDeleted[card.id];
       }
-      delete cardsToBeDeleted[card.id];
-
     });
 
     // order cards in arrayDue by percent overdue.
     arrayDue.sort((item1, item2) => {
-      return item1.percentOverdue - item2.percentOverdue;
+      return item1.data.percentOverdue - item2.data.percentOverdue;
     });
 
-    // removes cards in cardsToBeDeleted from the spaced-rep data. these cards were cards that no longer have content associated with them in the database, meaning the user chose to delete them.
-    let batch = db.batch();
-    Object.keys(cardsToBeDeleted).forEach((id) => {
-      const dataId = cardsToBeDeleted[id].id;
-      let badCardRef = db.collection('spacedRepData').doc(dataId);
-      batch.delete(badCardRef);                         
-    });
+    return {
+      name: deck.deckName,
+      creatorId: deck.creatorId,
+      arrayDue: arrayDue,
+      arrayNew: arrayNew,
+      arrayLeft: arrayLeft,
+    };
 
-    return batch.commit().then(() => {
-      return {
-        name: deck.deckName,
-        creatorId: deck.creatorId,
-        arrayDue: arrayDue,
-        arrayNew: arrayNew,
-        arrayLeft: arrayLeft,
-        personalData: cardsToBeKept
-      };
-    });
   })
 }
 
@@ -133,6 +154,46 @@ function getPercentOverdue(interval, due_date, current_date) {
   } else {
     return percentOverdue;
   }
+}
+
+/**
+ * Gets info for a deck -- the deck's creatorId, count, creator name,
+ *    name, and ID.
+ *
+ * @param {String} deckId - The ID of the desired deck
+ *
+ * @return {Object} An object with the deck's info, with properties "id", "count",
+ *    "creatorId", "creatorName", and "name"
+ */
+export function getDeckInfo(deckId) {
+  // set and get database reference
+  const cardRef = db.collection('decks').doc(deckId);
+  return cardRef.get().then((res) => {
+    const dataToReturn = res.data();
+    dataToReturn.id = res.id;
+    return dataToReturn;
+  });
+}
+
+/**
+ * Gets info for a card -- the card's front, back, and ID
+ *
+ * @param {String} deckId - The ID of the desired card's deck
+ * @param {String} cardId - the ID of the desired card
+ *
+ * @return {Object} An object with the card's info, with properties "front", "back",
+ *    and "id"
+ */
+export function getCardInfo(deckId, cardId) {
+  // set and get database reference
+  const cardRef = db.collection('decks').doc(deckId).collection('cards').doc(cardId);
+  return cardRef.get().then((res) => {
+    return {
+      front: res.data().front,
+      back: res.data().back,
+      id: res.id
+    }
+  });
 }
 
 export function getConceptList(listId) {
@@ -295,10 +356,24 @@ export function getDecksInClassroom(classroomId, period) {
 }
 
 
-
+/**
+ * Gets a classroom's information (such as id, name, periods)
+ * 
+ * @param {String} the ID of the desired classroom
+ *
+ * @return A promise resolving to a classroom object with the attributes "id",
+ *    "name", "periods" (array), and "teacherId"
+ */
 export function getClassroomInfo(classroomId) {
   const docRef = db.collection('classrooms').doc(classroomId);
-  return docRef.get();
+  return docRef.get().then((res) => {
+    return {
+      id: res.id,
+      name: res.data().name,
+      periods: res.data().periods,
+      teacherId: res.data().teacherId
+    };
+  });
 }
 
 export function getClassroomUser(classroomId, userId) {
@@ -321,14 +396,14 @@ export function getClassroomForUser(classroomId) {
       getClassroomInfo(classroomId),
       getDecksInClassroom(classroomId, period)
     ]).then((result) => {
-      const [ infoSnapshot, decksSnapshot ] = result;
+      const [ classRes, decksRes ] = result;
       let decks = [];
-      decksSnapshot.forEach((deck) => {
+      decksRes.forEach((deck) => {
         decks.push(deck);
-      })
+      });
       return {
-        data: infoSnapshot.data(),
-        id: infoSnapshot.id,
+        data: classRes,
+        id: classRes.id,
         decks: decks
       }
     })

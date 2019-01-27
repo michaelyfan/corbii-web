@@ -42,7 +42,7 @@ export default function TeacherSideBar(props) {
       <button className = 'dash-nav'>view deck analytics</button>
       <br />
       {periods.map((period) => 
-        <PeriodLink period={period} id={id} key={id} />
+        <PeriodLink period={period} id={id} key={`${id}_${period}`} />
       )}
     </div>
   )

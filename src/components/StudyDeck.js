@@ -57,6 +57,11 @@ function NewCardOptions(props) {
   )
 }
 
+NewCardOptions.propTypes = {
+  lastSelectedQuality: PropTypes.number,
+  submitCard: PropTypes.func.isRequired
+}
+
 function NotNewCardOptions(props) {
   const { submitCard } = props;
 
@@ -76,14 +81,21 @@ function NotNewCardOptions(props) {
   )
 }
 
+NotNewCardOptions.propTypes = {
+  submitCard: PropTypes.func.isRequired
+}
+
 function CardOptions(props) {
   const { isFlipped, isLearnerCard, submitCard, lastSelectedQuality, flip } = props;
-
+  
   let keyMap;
   let keyHandlers;
   let options;
+
   if (isFlipped) {
     if (isLearnerCard) {
+
+      // key handler code
       keyMap = {
         'one': '1',
         'two': '2',
@@ -107,6 +119,7 @@ function CardOptions(props) {
           'three': (event) => {submitCard(3, true)}
         }
       }
+
       options = <NewCardOptions 
                   submitCard={submitCard}
                   lastSelectedQuality={lastSelectedQuality} />
@@ -195,6 +208,8 @@ class CardWrapper extends React.Component {
 
     this.submitCard = this.submitCard.bind(this);
     this.flip = this.flip.bind(this);
+    this.addClassDataPoint = this.addClassDataPoint.bind(this);
+    this.learnerSubmit = this.learnerSubmit.bind(this);
   }
 
   flip() {
@@ -202,35 +217,92 @@ class CardWrapper extends React.Component {
   }
 
   submitCard(quality, isLearner) {
-    if (isLearner) {
-      let easinessFactor = null;
-      if (this.props.cardData) { // this is not a new card, but 0, 1, or 2 was selected
-        easinessFactor = this.props.cardData.easinessFactor;
-      }
-      this.props.learner(this.props.card.id, quality, easinessFactor);
-      this.setState(() => ({
-        isFlipped: false
-      }));
-    } else {
-      const { card, cardData, isForClassroom, addClassDataPoint } = this.props;
-      const { interval, easinessFactor } = cardData;
-      const dataId = cardData ? cardData.id : null;
+    const { card, learner, isForClassroom, deckId, incrementIndex } = this.props;
 
-      updateCardPersonalData(dataId, this.props.deckId, card.id, easinessFactor, interval, quality);
-      if (isForClassroom) {
-        addClassDataPoint(quality, card.id);
+    if (isLearner) {  
+      // set card easinessFactor. If the card is new, there is no easiness factor. If the
+      //    card is old but reentered learner func, then maintain old easiness factor
+      let easinessFactor = null;
+      if (card.data) {
+        easinessFactor = card.data.easinessFactor;
       }
+
+      // determine whether learner card will continue being learner, or can exit learner func
+      if (quality >= 2) {
+        // sends learner card to learnerSubmit since performance on learner card
+        //    was adequate enough
+        this.learnerSubmit(card.id, quality, easinessFactor);
+
+        // flips back to front and moves onto the next card
+        this.setState(() => ({
+          isFlipped: false
+        }), incrementIndex);
+      } else {
+        // sends learner card back into learner func.
+        // note that the index is not incremented during this step because of the
+        //    array shift.
+        learner(card.id, quality, easinessFactor);
+        this.setState(() => ({
+          isFlipped: false
+        }))
+      }
+    } else {
+      // update card data doc
+      let interval, easinessFactor, id;
+      if (card.data) {
+        ({ interval, easinessFactor, id } = card.data);
+      }
+      updateCardPersonalData(id, deckId, card.id, easinessFactor, interval, quality);
+      if (isForClassroom) {
+        this.addClassDataPoint(quality, card.id);
+      }
+
+      // flips back to front and moves onto the next card
       this.setState(() => ({
         isFlipped: false
-      }));
-      this.props.incrementIndex();
+      }), incrementIndex);
     }
   }
 
-  render() {
-    const { cardData, card } = this.props;
+  learnerSubmit(cardId, quality, easinessFactor) {
+    const { card, deckId, isForClassroom } = this.props;
 
-    const isLearnerCard = !cardData || card.isLearner;
+    // determine quality to submit to personal data and to class data point if applicable
+    // TODO: why is qualityToSubmit different from quality?
+    let qualityToSubmit;
+    if (quality == 2) {
+      qualityToSubmit = 1;
+    } else { // quality == 3
+      qualityToSubmit = 3;
+    }
+
+    // submit card to personal data
+    const dataId = card.data ? card.data.id : null;
+    updateCardPersonalDataLearner(dataId, deckId, cardId, qualityToSubmit, easinessFactor || null); // note quality doesn't matter here. TODO: why?
+    if (isForClassroom) {
+      this.addClassDataPoint(qualityToSubmit, cardId);
+    }
+  }
+
+  addClassDataPoint(quality, cardId) {
+    const { id } = this.props.match.params;
+    const { classroomId, period } = this.props.location.state;
+    createClassDataPoint({
+      quality: quality,
+      time: 9999, // TODO: implement time in study sessions
+      cardId: cardId,
+      deckId: id,
+      classroomId: classroomId,
+      period: period
+    }).catch((err) => {
+      console.error(err);
+    })
+  }
+
+  render() {
+    const { card } = this.props;
+
+    const isLearnerCard = !card.data || card.isLearner;
 
     return (
       <div>
@@ -251,14 +323,18 @@ CardWrapper.propTypes = {
   classroomId: PropTypes.string,
   period: PropTypes.string,
   card: PropTypes.object, 
-  cardData: PropTypes.object,
   deckId: PropTypes.string.isRequired,
   isForClassroom: PropTypes.bool.isRequired,
-  addClassDataPoint: PropTypes.func.isRequired,
   incrementIndex: PropTypes.func.isRequired,
   learner: PropTypes.func.isRequired
 }
 
+/**
+ * Parent component for the studying decks view. This component handles all logic regarding
+ *  cards relating to each other and regarding the overall deck to study, i.e things like
+ *  which card comes next, which card index are we at, changing card order,
+ *  changing the cards that are up for studying, etc
+ */
 class StudyDeck extends React.Component {
 
   constructor(props) {
@@ -267,18 +343,17 @@ class StudyDeck extends React.Component {
     this.state = {
       name: '',
       creatorName: '',
-      id: '',
       index: 0,
       arrayTodo: [],
       arrayLeft: [],
-      personalData: {},
       isForClassroom: false
     }
+
+    // TODO: check for state.id in StudyDeck
 
     this.incrementIndex = this.incrementIndex.bind(this);
     this.override = this.override.bind(this);
     this.learner = this.learner.bind(this);
-    this.addClassDataPoint = this.addClassDataPoint.bind(this);
   }
 
   componentDidMount() {
@@ -287,24 +362,25 @@ class StudyDeck extends React.Component {
 
   getDeck() {
     const { id } = this.props.match.params;
-    if (this.props.location.pathname.includes(routes.classroomStudy))
 
-    console.log('Going to get the deck');
-    getDeckForStudy(id).then((result) => {
-      console.log('Deck gotten');
-      return getUserProfileInfo(result.creatorId).then((result2) => {
-        result.creatorName = result2.data().name;
-        return result;
-      });
+    // gets the deck for study
+    getDeckForStudy(id).then((res) => {
+      return Promise.all([
+        getUserProfileInfo(res.creatorId),
+        Promise.resolve(res)
+      ]);
+    }).then((results) => {
+      const profileInfo = results[0];
+      const res = results[1];
+      results[1].creatorName = results[0].data().name;
+      return res;
     }).then((result) => {
-      const { name, creatorName, arrayDue, arrayNew, arrayLeft, personalData } = result;
+      const { name, creatorName, arrayDue, arrayNew, arrayLeft } = result;
       let newState = {
         name: name,
         creatorName: creatorName,
         arrayTodo: arrayDue.concat(arrayNew),
-        arrayLeft: arrayLeft,
-        personalData: personalData,
-        id: id
+        arrayLeft: arrayLeft
       };
       
       if (this.props.location.pathname.includes(routes.classroomStudy)) {
@@ -318,26 +394,16 @@ class StudyDeck extends React.Component {
         }
       }
 
-      this.setState(() => {
-        return newState;
-      });
-
+      this.setState(() => newState);
     }).catch((err) => {
+      alert(`Our apologies -- there was an error! Please go back to the 
+        dashboard or refresh the page.`);
       console.error(err);
     });
   }
 
-  learner(cardId, quality, easinessFactor) {
-    /*
-      0: very soon
-      1: not soon
-      2: 1 day
-      3: I know
-    */
-    
-    if (quality < 0 || quality > 3) {
-      throw new Error('Invalid quality');
-    } else if (quality == 0) {
+  learner(cardId, quality, easinessFactor) {    
+    if (quality == 0) {
       this.setState((prevState) => {
         const { arrayTodo, index } = prevState;
         arrayTodo[index].lastSelectedQuality = 0;
@@ -351,7 +417,7 @@ class StudyDeck extends React.Component {
           arrayTodo: arrayTodo,
         }
       });
-    } else if (quality == 1) {
+    } else { // quality == 1
       this.setState((prevState) => { 
         const { arrayTodo, index } = prevState;
         arrayTodo[index].lastSelectedQuality = 1;
@@ -360,38 +426,7 @@ class StudyDeck extends React.Component {
           arrayTodo: arrayTodo,
         }
       });
-    } else if (quality == 2) { 
-      const { id, arrayTodo, index, personalData, isForClassroom } = this.state;
-      const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
-      updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 1, easinessFactor || null); // note quality doesn't matter here
-      if (isForClassroom) {
-        this.addClassDataPoint(1, cardId);
-      }
-      this.incrementIndex();
-    } else { // quality == 3
-      const { id, arrayTodo, index, personalData, isForClassroom } = this.state;
-      const dataId = personalData ? (personalData[arrayTodo[index].id] ? personalData[arrayTodo[index].id].id : null) : null;
-      updateCardPersonalDataLearner(dataId, id, arrayTodo[index].id, 3, easinessFactor || null); // note quality doesn't matter here
-      if (isForClassroom) {
-        this.addClassDataPoint(3, cardId);
-      }
-      this.incrementIndex();
     }
-  }
-
-  addClassDataPoint(quality, cardId) {
-    const { id } = this.state;
-    const { classroomId, period } = this.props.location.state;
-    createClassDataPoint({
-      quality: quality,
-      time: 9999, // todo
-      cardId: cardId,
-      deckId: id,
-      classroomId: classroomId,
-      period: period
-    }).catch((err) => {
-      console.error(err);
-    })
   }
 
   incrementIndex() {
@@ -430,36 +465,32 @@ class StudyDeck extends React.Component {
 
 
   render() {
-    const { name, creatorName, arrayTodo, index, personalData, id, isForClassroom } = this.state;
-    const routeState = this.props.location.state;
+    const { id } = this.props.match.params;
+    const { name, creatorName, arrayTodo, index, isForClassroom } = this.state;
     let classroomId, period;
-    if (routeState) {
-      classroomId = routeState.classroomId;
-      period = routeState.period;
+    if (this.props.location.state) {
+      ({ classroomId, period } = this.props.location.state);
     }
 
-    const isDone = (index >= arrayTodo.length);
     const card = arrayTodo[index] || {};
-    const cardData = personalData ? personalData[card.id] : null;
+    const isDone = (index >= arrayTodo.length);
     let percentage = (index / arrayTodo.length) * 100;
 
     return (
       <div>
         <div>
-
           <Title
             text={name}
             titleLink={`${routes.viewDeck}/${id}`}
             subtitle={`created by ${creatorName}`} />
 
           { isForClassroom && <p className = 'small-caption'>Classroom: {classroomId}</p>}
-          <Line 
+          <Line
             className = 'progress-bar' 
             percent={percentage} 
             strokeWidth="3"
             trailWidth='3'
-            strokeColor="#003466"
-          />
+            strokeColor="#003466" />
           { isDone
             ? <div>
                 <p className = 'youre-finished'>you're finished!</p>
@@ -469,16 +500,14 @@ class StudyDeck extends React.Component {
                 <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
               </div>
             : <div>
-                <CardWrapper 
+                <CardWrapper
                   deckId={id}
                   card={card}
                   incrementIndex={this.incrementIndex}
                   learner={this.learner}
-                  cardData={cardData}
                   isForClassroom={isForClassroom}
                   classroomId={classroomId}
-                  period={period}
-                  addClassDataPoint={this.addClassDataPoint} />
+                  period={period} />
               </div>
           }
         </div>
