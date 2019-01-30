@@ -5,11 +5,11 @@ import shortid from 'shortid';
 import BackButton from '../reusables/BackButton';
 import routes from '../../routes/routes';
 import TeacherSidebar from './TeacherSidebar';
-import { getClassroomInfo } from '../../utils/api.js';
-import { getClassCardsMissedMost, getClassCardAverage, getClassStudents } from '../../utils/teacherapi.js';
+import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api.js';
+import { getClassCardsMissedMost, getClassCardAverage } from '../../utils/teacherapi.js';
 
 function LowRatedCard(props) {
-  const { rating, front, deckName } = props;
+  const { deckName, front, rating } = props;
 
   return (
     <div className = 'card-info inline-display'>
@@ -22,6 +22,12 @@ function LowRatedCard(props) {
       </div>
     </div>
   )
+}
+
+LowRatedCard.propTypes = {
+  deckName: PropTypes.string.isRequired,
+  front: PropTypes.string.isRequired,
+  rating: PropTypes.number.isRequired
 }
 
 function PeriodLink(props) {
@@ -45,43 +51,70 @@ class ClassroomTeacherView extends React.Component {
   constructor(props) {
     super(props);
 
+    /**
+     * cardsMissedMost has the structure:
+     * {
+     *   deckName: '',
+     *   front: '',
+     *   rating: ''
+     * }
+     */
     this.state = {
       name: 'Loading...',
       periods: [],
-      cardsMissedMost: [{
-        deckName: 'deckName 1',
-        front: 'sample 1',
-        rating: '9'
-      }, {
-        deckName: 'deckName 2',
-        front: 'sample 2',
-        rating: '9'
-      }],
+      cardsMissedMost: [],
       averageRatingPerCard: 0
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    this.getInfo();
+  }
+
+  async getInfo() {
     const { id } = this.props.match.params;
     if (id == null) {
       this.props.history.push(routes.teacherDashboard);
     }
 
-    Promise.all([
-      getClassCardAverage(id),
-      getClassroomInfo(id),
-      // getClassCardsMissedMost(id),
-      // getClassStudents(id)
-    ]).then((result) => {
-      const [ averageRating, classroomInfo ] = result;
-      // cardId, deckId, classroomId, quality
+    let averageRating, classroomInfo, missedCards, cardsInfo, deckInfos;
+    try {
+      // get card average, classroom info, and cards missed most
+      ([ averageRating, classroomInfo, missedCards ] = await Promise.all([
+        getClassCardAverage(id),
+        getClassroomInfo(id),
+        getClassCardsMissedMost(id)
+      ]));
+      cardsInfo = await getCardsInfo(missedCards);
 
-      this.setState(() => ({
-        name: classroomInfo.name,
-        averageRatingPerCard: averageRating,
-        periods: classroomInfo.periods
-      }));
+      // get missed cards' decks' names
+      const deckNameCalls = [];
+      missedCards.forEach((cardObj) => {
+        deckNameCalls.push(getDeckInfo(cardObj.deckId));
+      });
+      deckInfos = await(Promise.all(deckNameCalls));
+    } catch (e) {
+      alert('Apologies -- there was an error!');
+      console.error(e);
+    }
+
+    // create cardsMissedMost state object from missedCards, using deckInfos for deck names and
+    //    cardsInfo for card front
+    let cardsMissedMostState = [];
+    missedCards.forEach((cardObj, i) => {
+      cardsMissedMostState.push({
+        deckName: deckInfos[i].name,
+        front: cardsInfo[cardObj.cardId].front,
+        rating: cardObj.averageQuality
+      });
     });
+
+    this.setState(() => ({
+      name: classroomInfo.name,
+      averageRatingPerCard: averageRating,
+      periods: classroomInfo.periods,
+      cardsMissedMost: cardsMissedMostState
+    }));
   }
 
   render() {

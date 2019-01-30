@@ -39,6 +39,8 @@ class StudentsTeacherView extends React.Component {
   }
 
   componentDidMount() {
+    // this component will probably be just a list of students
+
     // someMethod().then((result) => {
     //   const { students, name, periods } = result;
     //   this.setState(() => ({

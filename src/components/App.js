@@ -124,13 +124,13 @@ class App extends React.Component {
   handleStudentClickRegister() {
     this.setState(() => ({
       teacherIsRegistering: false
-    }))
+    }));
   }
 
   handleTeacherClickRegister() {
     this.setState(() => ({
       teacherIsRegistering: true
-    }))
+    }));
   }
 
   render() {

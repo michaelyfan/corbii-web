@@ -7,12 +7,15 @@ import {HotKeys} from 'react-hotkeys';
 import { Line } from 'rc-progress';
 import Title from './reusables/Title';
 
+/**
+ * Component for the views for the options of a card that is new.
+ */
 function NewCardOptions(props) {
 
   const { lastSelectedQuality, submitCard } = props;
 
   let options;
-  if (lastSelectedQuality == 0) { // 'very soon' selected
+  if (lastSelectedQuality == 0) { // 'very soon' was the last selected button ('i do not know this card')
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
@@ -22,7 +25,7 @@ function NewCardOptions(props) {
           <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i know this card</button>
         </div>
       </div>
-  } else if (lastSelectedQuality == 1) { // 'not soon' selected
+  } else if (lastSelectedQuality == 1) { // 'not soon' selected ('unsure')
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
@@ -62,6 +65,9 @@ NewCardOptions.propTypes = {
   submitCard: PropTypes.func.isRequired
 }
 
+/**
+ * Component for the views for the options of a card that isn't new.
+ */
 function NotNewCardOptions(props) {
   const { submitCard } = props;
 
@@ -70,6 +76,7 @@ function NotNewCardOptions(props) {
       <p className = 'rating-prompt' id = 'rating-question'> on a scale of one to six, how comfortable are you with this card?</p>
       <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
       <div className = 'rating-buttons'>
+        {/* Send cards under a quality of 3 back into the learner function with a quality of 0 */}
         <button className = 'accuracy-button maroon number-scale' onClick={() => {submitCard(0, true)}}>1</button>
         <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(0, true)}}>2</button>
         <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(0, true)}}>3</button>
@@ -85,6 +92,11 @@ NotNewCardOptions.propTypes = {
   submitCard: PropTypes.func.isRequired
 }
 
+/**
+ * Parent component of a card's options. This component decides whether to render NewCardOptions
+ *    or NotNewCardOptions, and contains the flip button. This component also contains all
+ *    keybinding logic of deck studying.
+ */
 function CardOptions(props) {
   const { isFlipped, isLearnerCard, submitCard, lastSelectedQuality, flip } = props;
   
@@ -93,9 +105,13 @@ function CardOptions(props) {
   let options;
 
   if (isFlipped) {
+    // if flipped, determine options to display based on whether card is learner or not
     if (isLearnerCard) {
+      options = <NewCardOptions 
+                  submitCard={submitCard}
+                  lastSelectedQuality={lastSelectedQuality} />
 
-      // key handler code
+      // keybindings
       keyMap = {
         'one': '1',
         'two': '2',
@@ -119,11 +135,10 @@ function CardOptions(props) {
           'three': (event) => {submitCard(3, true)}
         }
       }
-
-      options = <NewCardOptions 
-                  submitCard={submitCard}
-                  lastSelectedQuality={lastSelectedQuality} />
     } else {
+      options = <NotNewCardOptions submitCard={submitCard} />
+
+      // keybindings
       keyMap = {
         'one': '1',
         'two': '2',
@@ -140,15 +155,9 @@ function CardOptions(props) {
         'five': (event) => {submitCard(4, false)},
         'six': (event) => {submitCard(5, false)}
       }
-      options = <NotNewCardOptions submitCard={submitCard} />
     }
   } else {
-    keyMap = {
-      'flip-card': 'space'
-    }
-    keyHandlers = {
-      'flip-card': flip
-    }
+    // if not flipped, display flip card button
     options = (
       <div className='center-button'>
         <button className = 'primary-button' 
@@ -158,6 +167,14 @@ function CardOptions(props) {
         </button>
       </div>
     )
+
+    // keybindings
+    keyMap = {
+      'flip-card': 'space'
+    }
+    keyHandlers = {
+      'flip-card': flip
+    }
   }
 
   return (
@@ -177,6 +194,10 @@ CardOptions.propTypes = {
   isLearnerCard: PropTypes.bool
 }
 
+/**
+ * Component that renders the card view. This component displays the either the card front or the
+ *    card back depending on the isFlipped prop.
+ */
 function CardContent(props) {
   const { isFlipped, card } = props;
   return (
@@ -198,6 +219,10 @@ CardContent.propTypes = {
   isFlipped: PropTypes.bool.isRequired
 }
 
+/**
+ * Parent component of an individual card view. This component handles all logic concerning just
+ *    one card i.e. the card's flip status, card submission (whether learner or not), etc.
+ */
 class CardWrapper extends React.Component {
   constructor(props) {
     super(props);
@@ -219,7 +244,7 @@ class CardWrapper extends React.Component {
   submitCard(quality, isLearner) {
     const { card, learner, isForClassroom, deckId, incrementIndex } = this.props;
 
-    if (isLearner) {  
+    if (isLearner) {
       // set card easinessFactor. If the card is new, there is no easiness factor. If the
       //    card is old but reentered learner func, then maintain old easiness factor
       let easinessFactor = null;
@@ -241,7 +266,7 @@ class CardWrapper extends React.Component {
         // sends learner card back into learner func.
         // note that the index is not incremented during this step because of the
         //    array shift.
-        learner(card.id, quality, easinessFactor);
+        learner(quality);
         this.setState(() => ({
           isFlipped: false
         }))
@@ -267,21 +292,26 @@ class CardWrapper extends React.Component {
   learnerSubmit(cardId, quality, easinessFactor) {
     const { card, deckId, isForClassroom } = this.props;
 
-    // determine quality to submit to personal data and to class data point if applicable
-    // TODO: why is qualityToSubmit different from quality?
-    let qualityToSubmit;
-    if (quality == 2) {
-      qualityToSubmit = 1;
-    } else { // quality == 3
-      qualityToSubmit = 3;
-    }
-
     // submit card to personal data
     const dataId = card.data ? card.data.id : null;
-    updateCardPersonalDataLearner(dataId, deckId, cardId, qualityToSubmit, easinessFactor || null); // note quality doesn't matter here. TODO: why?
+
+    // submit card to class data points if applicable
     if (isForClassroom) {
+      let qualityToSubmit;
+      // artificially change the submission quality to make class data points more intelligible
+      // TODO: change how this works...ask Owen
+      if (quality == 2) {
+        qualityToSubmit = 1;
+      } else { // quality == 3
+        qualityToSubmit = 3;
+      }
       this.addClassDataPoint(qualityToSubmit, cardId);
     }
+
+    updateCardPersonalDataLearner(dataId, deckId, cardId, quality, easinessFactor)
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
   addClassDataPoint(quality, cardId) {
@@ -301,7 +331,6 @@ class CardWrapper extends React.Component {
 
   render() {
     const { card } = this.props;
-
     const isLearnerCard = !card.data || card.isLearner;
 
     return (
@@ -340,6 +369,24 @@ class StudyDeck extends React.Component {
   constructor(props) {
     super(props);
 
+    /**
+     * arrayTodo is the array of all card objects that are currently being studied, and learner
+     *    cards that are "pushed back" are pushed back in arrayTodo. arrayLeft is the array
+     *    of all cards eligible for override studying, and functions as the "pool" from
+     *    which override() pulls from. Due to the SM2 algorithm, arrayLeft can only
+     *    contain new cards.
+     * 
+     * arrayTodo and arrayLeft objects have the structure:
+     *    {
+     *      back: '',
+     *      front: '',
+     *      id: '', // cardId
+     *      data: { // may be null
+     *        ...spacedRepData data attributes...
+     *        id: '' // dataId
+     *      }
+     *    }
+     */
     this.state = {
       name: '',
       creatorName: '',
@@ -348,8 +395,6 @@ class StudyDeck extends React.Component {
       arrayLeft: [],
       isForClassroom: false
     }
-
-    // TODO: check for state.id in StudyDeck
 
     this.incrementIndex = this.incrementIndex.bind(this);
     this.override = this.override.bind(this);
@@ -360,73 +405,73 @@ class StudyDeck extends React.Component {
     this.getDeck();
   } 
 
-  getDeck() {
+  async getDeck() {
     const { id } = this.props.match.params;
 
     // gets the deck for study
-    getDeckForStudy(id).then((res) => {
-      return Promise.all([
-        getUserProfileInfo(res.creatorId),
-        Promise.resolve(res)
-      ]);
-    }).then((results) => {
-      const profileInfo = results[0];
-      const res = results[1];
-      results[1].creatorName = results[0].data().name;
-      return res;
-    }).then((result) => {
-      const { name, creatorName, arrayDue, arrayNew, arrayLeft } = result;
-      let newState = {
-        name: name,
-        creatorName: creatorName,
-        arrayTodo: arrayDue.concat(arrayNew),
-        arrayLeft: arrayLeft
-      };
-      
-      if (this.props.location.pathname.includes(routes.classroomStudy)) {
-        const routeState = this.props.location.state;
-        if (routeState && routeState.fromClassroom) {
-          newState.isForClassroom = routeState.fromClassroom;
-        } else {
-          alert(`There was an error. Please go back to the dashboard.`);
-          console.error('No location state found despite classstudy route.');
-          return;
-        }
-      }
-
-      this.setState(() => newState);
-    }).catch((err) => {
+    let deckForStudy;
+    let profileInfo;
+    try {
+      deckForStudy = await(getDeckForStudy(id));
+      profileInfo = await(getUserProfileInfo(deckForStudy.creatorId));
+    } catch (e) {
       alert(`Our apologies -- there was an error! Please go back to the 
         dashboard or refresh the page.`);
-      console.error(err);
-    });
+      console.error(e);
+    }
+    
+    // constructs state after getting deck
+    const { name, arrayDue, arrayNew, arrayLeft } = result;
+    const creatorName = profileInfo.data().name;
+    let newState = {
+      name: name,
+      creatorName: creatorName,
+      arrayTodo: arrayDue.concat(arrayNew),
+      arrayLeft: arrayLeft
+    };
+
+    // determines isForClassroom state property
+    if (this.props.location.pathname.includes(routes.classroomStudy)) {
+      const routeState = this.props.location.state;
+      if (routeState && routeState.fromClassroom) {
+        newState.isForClassroom = routeState.fromClassroom;
+      } else {
+        alert(`There was an error. Please go back to the dashboard.`);
+        console.error('No location state found despite classstudy route.');
+        return;
+      }
+    }
+
+    this.setState(() => newState);
   }
 
-  learner(cardId, quality, easinessFactor) {    
-    if (quality == 0) {
-      this.setState((prevState) => {
-        const { arrayTodo, index } = prevState;
-        arrayTodo[index].lastSelectedQuality = 0;
-        arrayTodo[index].isLearner = true;
+  /**
+   * Learner function for learner cards that aren't submitted, but are pushed back in the
+   *    deck. Sets a new state with the card pushed back in arrayTodo.
+   *
+   * @param {number} quality - the quality this card was submitted with
+   *
+   */
+  learner(quality) {
+    this.setState((prevState) => {
+      const { arrayTodo, index } = prevState;
+      arrayTodo[index].lastSelectedQuality = quality;
+      // marks this card as a learner card; this happens regardless of if the card is new or
+      //    not new
+      arrayTodo[index].isLearner = true;
+      if (quality == 0) {
         if (arrayTodo.length < 5) {
           shiftInArray(arrayTodo, index, index + 3);
         } else {
           shiftInArray(arrayTodo, index, index + 5);
         }
-        return {
-          arrayTodo: arrayTodo,
-        }
-      });
-    } else { // quality == 1
-      this.setState((prevState) => { 
-        const { arrayTodo, index } = prevState;
-        arrayTodo[index].lastSelectedQuality = 1;
+      } else {
         shiftInArray(arrayTodo, prevState.index, arrayTodo.length - 1);
-        return {
-          arrayTodo: arrayTodo,
-        }
-      });
-    }
+      }
+      return {
+        arrayTodo: arrayTodo
+      }
+    });
   }
 
   incrementIndex() {
@@ -435,9 +480,14 @@ class StudyDeck extends React.Component {
       return {
         index: newIndex
       };
-    });  
+    });
   }
 
+  /**
+   * Handles studying "override" behavior by placing the cards in arrayLeft into arrayTodo.
+   *    By the time this function is called, all cards in arrayTodo should've been studied by
+   *    the user.
+   */
   override() {
     if (this.state.arrayLeft.length <= 0) {
       alert('You have no more cards remaining.');
@@ -458,7 +508,7 @@ class StudyDeck extends React.Component {
           index: 0,
           arrayTodo: newArrayTodo,
           arrayLeft: newArrayLeft
-        }
+        };
       });
     }
   }

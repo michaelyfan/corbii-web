@@ -99,7 +99,6 @@ export function getDeckForStudy(deckId) {
       cardDataObj[cardDataPoint.data().cardId] = cardData;
     });
 
-
     // Loop through content cards, attach each card's respective data
     //    to itself as an attribute, and divide into "due", "new", and
     //    "left" categories
@@ -176,7 +175,7 @@ export function getDeckInfo(deckId) {
 }
 
 /**
- * Gets info for a card -- the card's front, back, and ID
+ * Gets info for a card -- the card's front and back
  *
  * @param {String} deckId - The ID of the desired card's deck
  * @param {String} cardId - the ID of the desired card
@@ -193,6 +192,38 @@ export function getCardInfo(deckId, cardId) {
       back: res.data().back,
       id: res.id
     }
+  });
+}
+
+/**
+ * Gets info for multiple cards
+ *
+ * @param {String} an array of objects, each object with attributes 'cardId' and 'deckId' both
+ *    of type String. The object can have other attributes, which will not affect the execution
+ *    of this function, including the return value.
+ *
+ * @return {Object} An object with cardId's (String) as the key, and an object with attributes
+ *    'deckId', 'front', and 'back' as the value
+ */
+export function getCardsInfo(cards) {
+  // set up for Promise.all call to get card documents
+  const calls = [];
+  cards.forEach((obj) => {
+    const cardRef = db.collection('decks').doc(obj.deckId).collection('cards').doc(obj.cardId);
+    calls.push(cardRef.get());
+  });
+
+  // get card documents
+  return Promise.all(calls).then((result) => {
+    const toReturn = {};
+    result.forEach((res, i) => {
+      toReturn[cards[i].cardId] = {
+        deckId: cards[i].deckId,
+        front: res.data().front,
+        back: res.data().back
+      };
+    });
+    return toReturn;
   });
 }
 
@@ -625,19 +656,28 @@ export function updateCardPersonalData(dataId, deckId, cardId, oldEasinessFactor
   }, { merge: true });
 }
 
-export function updateCardPersonalDataLearner(dataId, deckId, cardId, newInterval, newEasinessFactor) {
+export function updateCardPersonalDataLearner(dataId, deckId, cardId, quality, newEasinessFactor) {
   const uid = firebase.auth().currentUser.uid;
-
   let cardRef;
   if (dataId) {
     cardRef = db.collection('spacedRepData').doc(dataId);
   } else {
     cardRef = db.collection('spacedRepData').doc();
   }
+
+  let newInterval;
+  if (quality == 2) {
+    newInterval = 1;
+  } else if (quality == 3) {
+    newInterval = 3;
+  } else {
+    throw new Error('invalid quality submitted -- aborting!');
+  }
+
   const newNextReviewed = new Date();
   newNextReviewed.setDate(newNextReviewed.getDate() + newInterval);
 
-  cardRef.set({
+  return cardRef.set({
     easinessFactor: newEasinessFactor || 2.5,
     interval: newInterval,
     nextReviewed: newNextReviewed,
@@ -922,3 +962,27 @@ export function searchLists(query) {
 }
 // end search functions
 
+async function main() {
+  try {
+    const args = [
+      {
+        cardId: 'MVJo0hPXhc34pl5a8cDi',
+        deckId: '39Afm0PZBMrTvIKEMfCS'
+      },
+      {
+        cardId: 'PFpNVI9fYB6RX6zGmyQN',
+        deckId: '39Afm0PZBMrTvIKEMfCS'
+      },
+      {
+        cardId: '0gcyzyO1Q1QN8P1dvshA',
+        deckId: 'Cm4nLlNNOZZClH61G2CM'
+      },
+    ];
+    const res = await getCardsInfo(args);
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+// main();
