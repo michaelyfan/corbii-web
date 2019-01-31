@@ -777,7 +777,6 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
   if (deckName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
-  const userId = firebase.auth().currentUser.uid;
   const deckRef = `decks/${deckId}`;
 
   return db.doc(deckRef).update({name: deckName}).then(() => {
@@ -787,10 +786,10 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
         let cardRef;
         if (card.id) {
           cardRef = db.collection('decks').doc(deckId)
-                      .collection('cards').doc(card.id);
+            .collection('cards').doc(card.id);
         } else {
           cardRef = db.collection('decks').doc(deckId)
-                      .collection('cards').doc();
+            .collection('cards').doc();
         }
         batch.set(cardRef, {
           front: card.front,
@@ -798,7 +797,7 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
         }, {merge: true});
 
         return batch.commit();
-      })
+      });
     }
   });
 }
@@ -807,8 +806,7 @@ export function updateCurrentUserList(listId, listName, concepts) {
   if (listName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   }
-  const userId = firebase.auth().currentUser.uid;
-  const listRef = `lists/${listId}`
+  const listRef = `lists/${listId}`;
 
   if (listName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
@@ -821,17 +819,17 @@ export function updateCurrentUserList(listId, listName, concepts) {
         let conceptRef;
         if (concept.id) {
           conceptRef = db.collection('lists').doc(listId)
-                      .collection('concepts').doc(concept.id);
+            .collection('concepts').doc(concept.id);
         } else {
           conceptRef = db.collection('lists').doc(listId)
-                      .collection('concepts').doc();
+            .collection('concepts').doc();
         }
         batch.set(conceptRef, {
           front: concept.front,
           back: concept.back
         }, {merge: true});
         return batch.commit();
-      })
+      });
     }
   });
 }

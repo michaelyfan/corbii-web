@@ -21,14 +21,14 @@ function LowRatedCard(props) {
         </h4>
       </div>
     </div>
-  )
+  );
 }
 
 LowRatedCard.propTypes = {
   deckName: PropTypes.string.isRequired,
   front: PropTypes.string.isRequired,
   rating: PropTypes.number.isRequired
-}
+};
 
 function PeriodLink(props) {
   const { id, period } = props;
@@ -39,11 +39,7 @@ function PeriodLink(props) {
       </Link>
       <br />
     </span>
-  )
-}
-
-PeriodLink.propTypes = {
-  period: PropTypes.string.isRequired
+  );
 }
 
 class ClassroomTeacherView extends React.Component {
@@ -64,7 +60,7 @@ class ClassroomTeacherView extends React.Component {
       periods: [],
       cardsMissedMost: [],
       averageRatingPerCard: 0
-    }
+    };
   }
 
   async componentDidMount() {
@@ -108,7 +104,7 @@ class ClassroomTeacherView extends React.Component {
         rating: cardObj.averageQuality
       });
     });
-
+    
     this.setState(() => ({
       name: classroomInfo.name,
       averageRatingPerCard: averageRating,
@@ -148,15 +144,23 @@ class ClassroomTeacherView extends React.Component {
               {cardsMissedMost.length === 0
                 ? <p>You don't have any data yet! Try making a deck, and encourage your students to study.</p>
                 : cardsMissedMost.map((card) => {
-                    return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />
-                  })}
+                  return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />;
+                })}
               
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 export default ClassroomTeacherView;
+
+ClassroomTeacherView.propTypes = {
+  // TODO: fill out
+}
+
+PeriodLink.propTypes = {
+  period: PropTypes.string.isRequired
+};

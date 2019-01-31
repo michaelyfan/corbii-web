@@ -75,7 +75,36 @@ export function getPeriodStudents(classroomId, period) {
     });
 
     return ids;
-  })
+  });
+}
+
+/**
+ * Gets info for multiple students
+ *
+ * @param {String} students - an array of userId's, belonging to students
+ *
+ * @return {Object} An object with userId's of type String as the keys, and an object with
+ *    attributes 'name' and 'email' as the values
+ */
+export function getStudentsInfo(students) {
+  // set up for Promise.all call to get student documents
+  const calls = [];
+  students.forEach((student) => {
+    const userRef = db.collection('users').doc(student);
+    calls.push(userRef.get());
+  });
+
+  // get card documents
+  return Promise.all(calls).then((result) => {
+    const toReturn = {};
+    result.forEach((res, i) => {
+      toReturn[students[i]] = {
+        name: res.data().name,
+        email: res.data().email
+      };
+    });
+    return toReturn;
+  });
 }
 
 /**
