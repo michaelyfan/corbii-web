@@ -79,6 +79,33 @@ export function getPeriodStudents(classroomId, period) {
 }
 
 /**
+ * Gets profile information of a student.
+ *
+ * @param {String} userId - The ID of the student
+ *
+ * @return An promise resolving to an array of student objects.
+ *    Each object has attributes 'period' and 'id', both of
+ *    type {String}.
+ */
+export function getStudentInfo(userId, classroomId) {
+  const profileRef = db.collection('users').doc(userId);
+  const classProfileRef = db.collection('classrooms').doc(classroomId)
+    .collection('users').doc(userId);
+  return Promise.all([
+    profileRef.get(),
+    classProfileRef.get()
+  ]).then((res) => {
+    const [profile, classProfile] = res;
+    return {
+      id: userId,
+      name: profile.data().name,
+      email: profile.data().email,
+      period: classProfile.data().period
+    };
+  });
+}
+
+/**
  * Gets info for multiple students
  *
  * @param {String} students - an array of userId's, belonging to students
@@ -137,7 +164,7 @@ export function getClassCardAverage(classroomId) {
  * @return The average card rating of a classroom, a number of type int.
  */
 export function getPeriodCardAverage(classroomId, period) {
-  let colRef = db.collection('classSpacedRepData')
+  const colRef = db.collection('classSpacedRepData')
     .where('classroomId', '==', classroomId)
     .where('period', '==', period);
 
@@ -164,6 +191,32 @@ export function getPeriodCardAverage(classroomId, period) {
  */
 export function getDeckCardAverage(deckId, classroomId, periodId) {
   // classroomId may not be necessary
+}
+
+/**
+ * Gets the average card rating of a deck, filtered by classroom or period.
+ *
+ * @param {String} deckId - The ID of the deck
+ * @param {String} classroomId - (Optional) The ID of the classroom to filter results by
+ * @param {String} period - (Optional) The ID of the period to filter results by
+ *
+ * @return The average card rating of a deck, filtered by classroom or period. This will be a
+ *    number of type int.
+ */
+export function getStudentCardAverage(userId, classroomId) {
+  const colRef = db.collection('classSpacedRepData')
+    .where('userId', '==', userId)
+    .where('classroomId', '==', classroomId);
+
+  return colRef.get().then((result) => {
+    let accumulation = 0;
+    let count = 0;
+    result.forEach((dataPoint) => {
+      accumulation += dataPoint.data().quality;
+      count++;
+    });
+    return count == 0 ? accumulation : (accumulation/count);
+  });
 }
 
 /**
@@ -201,9 +254,9 @@ export function getClassCardsMissedMost(classroomId) {
 export function getPeriodCardsMissedMost(classroomId, period) {
   // set and get database reference
   let colRef = db.collection('classSpacedRepData')
-                  .where('classroomId', '==', classroomId)
-                  .where('period', '==', period)
-                  .where('quality', '<', 3);
+    .where('classroomId', '==', classroomId)
+    .where('period', '==', period)
+    .where('quality', '<', 3);
   return colRef.get().then((result) => {
     return calculateCardAverages(result);
   });
@@ -239,7 +292,7 @@ export function getDeckCardsMissedMost(deckId, classroomId, period) {
  *    student (the number of all cards in all decks assigned to the student's period).
  */
 export function getStudentStudyRatio(classroomId, userId, period) {
-
+   
 }
 
 /**

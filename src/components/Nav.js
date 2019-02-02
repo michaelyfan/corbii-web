@@ -12,7 +12,7 @@ class Nav extends React.Component {
 
     this.state = {
       searchQuery: ''
-    }
+    };
 
     this.enterActivator = this.enterActivator.bind(this);
     this.handleChangeSearch = this.handleChangeSearch.bind(this);
@@ -23,10 +23,10 @@ class Nav extends React.Component {
     const user = firebase.auth().currentUser;
     if (user) {
       firebase.auth().signOut().then(() => {
-        this.props.history.push(routes.home);
+        this.props.history.push(routes.home.base);
       }).catch((err) => {
         console.log(err);
-      })
+      });
     }
   }
 
@@ -34,7 +34,7 @@ class Nav extends React.Component {
     e.persist();
     this.setState(() => ({
       searchQuery: e.target.value
-    }))
+    }));
   }
 
   enterActivator(e) {
@@ -43,7 +43,7 @@ class Nav extends React.Component {
 
   render() {
     const { signedIn, photoURL, isTeacher, handleStudentClickRegister } = this.props;
-    const imageLink = signedIn ? (isTeacher ? routes.teacherDashboard : routes.dashboard) : routes.home;
+    const imageLink = signedIn ? (isTeacher ? routes.teacher.dashboard : routes.dashboard.base) : routes.home.base;
     return (
       <div className = "header"> 
         <div className = 'flex-header'>
@@ -64,7 +64,7 @@ class Nav extends React.Component {
                 value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: `${routes.searchResults}`,
+                  pathname: routes.search.results,
                   search: `?mode=decks&q=${this.state.searchQuery}`
                 }}>
                 <button style={{display: 'none'}} type='submit'>Search</button>
@@ -75,7 +75,7 @@ class Nav extends React.Component {
 
         <div id= 'navbar-usercard'>
           {photoURL 
-            && <Link to={routes.profile}>
+            && <Link to={routes.profile.base}>
                   <img className='nav-profile-img' src={photoURL} />
                </Link>}
 

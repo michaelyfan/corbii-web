@@ -26,7 +26,7 @@ class ClassroomRow extends React.Component {
     const { id, periods, name } = this.props;
     return (
       <div>
-        <Link to ={`${routes.teacherViewClassroom}/${id}`}>
+        <Link to ={routes.teacher.getViewClassroomRoute(id)}>
           <h3 className = 'classroom-name'> {name} </h3>
         </Link>
         {periods.map((period) => {

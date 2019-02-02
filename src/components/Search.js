@@ -34,7 +34,7 @@ class Search extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.state.mode != prevState.mode) {
       this.props.history.push({
-        pathname: `${routes.searchResults}`,
+        pathname: routes.search.results,
         search: `?mode=${this.state.mode}&q=${this.state.searchQuery}`
       })
     }
@@ -71,7 +71,7 @@ class Search extends React.Component {
                   onChange={this.handleChangeSearch} value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: `${routes.searchResults}`,
+                  pathname: routes.search.results,
                   search: `?mode=${this.state.mode}&q=${this.state.searchQuery}`
                 }}>
                 <button type='submit' className='no-display'></button>
@@ -84,7 +84,7 @@ class Search extends React.Component {
           </form>
         </div>
 
-        <Route path={`${routes.searchResults}`} component={SearchResults} />
+        <Route path={routes.search.results} component={SearchResults} />
       </div>
       
     )

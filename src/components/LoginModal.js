@@ -95,8 +95,8 @@ LoginModal.propTypes = {
 LoginModal.defaultProps = {
   header: 'log in',
   isTeacher: false,
-  redirectTeacherTo: routes.teacherDashboard,
-  redirectStudentTo: routes.dashboard
+  redirectTeacherTo: routes.teacher.dashboard,
+  redirectStudentTo: routes.dashboard.base
 }
  
 export default LoginModal;

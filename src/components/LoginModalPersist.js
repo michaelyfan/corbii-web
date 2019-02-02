@@ -124,8 +124,8 @@ LoginModalPersist.propTypes = {
 }
 
 LoginModalPersist.defaultProps = {
-  redirectStudentTo: routes.dashboard,
-  redirectTeacherTo: routes.teacherDashboard,
+  redirectStudentTo: routes.dashboard.base,
+  redirectTeacherTo: routes.teacher.dashboard,
   header: 'log in'
 }
  

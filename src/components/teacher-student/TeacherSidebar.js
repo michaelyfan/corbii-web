@@ -7,7 +7,7 @@ function PeriodLink(props) {
   const { id, period } = props;
   return (
     <span>
-      <Link to={`${routes.teacherViewClassroom}/${id}/${period}`}>
+      <Link to={routes.teacher.getViewPeriodRoute(id, period)}>
         <button className='dash-nav'>period {period}</button>
       </Link>
       <br />
@@ -24,7 +24,7 @@ export default function TeacherSideBar(props) {
   return (
     <div className ='navigation'>
       <Link to={{
-        pathname: routes.teacherCreate,
+        pathname: routes.teacher.create,
         state: {
           isForClassroom: true,
           classroomId: id
@@ -35,7 +35,7 @@ export default function TeacherSideBar(props) {
         </button>
       </Link>
       <br />
-      <Link to={`${routes.teacherViewStudents}/${id}`}>
+      <Link to={routes.teacher.getViewTeacherRoute(id)}>
         <button className = 'dash-nav'>view student analytics</button>
       </Link>
       <br />

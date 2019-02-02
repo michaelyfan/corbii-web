@@ -18,6 +18,6 @@ BackButton.propTypes = {
 }
 
 BackButton.defaultProps = {
-  redirectTo: routes.dashboard,
+  redirectTo: routes.dashboard.base,
   destination: 'dashboard'
 }

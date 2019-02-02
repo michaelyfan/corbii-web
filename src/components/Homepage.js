@@ -27,7 +27,7 @@ class Homepage extends React.Component {
 
   render() {
     const { signedIn, isTeacher, handleStudentClickRegister, handleTeacherClickRegister } = this.props;
-    const redirectLink = isTeacher ? routes.teacherDashboard : routes.dashboard;
+    const redirectLink = isTeacher ? routes.teacher.dashboard : routes.dashboard.base;
 
     return (
       <div>

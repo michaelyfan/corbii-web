@@ -56,7 +56,7 @@ class PeriodTeacherView extends React.Component {
   async getInfo() {
     const { id, period } = this.props.match.params;
     if (id == null) {
-      this.props.history.push(routes.teacherDashboard);
+      this.props.history.push(routes.teacher.dashboard);
     }
 
     let averageRating, classroomInfo, missedCards, cardsInfo, deckInfos;
@@ -106,7 +106,7 @@ class PeriodTeacherView extends React.Component {
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
-          <BackButton redirectTo={`${routes.teacherViewClassroom}/${id}`} destination='classroom' />
+          <BackButton redirectTo={routes.teacher.getViewClassroomRoute(id)} destination='classroom' />
           <h3 className = 'emphasized-words' id='teacher-welcome'>{classroomName} - period {period}</h3>
         </div>
 
@@ -114,7 +114,7 @@ class PeriodTeacherView extends React.Component {
           <div className = 'dashboard-menu' id = 'no-margin'>
             <div className = 'navigation'>
               <Link to={{
-                pathname: routes.teacherCreate,
+                pathname: routes.teacher.create,
                 state: {
                   isForClassroom: true,
                   classroomId: id
@@ -125,11 +125,11 @@ class PeriodTeacherView extends React.Component {
                 </button>
               </Link>
               <br />
-              <Link to={`${routes.teacherViewStudents}/${id}`}>
+              <Link to={routes.teacher.getViewStudentsRoute(id)}>
                 <button className = 'dash-nav'>view student analytics</button>
               </Link>
               <br />
-              <Link to={routes.teacherDashboard}>
+              <Link to={routes.teacher.dashboard}>
                 <button className = 'dash-nav'>view deck analytics</button>
               </Link>
             </div>

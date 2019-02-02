@@ -55,7 +55,7 @@ function ClassroomRow(props) {
   const { classroomId } = props;
   return (
     <div>
-      <Link to={`${routes.classroom}/${classroomId}`}><button>classroom with id: {classroomId}</button></Link>
+      <Link to={routes.classroom.getRoute(classroomId)}><button>classroom with id: {classroomId}</button></Link>
     </div>
   )
 }

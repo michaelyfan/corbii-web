@@ -349,7 +349,7 @@ class Deck extends React.Component {
       isLoading: true
     }), () => {
       deleteDeckFromCurrentUser(this.state.id).then(() => {
-        this.props.history.push(routes.dashboard);
+        this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
         console.log(err);
         alert(err);
@@ -396,7 +396,7 @@ class Deck extends React.Component {
             </div>
 
             <div className='soft-blue-background'>
-              <Link id = 'study-deck' to={`${routes.studyDeck}/${id}`}>
+              <Link id = 'study-deck' to={routes.study.getDeckRoute(id)}>
                 <button className = 'primary-button'>study this deck</button>
               </Link>
 

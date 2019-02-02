@@ -24,17 +24,11 @@ function LowRatedCard(props) {
   );
 }
 
-LowRatedCard.propTypes = {
-  deckName: PropTypes.string.isRequired,
-  front: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
-};
-
 function PeriodLink(props) {
   const { id, period } = props;
   return (
     <span>
-      <Link to={`${routes.teacherViewClassroom}/${id}/${period}`}>
+      <Link to={routes.teacher.getViewPeriodRoute(id, period)}>
         <button className='dash-nav'>period {period}</button>
       </Link>
       <br />
@@ -70,7 +64,7 @@ class ClassroomTeacherView extends React.Component {
   async getInfo() {
     const { id } = this.props.match.params;
     if (id == null) {
-      this.props.history.push(routes.teacherDashboard);
+      this.props.history.push(routes.teacher.dashboard);
     }
 
     let averageRating, classroomInfo, missedCards, cardsInfo, deckInfos;
@@ -120,7 +114,7 @@ class ClassroomTeacherView extends React.Component {
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
-          <BackButton redirectTo={routes.teacherDashboard} destination='dashboard' />
+          <BackButton redirectTo={routes.teacher.dashboard} destination='dashboard' />
           <h3 className = 'emphasized-words' id='teacher-welcome'>{name}</h3>
         </div>
 
@@ -159,8 +153,15 @@ export default ClassroomTeacherView;
 
 ClassroomTeacherView.propTypes = {
   // TODO: fill out
-}
+};
 
 PeriodLink.propTypes = {
-  period: PropTypes.string.isRequired
+  period: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired
+};
+
+LowRatedCard.propTypes = {
+  deckName: PropTypes.string.isRequired,
+  front: PropTypes.string.isRequired,
+  rating: PropTypes.number.isRequired
 };

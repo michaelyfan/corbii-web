@@ -297,7 +297,7 @@ class ConceptList extends React.Component {
 
   handleDeleteList() {
     deleteListFromCurrentUser(this.state.id).then(() => {
-      this.props.history.push(routes.dashboard);
+      this.props.history.push(routes.dashboard.base);
     }).catch((err) => {
       console.log(err);
       alert(err);
@@ -342,7 +342,7 @@ class ConceptList extends React.Component {
 
           <div className='soft-blue-background'>
 
-            <Link id = 'study-list' to={`${routes.studyConceptList}/${id}`}>
+            <Link id = 'study-list' to={routes.study.getConceptListRoute(id)}>
               <button className = 'primary-button'>study this list</button>
             </Link>
 

@@ -11,7 +11,7 @@ function ConceptListRow(props) {
 
   return (
     <div className='deck-row'>
-      <Link to={`${routes.viewConceptList}/${id}`}>
+      <Link to={routes.viewConceptList.getRoute(id)}>
         <button className = 'stuff-title'>{name}</button>
       </Link>
     </div>

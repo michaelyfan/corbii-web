@@ -431,7 +431,7 @@ class StudyDeck extends React.Component {
     };
 
     // determines isForClassroom state property
-    if (this.props.location.pathname.includes(routes.classroomStudy)) {
+    if (this.props.location.pathname.includes(routes.classroomStudy.base)) {
       const routeState = this.props.location.state;
       if (routeState && routeState.fromClassroom) {
         newState.isForClassroom = routeState.fromClassroom;
@@ -491,7 +491,7 @@ class StudyDeck extends React.Component {
   override() {
     if (this.state.arrayLeft.length <= 0) {
       alert('You have no more cards remaining.');
-      this.props.history.push(routes.dashboard);
+      this.props.history.push(routes.dashboard.base);
     } else {
       this.setState((prevState) => {
         let newArrayTodo;
@@ -531,7 +531,7 @@ class StudyDeck extends React.Component {
         <div>
           <Title
             text={name}
-            titleLink={`${routes.viewDeck}/${id}`}
+            titleLink={routes.viewDeck.getRoute(id)}
             subtitle={`created by ${creatorName}`} />
 
           { isForClassroom && <p className = 'small-caption'>Classroom: {classroomId}</p>}

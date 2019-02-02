@@ -68,7 +68,7 @@ class Profile extends React.Component {
               <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
             </form>
             <div className = 'dashboard-link'>
-              <Link to={routes.dashboard}>
+              <Link to={routes.dashboard.base}>
                 <button className = 'dashboard-button'>go to dashboard</button>
               </Link>
             </div>

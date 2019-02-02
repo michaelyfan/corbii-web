@@ -369,7 +369,7 @@ class Create extends React.Component {
 
   componentDidMount() {
     const routeState = this.props.location.state;
-    if (this.props.location.pathname === routes.teacherCreate
+    if (this.props.location.pathname === routes.teacher.create
         && routeState
         && routeState.isForClassroom
         && routeState.classroomId) {
@@ -395,7 +395,7 @@ class Create extends React.Component {
     } else {
       console.log(concepts);
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
-        this.props.history.push(routes.dashboard);
+        this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
         console.error(err);
       });  
@@ -417,7 +417,7 @@ class Create extends React.Component {
         classroomId: classroomId,
         periods: periods.split(',')
       }).then(() => {
-        this.props.history.push(routes.dashboard);
+        this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
         console.error(err);
       });

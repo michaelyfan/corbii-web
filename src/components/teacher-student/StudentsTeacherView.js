@@ -12,11 +12,11 @@ import { getClassroomInfo } from '../../utils/api.js';
 import { getClassStudents, getStudentsInfo } from '../../utils/teacherapi.js';
 
 function StudentRow(props) {
-  const { name, period, id } = props;
+  const { name, period, classroomId, studentId } = props;
   return (
     <div className = 'block-display'>
       <div className = 'inline-display center-items'>
-        <Link to={`${routes.teacherViewStudent}/${id}`} className = 'inline-display'>
+        <Link to={routes.teacher.getViewStudentRoute(classroomId, studentId)} className = 'inline-display'>
           <div className = 'profile-display'>
             {/*
             <img className = 'profile-img' id = 'profile-thumbnail' src = '/src/resources/genericprofile.jpg' />
@@ -38,7 +38,7 @@ class StudentsTeacherView extends React.Component {
     super(props);
 
     /*
-     *  structure of students:
+     *  structure of object in students:
      *     {
      *       name: '',
      *       period: '',
@@ -49,13 +49,22 @@ class StudentsTeacherView extends React.Component {
     this.state = {
       students: [],
       name: 'Loading...',
-      periods: []
+      periods: [],
+      periodFilter: null
     };
+    this.filterPeriod = this.filterPeriod.bind(this);
   }
 
   componentDidMount() {
     this.getStudents();
   }
+
+  /**
+   * Sets the periodFilter state, which controls student list period filtering.
+   *
+   * @param period - The period to filter list of students by. To remove filter, pass in null
+   */
+  filterPeriod(period) { this.setState(() => ({ periodFilter: period })); }
 
   async getStudents() {
     try {
@@ -89,13 +98,13 @@ class StudentsTeacherView extends React.Component {
   }
 
   render() {
-    const { students, name, periods } = this.state;
+    const { students, name, periods, periodFilter } = this.state;
     const { id } = this.props.match.params;
 
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
-          <BackButton redirectTo={`${routes.teacherViewClassroom}/${id}`} destination='classroom' />
+          <BackButton redirectTo={routes.teacher.getViewClassroomRoute(id)} destination='classroom' />
           <h3 className = 'emphasized-words' id='teacher-welcome'>{name} - students</h3>
         </div>
 
@@ -105,12 +114,24 @@ class StudentsTeacherView extends React.Component {
           </div>
 
           <div className = 'active-view top-border flex-display'>
-            {students.map((student) =>
-              <StudentRow name={student.name}
-                period={student.period}
-                id={student.id}
-                key={shortid.generate()} />
-            )}
+            <div>
+              <p>Filter by period:</p>
+              <button onClick={() => { this.filterPeriod(null); }}>None</button>
+              {periods.map((period) => 
+                <button onClick={() => { this.filterPeriod(period); }} key={period}>{period}</button>
+              )}
+            </div>
+            {students.map((student) =>{
+              // only render this student if period to filter by is null, or if student period
+              //    matches period to filter by
+              if (periodFilter == null || periodFilter === student.period) {
+                return <StudentRow name={student.name}
+                  period={student.period}
+                  studentId={student.id}
+                  classroomId={id}
+                  key={shortid.generate()} />;
+              }
+            })}
           </div>
         </div>
       </div>
@@ -127,5 +148,6 @@ StudentsTeacherView.propTypes = {
 StudentRow.propTypes = {
   name: PropTypes.string.isRequired,
   period: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
+  studentId: PropTypes.string.isRequired,
+  classroomId: PropTypes.string.isRequired
 };

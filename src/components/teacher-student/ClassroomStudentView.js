@@ -9,7 +9,7 @@ function DeckRow(props) {
 
   return (
     <Link to={{
-      pathname: `${routes.classroomStudy}/${id}`,
+      pathname: routes.classroomStudy.getRoute(id),
       state: { 
         fromClassroom: true,
         period: period,
@@ -18,14 +18,14 @@ function DeckRow(props) {
     }}>
       <button>Study {name} (id: {id})</button>
     </Link>
-  )
+  );
 }
 
 DeckRow.propTypes = {
   name: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   classroomId: PropTypes.string.isRequired
-}
+};
 
 class ClassroomStudentView extends React.Component {
 
@@ -36,7 +36,7 @@ class ClassroomStudentView extends React.Component {
       decks: [],
       teacherName: '',
       period: ''
-    }
+    };
   }
 
   componentDidMount() {

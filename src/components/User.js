@@ -8,7 +8,7 @@ function DeckMiniView(props) {
   return (
     <div className='deck-mini-view'>
       <h3>{name}</h3>
-      <Link to={`${routes.viewDeck}/${id}`}>
+      <Link to={routes.viewDeck.getRoute(id)}>
         <button>View</button>
       </Link>  
     </div>

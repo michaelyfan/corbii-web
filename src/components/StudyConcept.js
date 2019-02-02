@@ -139,7 +139,7 @@ class StudyConcept extends React.Component {
 
         <Title 
           text={listName}
-          titleLink={`${routes.viewConceptList}/${listId}`}
+          titleLink={routes.viewConceptList.getRoute(listId)}
           subtitle={`created by ${creatorName}`} />
           
         <div className = 'disp-inline center-button'>

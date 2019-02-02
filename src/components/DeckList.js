@@ -10,11 +10,11 @@ function DeckRow(props) {
 
   return (
     <div className='deck-row'>
-      <Link to={`${routes.viewDeck}/${id}`}>
+      <Link to={routes.viewDeck.getRoute(id)}>
         <button className = 'stuff-title'>{name}</button>
       </Link>
     </div>
-  )
+  );
 }
 
 DeckRow.propTypes = {
