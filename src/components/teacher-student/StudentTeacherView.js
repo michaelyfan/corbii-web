@@ -5,8 +5,10 @@ import shortid from 'shortid';
 
 /* Required modules */
 import BackButton from '../reusables/BackButton';
+import TeacherSidebar from './TeacherSidebar';
 import routes from '../../routes/routes';
-import { Link } from 'react-router-dom';
+import { getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getClassData, getStudentStudyRatio } from '../../utils/teacherapi.js';
+import { getClassroomInfo, getCardsInfo, getDeckInfo, getProfilePic } from '../../utils/api.js';
 
 function LowRatedCard(props) {
   const { deckName, front, rating } = props;
@@ -20,18 +22,6 @@ function LowRatedCard(props) {
         </h4>
       </div>
     </div>
-  );
-}
-
-function PeriodLink(props) {
-  const { id, period } = props;
-  return (
-    <span>
-      <Link to={routes.teacher.getViewPeriodRoute(id, period)}>
-        <button className='dash-nav'>period {period}</button>
-      </Link>
-      <br />
-    </span>
   );
 }
 
@@ -58,25 +48,26 @@ class StudentTeacherView extends React.Component {
   constructor(props) {
     super(props);
     /**
-     * cardsMissedMost has the structure:
+     * consistentLowCards has the structure:
      * {
      *   deckName: '',
      *   front: '',
      *   rating: ''
      * }
      *
-     * cards has the standard class data point structure.
-     *
+     * datapoints has the standard class data point .data() structure.
      *
      */
     this.state = {
       name: 'Loading...',
       period: '0',
       periods: [],
+      photoUrl: '',
       numCardsStudied: 0,
       averageRating: 0,
-      cards: [],
-      cardsMissedMost: []
+      averageTime: 0,
+      consistentLowCards: [],
+      datapoints: []
     };
   }
 
@@ -85,16 +76,54 @@ class StudentTeacherView extends React.Component {
   }
 
   async getInfo() {
-    const { id } = this.props.match.params;
-    // check for null id
-    if (id == null) {
-      this.props.history.push(routes.teacher.dashboard);
-    }
+    const { classroomId, userId } = this.props.match.params;
 
     try {
-      // const [ numCardsStudied, cardsMissedMost, studentInfo, classroomInfo, averageRating, cards ] = await Promise.all([Insert methods here]);
-      // TODO: fix above call
-      // TODO: refactor stufffff
+      const [ consistentLowCards, studentInfo, classroomInfo, averageRating,
+        averageTime, datapts, photoUrl ] = await Promise.all([
+        getConsistentLowCards(classroomId, null, userId),
+        getStudentInfo(classroomId, userId),
+        getClassroomInfo(classroomId),
+        getCardAverage(classroomId, null, null, userId),
+        getCardTimeAverage(classroomId, null, null, userId),
+        getClassData(classroomId, null, null, userId),
+        getProfilePic(userId)
+      ]);
+      const { name, period } = studentInfo;
+      const [ studyRatio, cardsInfo ] = await Promise.all([
+        getStudentStudyRatio(classroomId, userId, period),
+        getCardsInfo(consistentLowCards)
+      ]);
+      
+      // get missed cards' decks' names
+      const deckNameCalls = [];
+      consistentLowCards.forEach((cardObj) => {
+        deckNameCalls.push(getDeckInfo(cardObj.deckId));
+      });
+      const deckInfos = await Promise.all(deckNameCalls);
+
+      // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
+      //    names and cardsInfo for card front
+      let consistentLowCardsState = [];
+      consistentLowCards.forEach((cardObj, i) => {
+        consistentLowCardsState.push({
+          deckName: deckInfos[i].name,
+          front: cardsInfo[cardObj.cardId].front,
+          rating: cardObj.quality
+        });
+      });
+
+      this.setState(() => ({
+        name: name,
+        period: period,
+        periods: classroomInfo.periods,
+        numCardsStudied: studyRatio[0],
+        averageRating: averageRating,
+        averageTime: averageTime,
+        consistentLowCards: consistentLowCardsState,
+        datapoints: datapts,
+        photoUrl: photoUrl
+      }));
     } catch (e) {
       alert('Apologies -- there was an error!');
       console.error(e);
@@ -102,14 +131,14 @@ class StudentTeacherView extends React.Component {
   }
 
   render() {
-    const { name, period, periods, numCardsStudied, averageRating, cards, cardsMissedMost } = this.state;
-    const { id } = this.props.match.params;
+    const { name, period, periods, numCardsStudied, averageRating, averageTime, datapoints, consistentLowCards, photoUrl } = this.state;
+    const { classroomId } = this.props.match.params;
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
           <BackButton redirectTo={routes.teacher.dashboard} destination='student pages' />
           <div className='flex-center student-header-individual'>
-            <img className='student-pic-individual' src='/src/resources/genericprofile.jpg' />
+            <img className='student-pic-individual' src={photoUrl} />
             <div>
               <h1 className = 'emphasized-words emphasized-words-individual'>{name}</h1>
               <p className='period-subtitle'>Period {period}</p>
@@ -119,40 +148,19 @@ class StudentTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <div className ='navigation'>
-              <Link to={{
-                pathname: routes.teacher.create,
-                state: {
-                  isForClassroom: true,
-                  classroomId: id
-                }
-              }}>
-                <button className = 'dash-nav'>
-                    create a new deck
-                </button>
-              </Link>
-              <br />
-              <Link to={routes.teacher.getViewStudentsRoute(id)}>
-                <button className = 'dash-nav'>view student analytics</button>
-              </Link>
-              <br />
-              <button className = 'dash-nav'>view deck analytics</button>
-              <br />
-              {periods.map((period) => 
-                <PeriodLink period={period} id={id} key={shortid.generate()} />
-              )}
-            </div>
+            <TeacherSidebar id={classroomId} periods={periods} />
           </div>
 
           <div className = 'active-view top-border'>
             <div id='student-stats-wrapper'>
               <div className = 'student-stats student-stats-individual navigation'>
                 <h3 className = 'stat'>cards studied: {numCardsStudied}</h3>
-                <h3 className = 'stat'>avg. card rating: {averageRating}</h3>
+                <h3 className = 'stat'>avg. card rating: {averageRating.toFixed(2)}</h3>
+                <h3 className = 'stat'>avg. card time: {Math.trunc(averageTime)} seconds</h3>
               </div>
               <div>
                 <h2>GRAPH GOES HERE</h2>
-                <CardGraph cards={cards} />
+                <CardGraph cards={datapoints} />
                 {/* CARD QUALITY GRAPH -- TODO: replace with React bargraph module */}
                 {/* <img className='student-graph-individual' src='/src/resources/graph.jpg' /> */}
               </div>
@@ -161,9 +169,9 @@ class StudentTeacherView extends React.Component {
             <div>
               <div className = 'low-card'>
                 <h2 className = 'low-card-header'>lowest rated cards</h2>
-                {cardsMissedMost.length === 0
+                {consistentLowCards.length === 0
                   ? <p>You don&apos;t have any data yet! Try making a deck, and encourage your students to study.</p>
-                  : cardsMissedMost.map((card) => {
+                  : consistentLowCards.map((card) => {
                     return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />;
                   })}
               </div>
@@ -193,16 +201,16 @@ class StudentTeacherView extends React.Component {
 export default StudentTeacherView;
 
 StudentTeacherView.propTypes = {
-  // TODO: fill out
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      classroomId: PropTypes.string.isRequired,
+      userId: PropTypes.string.isRequired
+    })
+  })
 };
 
 CardGraph.propTypes = {
   cards: PropTypes.array.isRequired
-};
-
-PeriodLink.propTypes = {
-  period: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
 };
 
 LowRatedCard.propTypes = {

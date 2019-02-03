@@ -60,12 +60,14 @@ const routes = {
     viewPeriodTemplate: '/teacher/classroom/:id/:period',
     viewStudentsTemplate: '/teacher/students/:id',
     viewStudentTemplate: '/teacher/student/:classroomId/:userId',
+    viewDecksTemplate: '/teacher/decks/:id',
     viewDeckTemplate: '/teacher/deck/:classroomId/:deckId',
 
     getViewClassroomRoute: ((id) => `/teacher/classroom/${id}`),
     getViewPeriodRoute: ((id, period) => `/teacher/classroom/${id}/${period}`),
     getViewStudentsRoute: ((id) => `/teacher/students/${id}`),
     getViewStudentRoute: ((classroomId, userId) => `/teacher/student/${classroomId}/${userId}`),
+    getViewDecksRoute: ((id) => `/teacher/decks/${id}`),
     getViewDeckRoute: ((classroomId, deckId) => `/teacher/deck/${classroomId}/${deckId}`)
   },
   denied: {

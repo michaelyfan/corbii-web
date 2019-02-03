@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import BackButton from '../reusables/BackButton';
 import TeacherSidebar from './TeacherSidebar';
 import { getClassroomInfo } from '../../utils/api.js';
-import { getClassStudents, getStudentsInfo } from '../../utils/teacherapi.js';
+import { getStudents, getStudentsInfo } from '../../utils/teacherapi.js';
 
 function StudentRow(props) {
   const { name, period, classroomId, studentId } = props;
@@ -71,7 +71,7 @@ class StudentsTeacherView extends React.Component {
       const { id } = this.props.match.params;
       // get classrooms' students from api
       const [ students, classroomInfo ] = await Promise.all([
-        getClassStudents(id),
+        getStudents(id),
         getClassroomInfo(id)
       ]);
       // construct student ID array for getStudentsInfo call

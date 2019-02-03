@@ -19,50 +19,45 @@ function NewCardOptions(props) {
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
-          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true)}}>i do not know this card</button>
+          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true);}}>i do not know this card</button>
         </div>
         <div className = 'center-button'>
-          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i know this card</button>
+          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true);}}>i know this card</button>
         </div>
-      </div>
+      </div>;
   } else if (lastSelectedQuality == 1) { // 'not soon' selected ('unsure')
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
-          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true)}}>i do not know this card</button>
+          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true);}}>i do not know this card</button>
         </div>
         <div className = 'center-button'>
-          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i am unsure about this card</button>
+          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true);}}>i am unsure about this card</button>
         </div>
         <div className = 'center-button'>  
-          <button className = 'accuracy-button green' onClick={() => {submitCard(2, true)}}>i know this card</button>
+          <button className = 'accuracy-button green' onClick={() => {submitCard(2, true);}}>i know this card</button>
         </div>
-      </div>
+      </div>;
   } else { // first time seeing card
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
-          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true)}}>i do not know this card</button>
+          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true);}}>i do not know this card</button>
         </div>
         <div className = 'center-button'>
-          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true)}}>i am unsure about this card</button>
+          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true);}}>i am unsure about this card</button>
         </div>
         <div className = 'center-button'>  
-          <button className = 'accuracy-button green' onClick={() => {submitCard(3, true)}}>i definitely know this card</button>
+          <button className = 'accuracy-button green' onClick={() => {submitCard(3, true);}}>i definitely know this card</button>
         </div>
-      </div>
+      </div>;
   }
 
   return (
     <div className = 'option-menu center-button'>
       {options}
     </div>
-  )
-}
-
-NewCardOptions.propTypes = {
-  lastSelectedQuality: PropTypes.number,
-  submitCard: PropTypes.func.isRequired
+  );
 }
 
 /**
@@ -77,19 +72,15 @@ function NotNewCardOptions(props) {
       <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
       <div className = 'rating-buttons'>
         {/* Send cards under a quality of 3 back into the learner function with a quality of 0 */}
-        <button className = 'accuracy-button maroon number-scale' onClick={() => {submitCard(0, true)}}>1</button>
-        <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(0, true)}}>2</button>
-        <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(0, true)}}>3</button>
-        <button className = 'accuracy-button yellow number-scale' onClick={() => {submitCard(3, false)}}>4</button>
-        <button className = 'accuracy-button lime number-scale' onClick={() => {submitCard(4, false)}}>5</button>
-        <button className = 'accuracy-button green number-scale' onClick={() => {submitCard(5, false)}}>6</button>
+        <button className = 'accuracy-button maroon number-scale' onClick={() => {submitCard(0, true);}}>1</button>
+        <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(0, true);}}>2</button>
+        <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(0, true);}}>3</button>
+        <button className = 'accuracy-button yellow number-scale' onClick={() => {submitCard(3, false);}}>4</button>
+        <button className = 'accuracy-button lime number-scale' onClick={() => {submitCard(4, false);}}>5</button>
+        <button className = 'accuracy-button green number-scale' onClick={() => {submitCard(5, false);}}>6</button>
       </div>
     </div>
-  )
-}
-
-NotNewCardOptions.propTypes = {
-  submitCard: PropTypes.func.isRequired
+  );
 }
 
 /**
@@ -108,35 +99,35 @@ function CardOptions(props) {
     // if flipped, determine options to display based on whether card is learner or not
     if (isLearnerCard) {
       options = <NewCardOptions 
-                  submitCard={submitCard}
-                  lastSelectedQuality={lastSelectedQuality} />
+        submitCard={submitCard}
+        lastSelectedQuality={lastSelectedQuality} />;
 
       // keybindings
       keyMap = {
         'one': '1',
         'two': '2',
         'three': '3',
-      }
+      };
       if (lastSelectedQuality == 0) {
         keyHandlers = {
-          'one': (event) => {submitCard(0, true)},
-          'two': (event) => {submitCard(1, true)}
-        }
+          'one': () => {submitCard(0, true);},
+          'two': () => {submitCard(1, true);}
+        };
       } else if (lastSelectedQuality == 1) {
         keyHandlers = {
-          'one': (event) => {submitCard(0, true)},
-          'two': (event) => {submitCard(1, true)},
-          'three': (event) => {submitCard(2, true)}
-        }
+          'one': () => {submitCard(0, true);},
+          'two': () => {submitCard(1, true);},
+          'three': () => {submitCard(2, true);}
+        };
       } else {
         keyHandlers = {
-          'one': (event) => {submitCard(0, true)},
-          'two': (event) => {submitCard(1, true)},
-          'three': (event) => {submitCard(3, true)}
-        }
+          'one': () => {submitCard(0, true);},
+          'two': () => {submitCard(1, true);},
+          'three': () => {submitCard(3, true);}
+        };
       }
     } else {
-      options = <NotNewCardOptions submitCard={submitCard} />
+      options = <NotNewCardOptions submitCard={submitCard} />;
 
       // keybindings
       keyMap = {
@@ -146,15 +137,15 @@ function CardOptions(props) {
         'four': '4',
         'five': '5',
         'six': '6',
-      }
+      };
       keyHandlers = {
-        'one': (event) => {submitCard(0, true)},
-        'two': (event) => {submitCard(0, true)},
-        'three': (event) => {submitCard(0, true)},
-        'four': (event) => {submitCard(3, false)},
-        'five': (event) => {submitCard(4, false)},
-        'six': (event) => {submitCard(5, false)}
-      }
+        'one': () => {submitCard(0, true);},
+        'two': () => {submitCard(0, true);},
+        'three': () => {submitCard(0, true);},
+        'four': () => {submitCard(3, false);},
+        'five': () => {submitCard(4, false);},
+        'six': () => {submitCard(5, false);}
+      };
     }
   } else {
     // if not flipped, display flip card button
@@ -166,15 +157,15 @@ function CardOptions(props) {
           flip card
         </button>
       </div>
-    )
+    );
 
     // keybindings
     keyMap = {
       'flip-card': 'space'
-    }
+    };
     keyHandlers = {
       'flip-card': flip
-    }
+    };
   }
 
   return (
@@ -183,15 +174,7 @@ function CardOptions(props) {
         {options}
       </div>              
     </HotKeys>
-  )
-}
-
-CardOptions.propTypes = {
-  isFlipped: PropTypes.bool.isRequired,
-  submitCard: PropTypes.func.isRequired,
-  flip: PropTypes.func.isRequired,
-  lastSelectedQuality: PropTypes.number,
-  isLearnerCard: PropTypes.bool
+  );
 }
 
 /**
@@ -205,18 +188,13 @@ function CardContent(props) {
       <div className= 'flashcard-text studying'>
         <p className = 'front-text'>
           { isFlipped
-              ? card && card.back
-              : card && card.front
+            ? card && card.back
+            : card && card.front
           }
         </p>
       </div>
     </div>
-  )
-}
-
-CardContent.propTypes = {
-  card: PropTypes.object,
-  isFlipped: PropTypes.bool.isRequired
+  );
 }
 
 /**
@@ -228,8 +206,9 @@ class CardWrapper extends React.Component {
     super(props);
 
     this.state = {
-      isFlipped: false
-    }
+      isFlipped: false,
+      seconds: 0 // for keeping time
+    };
 
     this.submitCard = this.submitCard.bind(this);
     this.flip = this.flip.bind(this);
@@ -237,12 +216,25 @@ class CardWrapper extends React.Component {
     this.learnerSubmit = this.learnerSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.interval = setInterval(() => {
+      this.setState((prevState) => ({
+        seconds: prevState.seconds + 1
+      }));
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   flip() {
-    this.setState((prevState) => ({isFlipped: !prevState.isFlipped}))
+    this.setState((prevState) => ({isFlipped: !prevState.isFlipped}));
   }
 
   submitCard(quality, isLearner) {
     const { card, learner, isForClassroom, deckId, incrementIndex } = this.props;
+    const { seconds } = this.state;
 
     if (isLearner) {
       // set card easinessFactor. If the card is new, there is no easiness factor. If the
@@ -256,11 +248,12 @@ class CardWrapper extends React.Component {
       if (quality >= 2) {
         // sends learner card to learnerSubmit since performance on learner card
         //    was adequate enough
-        this.learnerSubmit(card.id, quality, easinessFactor);
+        this.learnerSubmit(card.id, quality, easinessFactor, seconds);
 
-        // flips back to front and moves onto the next card
+        // flips back to front, resets time count, and moves onto the next card
         this.setState(() => ({
-          isFlipped: false
+          isFlipped: false,
+          seconds: 0
         }), incrementIndex);
       } else {
         // sends learner card back into learner func.
@@ -268,8 +261,9 @@ class CardWrapper extends React.Component {
         //    array shift.
         learner(quality);
         this.setState(() => ({
-          isFlipped: false
-        }))
+          isFlipped: false,
+          seconds: 0
+        }));
       }
     } else {
       // update card data doc
@@ -279,17 +273,18 @@ class CardWrapper extends React.Component {
       }
       updateCardPersonalData(id, deckId, card.id, easinessFactor, interval, quality);
       if (isForClassroom) {
-        this.addClassDataPoint(quality, card.id);
+        this.addClassDataPoint(quality, card.id, seconds);
       }
 
-      // flips back to front and moves onto the next card
+      // flips back to front, resets time count, and moves onto the next card
       this.setState(() => ({
-        isFlipped: false
+        isFlipped: false,
+        seconds: 0
       }), incrementIndex);
     }
   }
 
-  learnerSubmit(cardId, quality, easinessFactor) {
+  learnerSubmit(cardId, quality, easinessFactor, time) {
     const { card, deckId, isForClassroom } = this.props;
 
     // submit card to personal data
@@ -305,7 +300,7 @@ class CardWrapper extends React.Component {
       } else { // quality == 3
         qualityToSubmit = 3;
       }
-      this.addClassDataPoint(qualityToSubmit, cardId);
+      this.addClassDataPoint(qualityToSubmit, cardId, time);
     }
 
     updateCardPersonalDataLearner(dataId, deckId, cardId, quality, easinessFactor)
@@ -314,19 +309,18 @@ class CardWrapper extends React.Component {
       });
   }
 
-  addClassDataPoint(quality, cardId) {
-    const { id } = this.props.match.params;
-    const { classroomId, period } = this.props.location.state;
+  addClassDataPoint(quality, cardId, time) {
+    const { deckId, classroomId, period } = this.props;
     createClassDataPoint({
       quality: quality,
-      time: 9999, // TODO: implement time in study sessions
+      time: time,
       cardId: cardId,
-      deckId: id,
+      deckId: deckId,
       classroomId: classroomId,
       period: period
     }).catch((err) => {
       console.error(err);
-    })
+    });
   }
 
   render() {
@@ -344,18 +338,8 @@ class CardWrapper extends React.Component {
           flip={this.flip} />
 
       </div>
-    )
+    );
   }
-}
-
-CardWrapper.propTypes = {
-  classroomId: PropTypes.string,
-  period: PropTypes.string,
-  card: PropTypes.object, 
-  deckId: PropTypes.string.isRequired,
-  isForClassroom: PropTypes.bool.isRequired,
-  incrementIndex: PropTypes.func.isRequired,
-  learner: PropTypes.func.isRequired
 }
 
 /**
@@ -394,7 +378,7 @@ class StudyDeck extends React.Component {
       arrayTodo: [],
       arrayLeft: [],
       isForClassroom: false
-    }
+    };
 
     this.incrementIndex = this.incrementIndex.bind(this);
     this.override = this.override.bind(this);
@@ -421,7 +405,7 @@ class StudyDeck extends React.Component {
     }
     
     // constructs state after getting deck
-    const { name, arrayDue, arrayNew, arrayLeft } = result;
+    const { name, arrayDue, arrayNew, arrayLeft } = deckForStudy;
     const creatorName = profileInfo.data().name;
     let newState = {
       name: name,
@@ -436,7 +420,7 @@ class StudyDeck extends React.Component {
       if (routeState && routeState.fromClassroom) {
         newState.isForClassroom = routeState.fromClassroom;
       } else {
-        alert(`There was an error. Please go back to the dashboard.`);
+        alert('There was an error. Please go back to the dashboard.');
         console.error('No location state found despite classstudy route.');
         return;
       }
@@ -470,7 +454,7 @@ class StudyDeck extends React.Component {
       }
       return {
         arrayTodo: arrayTodo
-      }
+      };
     });
   }
 
@@ -513,7 +497,6 @@ class StudyDeck extends React.Component {
     }
   }
 
-
   render() {
     const { id } = this.props.match.params;
     const { name, creatorName, arrayTodo, index, isForClassroom } = this.state;
@@ -543,28 +526,89 @@ class StudyDeck extends React.Component {
             strokeColor="#003466" />
           { isDone
             ? <div>
-                <p className = 'youre-finished'>you're finished!</p>
-                <div className = 'center-button'>
-                  <button className = 'primary-button' onClick={this.override}>continue studying</button>
-                </div>
-                <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
+              <p className = 'youre-finished'>you&apos;re finished!</p>
+              <div className = 'center-button'>
+                <button className = 'primary-button' onClick={this.override}>continue studying</button>
               </div>
+              <p className = 'study-warning'>keep in mind that studying past your set amount will decrease effectiveness.</p>
+            </div>
             : <div>
-                <CardWrapper
-                  deckId={id}
-                  card={card}
-                  incrementIndex={this.incrementIndex}
-                  learner={this.learner}
-                  isForClassroom={isForClassroom}
-                  classroomId={classroomId}
-                  period={period} />
-              </div>
+              <CardWrapper
+                deckId={id}
+                card={card}
+                incrementIndex={this.incrementIndex}
+                learner={this.learner}
+                isForClassroom={isForClassroom}
+                classroomId={classroomId}
+                period={period} />
+            </div>
           }
         </div>
       </div>
-    )
+    );
   }
 }
 
-
 export default StudyDeck;
+
+StudyDeck.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  }),
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+    state: PropTypes.shape({
+      classroomId: PropTypes.string,
+      period: PropTypes.string
+    })
+  }),
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+};
+
+CardWrapper.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  }),
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+    state: PropTypes.shape({
+      classroomId: PropTypes.string,
+      period: PropTypes.string
+    })
+  }),
+  classroomId: PropTypes.string,
+  period: PropTypes.string,
+  card: PropTypes.object, 
+  deckId: PropTypes.string.isRequired,
+  isForClassroom: PropTypes.bool.isRequired,
+  incrementIndex: PropTypes.func.isRequired,
+  learner: PropTypes.func.isRequired
+};
+
+NewCardOptions.propTypes = {
+  lastSelectedQuality: PropTypes.number,
+  submitCard: PropTypes.func.isRequired
+};
+
+NotNewCardOptions.propTypes = {
+  submitCard: PropTypes.func.isRequired
+};
+
+CardOptions.propTypes = {
+  isFlipped: PropTypes.bool.isRequired,
+  submitCard: PropTypes.func.isRequired,
+  flip: PropTypes.func.isRequired,
+  lastSelectedQuality: PropTypes.number,
+  isLearnerCard: PropTypes.bool
+};
+
+CardContent.propTypes = {
+  card: PropTypes.object,
+  isFlipped: PropTypes.bool.isRequired
+};

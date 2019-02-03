@@ -27,6 +27,7 @@ import PeriodTeacherView from './teacher-student/PeriodTeacherView';
 import StudentsTeacherView from './teacher-student/StudentsTeacherView';
 import StudentTeacherView from './teacher-student/StudentTeacherView';
 import DeckTeacherView from './teacher-student/DeckTeacherView';
+import DecksTeacherView from './teacher-student/DecksTeacherView';
 
 function TeacherPrivateRoute({ component: Component, render, signedIn, isTeacher, loading, ...rest }) {
   return <Route {...rest} render={(props) => (
@@ -80,13 +81,13 @@ class App extends React.Component {
                 signedIn: true,
                 isTeacher: true,
                 loading: false
-              }))
+              }));
             } else {
               this.setState(() => ({
                 signedIn: true,
                 isTeacher: false,
                 loading: false
-              }))
+              }));
             }
             this.doGetProfilePic();
           } else {
@@ -242,6 +243,12 @@ class App extends React.Component {
               isTeacher={isTeacher}
               loading={loading}
               component={StudentTeacherView} />
+            <TeacherPrivateRoute
+              exact path={routes.teacher.viewDecksTemplate}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={DecksTeacherView} />
             <TeacherPrivateRoute
               exact path={routes.teacher.viewDeckTemplate}
               signedIn={signedIn}

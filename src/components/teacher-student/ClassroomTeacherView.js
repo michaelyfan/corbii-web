@@ -6,7 +6,7 @@ import BackButton from '../reusables/BackButton';
 import routes from '../../routes/routes';
 import TeacherSidebar from './TeacherSidebar';
 import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api.js';
-import { getClassCardsMissedMost, getClassCardAverage } from '../../utils/teacherapi.js';
+import { getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 
 function LowRatedCard(props) {
   const { deckName, front, rating } = props;
@@ -71,9 +71,9 @@ class ClassroomTeacherView extends React.Component {
     try {
       // get card average, classroom info, and cards missed most
       ([ averageRating, classroomInfo, missedCards ] = await Promise.all([
-        getClassCardAverage(id),
+        getCardAverage(id),
         getClassroomInfo(id),
-        getClassCardsMissedMost(id)
+        getCardsMissedMost(id)
       ]));
       cardsInfo = await getCardsInfo(missedCards);
 

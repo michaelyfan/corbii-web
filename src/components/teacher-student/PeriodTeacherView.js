@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import routes from '../../routes/routes';
 import BackButton from '../reusables/BackButton';
-import {Link} from 'react-router-dom';
+import TeacherSidebar from './TeacherSidebar';
 import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api.js';
-import { getPeriodCardsMissedMost, getPeriodCardAverage } from '../../utils/teacherapi.js';
+import { getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 
 function LowRatedCard(props) {
   const { deckName, front, rating } = props;
@@ -23,12 +23,6 @@ function LowRatedCard(props) {
   );
 }
 
-LowRatedCard.propTypes = {
-  deckName: PropTypes.string.isRequired,
-  front: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
-};
-
 class PeriodTeacherView extends React.Component {
 
   constructor(props) {
@@ -44,6 +38,7 @@ class PeriodTeacherView extends React.Component {
      */
     this.state = {
       classroomName: 'Loading...',
+      periods: [],
       cardsMissedMost: [],
       averageRatingPerCard: 0
     };
@@ -55,17 +50,14 @@ class PeriodTeacherView extends React.Component {
 
   async getInfo() {
     const { id, period } = this.props.match.params;
-    if (id == null) {
-      this.props.history.push(routes.teacher.dashboard);
-    }
 
     let averageRating, classroomInfo, missedCards, cardsInfo, deckInfos;
     try {
       // get card average, classroom info, and cards missed most
       ([ averageRating, classroomInfo, missedCards ] = await Promise.all([
-        getPeriodCardAverage(id, period),
+        getCardAverage(id, period),
         getClassroomInfo(id),
-        getPeriodCardsMissedMost(id, period)
+        getCardsMissedMost(id, period)
       ]));
       cardsInfo = await getCardsInfo(missedCards);
 
@@ -93,6 +85,7 @@ class PeriodTeacherView extends React.Component {
 
     this.setState(() => ({
       classroomName: classroomInfo.name,
+      periods: classroomInfo.periods,
       averageRatingPerCard: averageRating,
       cardsMissedMost: cardsMissedMostState
     }));
@@ -100,8 +93,7 @@ class PeriodTeacherView extends React.Component {
 
   render() {
     const { id, period } = this.props.match.params;
-    const { classroomName, averageRatingPerCard, cardsMissedMost } = this.state;
-
+    const { classroomName, periods, averageRatingPerCard, cardsMissedMost } = this.state;
 
     return (
       <div className = 'dashboard'>
@@ -112,27 +104,7 @@ class PeriodTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <div className = 'navigation'>
-              <Link to={{
-                pathname: routes.teacher.create,
-                state: {
-                  isForClassroom: true,
-                  classroomId: id
-                }
-              }}>
-                <button className = 'dash-nav'>
-                    create a new deck
-                </button>
-              </Link>
-              <br />
-              <Link to={routes.teacher.getViewStudentsRoute(id)}>
-                <button className = 'dash-nav'>view student analytics</button>
-              </Link>
-              <br />
-              <Link to={routes.teacher.dashboard}>
-                <button className = 'dash-nav'>view deck analytics</button>
-              </Link>
-            </div>
+            <TeacherSidebar id={id} periods={periods} />
           </div>
 
           <div className = 'active-view'>
@@ -183,5 +155,19 @@ class PeriodTeacherView extends React.Component {
   }
 }
 
-
 export default PeriodTeacherView;
+
+PeriodTeacherView.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      period: PropTypes.string.isRequired
+    })
+  })
+};
+
+LowRatedCard.propTypes = {
+  deckName: PropTypes.string.isRequired,
+  front: PropTypes.string.isRequired,
+  rating: PropTypes.number.isRequired
+};

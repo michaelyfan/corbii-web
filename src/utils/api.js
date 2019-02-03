@@ -23,6 +23,98 @@ db.settings(settings);
 // Begin api functions
 
 /**
+ * Gets info for a deck -- the deck's creatorId, count, creator name,
+ *    name, and ID.
+ *
+ * @param {String} deckId - The ID of the desired deck
+ *
+ * @return {Object} An object with the deck's info, with properties "id", "count",
+ *    "creatorId", "creatorName", and "name"
+ */
+export function getDeckInfo(deckId) {
+  // set and get database reference
+  const cardRef = db.collection('decks').doc(deckId);
+  return cardRef.get().then((res) => {
+    const dataToReturn = res.data();
+    dataToReturn.id = res.id;
+    return dataToReturn;
+  });
+}
+
+/**
+ * Gets info for a card -- the card's front and back
+ *
+ * @param {String} deckId - The ID of the desired card's deck
+ * @param {String} cardId - the ID of the desired card
+ *
+ * @return {Object} An object with the card's info, with properties "front", "back",
+ *    and "id"
+ */
+export function getCardInfo(deckId, cardId) {
+  // set and get database reference
+  const cardRef = db.collection('decks').doc(deckId).collection('cards').doc(cardId);
+  return cardRef.get().then((res) => {
+    return {
+      front: res.data().front,
+      back: res.data().back,
+      id: res.id
+    };
+  });
+}
+
+/**
+ * Gets info for multiple cards
+ *
+ * @param {String} an array of objects, each object with attributes 'cardId' and 'deckId' both
+ *    of type String. The object can have other attributes, which will not affect the execution
+ *    of this function, including the return value.
+ *
+ * @return {Object} An object with cardId's (String) as the key, and an object with attributes
+ *    'deckId', 'front', and 'back' as the value
+ */
+export function getCardsInfo(cards) {
+  // set up for Promise.all call to get card documents
+  const calls = [];
+  cards.forEach((obj) => {
+    const cardRef = db.collection('decks').doc(obj.deckId).collection('cards').doc(obj.cardId);
+    calls.push(cardRef.get());
+  });
+
+  // get card documents
+  return Promise.all(calls).then((result) => {
+    const toReturn = {};
+    result.forEach((res, i) => {
+      toReturn[cards[i].cardId] = {
+        deckId: cards[i].deckId,
+        front: res.data().front,
+        back: res.data().back
+      };
+    });
+    return toReturn;
+  });
+}
+
+/**
+ * Gets a classroom's information (such as id, name, periods)
+ * 
+ * @param {String} the ID of the desired classroom
+ *
+ * @return A promise resolving to a classroom object with the attributes "id",
+ *    "name", "periods" (array), and "teacherId"
+ */
+export function getClassroomInfo(classroomId) {
+  const docRef = db.collection('classrooms').doc(classroomId);
+  return docRef.get().then((res) => {
+    return {
+      id: res.id,
+      name: res.data().name,
+      periods: res.data().periods,
+      teacherId: res.data().teacherId
+    };
+  });
+}
+
+/**
  * Gets the contents of a deck.
  *
  * @param {String} deckId -- the ID of the desired deck.
@@ -47,15 +139,14 @@ export function getDeck(deckId) {
         id: card.id,
         front: card.data().front,
         back: card.data().back
-      })
+      });
     });
     return {
       deckName: deck.data().name,
       creatorId: deck.data().creatorId,
       cards: cardsArr
-    }
+    };
   });
-
 }
 
 /**
@@ -71,8 +162,8 @@ export function getDeckForStudy(deckId) {
   // set DB references
   const uid = firebase.auth().currentUser.uid;
   const userCardsStudiedRef = db.collection('spacedRepData')
-                                .where('userId', '==', uid)
-                                .where('deckId', '==', deckId);
+    .where('userId', '==', uid)
+    .where('deckId', '==', deckId);
 
   // get card content and user data from DB
   return Promise.all([
@@ -140,91 +231,18 @@ export function getDeckForStudy(deckId) {
       arrayLeft: arrayLeft,
     };
 
-  })
+  });
 }
 
 function getPercentOverdue(interval, due_date, current_date) {
   const currentMoment = moment(current_date).startOf('day');
   const dueMoment = moment(due_date).startOf('day');
   const percentOverdue = currentMoment.diff(dueMoment, 'days') / interval;
-
   if (percentOverdue >= 2) {
     return 2;
   } else {
     return percentOverdue;
   }
-}
-
-/**
- * Gets info for a deck -- the deck's creatorId, count, creator name,
- *    name, and ID.
- *
- * @param {String} deckId - The ID of the desired deck
- *
- * @return {Object} An object with the deck's info, with properties "id", "count",
- *    "creatorId", "creatorName", and "name"
- */
-export function getDeckInfo(deckId) {
-  // set and get database reference
-  const cardRef = db.collection('decks').doc(deckId);
-  return cardRef.get().then((res) => {
-    const dataToReturn = res.data();
-    dataToReturn.id = res.id;
-    return dataToReturn;
-  });
-}
-
-/**
- * Gets info for a card -- the card's front and back
- *
- * @param {String} deckId - The ID of the desired card's deck
- * @param {String} cardId - the ID of the desired card
- *
- * @return {Object} An object with the card's info, with properties "front", "back",
- *    and "id"
- */
-export function getCardInfo(deckId, cardId) {
-  // set and get database reference
-  const cardRef = db.collection('decks').doc(deckId).collection('cards').doc(cardId);
-  return cardRef.get().then((res) => {
-    return {
-      front: res.data().front,
-      back: res.data().back,
-      id: res.id
-    }
-  });
-}
-
-/**
- * Gets info for multiple cards
- *
- * @param {String} an array of objects, each object with attributes 'cardId' and 'deckId' both
- *    of type String. The object can have other attributes, which will not affect the execution
- *    of this function, including the return value.
- *
- * @return {Object} An object with cardId's (String) as the key, and an object with attributes
- *    'deckId', 'front', and 'back' as the value
- */
-export function getCardsInfo(cards) {
-  // set up for Promise.all call to get card documents
-  const calls = [];
-  cards.forEach((obj) => {
-    const cardRef = db.collection('decks').doc(obj.deckId).collection('cards').doc(obj.cardId);
-    calls.push(cardRef.get());
-  });
-
-  // get card documents
-  return Promise.all(calls).then((result) => {
-    const toReturn = {};
-    result.forEach((res, i) => {
-      toReturn[cards[i].cardId] = {
-        deckId: cards[i].deckId,
-        front: res.data().front,
-        back: res.data().back
-      };
-    });
-    return toReturn;
-  });
 }
 
 export function getConceptList(listId) {
@@ -239,21 +257,20 @@ export function getConceptList(listId) {
       conceptArr.push({
         id: concept.id,
         question: concept.data().question
-      })
+      });
     });
     return {
       listName: list.data().name,
       creatorId: list.data().creatorId,
       concepts: conceptArr
-    }
+    };
   });
 }
 
 export function getConceptListForStudy(listId) {
   const uid = firebase.auth().currentUser.uid;
-  let contentRef = db.collection('lists').doc(listId);
   let dataRef = db.collection('selfExData')
-                  .where('userId', '==', uid).where('listId', '==', listId);
+    .where('userId', '==', uid).where('listId', '==', listId);
 
   return Promise.all([
     getConceptList(listId),
@@ -289,13 +306,20 @@ export function getConceptListForStudy(listId) {
         conceptsData: conceptsToBeKept
       };
     });
-  })
+  });
 }
 
 export function getUserProfileInfo(uid) {
   return db.collection('users').doc(uid).get();
 }
 
+/**
+ * Gets the profile pic URL of a user.
+ *
+ * @param {String} uid - the ID of the user
+ *
+ * @return A Promise resolving to the profile pic URL of the desired user.
+ */
 export function getProfilePic(uid) {
   return storageRef.child(`profilePics/${uid}`).getDownloadURL();
 }
@@ -329,13 +353,11 @@ export function getUserConceptLists(uid) {
 }
 
 export function getUserAll(uid) {
-
   return Promise.all([
     getUserProfileInfo(uid),
     getUserDecks(uid),
     getUserConceptLists(uid),
-    getProfilePic(uid),
-    getUserClassrooms(uid)
+    getProfilePic(uid)
   ]).then((results) => {
     const [ user, decks, conceptLists, url ] = results;
     return {
@@ -345,10 +367,9 @@ export function getUserAll(uid) {
       decks: decks,
       conceptLists: conceptLists,
       photoURL: url
-    }
+    };
   });
 }
-
 
 export function getCurrentUser() {
   const uid = firebase.auth().currentUser.uid;
@@ -382,34 +403,12 @@ export function getDecksInClassroom(classroomId, period) {
   } else {
     colRef = db.collection('decks').where('classroomId', '==', classroomId);
   }
-
   return colRef.get();
-}
-
-
-/**
- * Gets a classroom's information (such as id, name, periods)
- * 
- * @param {String} the ID of the desired classroom
- *
- * @return A promise resolving to a classroom object with the attributes "id",
- *    "name", "periods" (array), and "teacherId"
- */
-export function getClassroomInfo(classroomId) {
-  const docRef = db.collection('classrooms').doc(classroomId);
-  return docRef.get().then((res) => {
-    return {
-      id: res.id,
-      name: res.data().name,
-      periods: res.data().periods,
-      teacherId: res.data().teacherId
-    };
-  });
 }
 
 export function getClassroomUser(classroomId, userId) {
   const docRef = db.collection('classrooms').doc(classroomId)
-                    .collection('users').doc(userId);
+    .collection('users').doc(userId);
 
   return docRef.get();
 }
@@ -436,9 +435,9 @@ export function getClassroomForUser(classroomId) {
         data: classRes,
         id: classRes.id,
         decks: decks
-      }
-    })
-  })
+      };
+    });
+  });
 }
 
 export function getUserOnLogin() {
@@ -449,11 +448,11 @@ export function getUserOnLogin() {
       return {
         isTeacher: userDocSnapshot.data().isTeacher,
         exists: true
-      }
+      };
     } else {
       return {
         exists: false
-      }
+      };
     }
   });
 }
@@ -467,7 +466,7 @@ export function createClassroomUser(code) {
   if (codeParts.length != 2) {
     return new Promise((resolve, reject) => {
       reject(new Error('invalid code'));
-    })
+    });
   } else {
     const [ classroomId, period ] = codeParts;
     const uid = firebase.auth().currentUser.uid;
@@ -486,8 +485,8 @@ export function createClassroomUser(code) {
           t.update(userRef, {
             classrooms: classrooms
           });
-        })
-      }),   
+        });
+      }),
       classroomRef.collection('users').doc(uid).set({
         period: period
       })
@@ -528,12 +527,12 @@ export function createDeckCurrentUser(params) {
     creatorId: uid,
     creatorName: displayName,
     count: (cards && cards.length) || 0
-  }    
+  };
   if (isForClassroom) {
     let periodObject = {};
     periods.forEach((period) => {
       periodObject[period] = true;
-    })
+    });
     data.isClassroomPrivate = true;
     data.periods = periodObject;
     data.classroomId = classroomId;
@@ -570,7 +569,7 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
     creatorId: uid,
     creatorName: displayName,
     count: (concepts && concepts.length) || 0
-  }
+  };
 
   return db.collection('lists').add(data).then((listRef) => {
     if (concepts) {

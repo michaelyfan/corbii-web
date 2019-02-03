@@ -12,7 +12,7 @@ class Profile extends React.Component {
     this.state = {
       name: '',
       email: ''
-    }
+    };
 
     this.inputFile = React.createRef();
     this.handleChangeProfilePic = this.handleChangeProfilePic.bind(this);
@@ -31,7 +31,7 @@ class Profile extends React.Component {
       }));
     }).catch((err) => {
       console.log(err);
-    })
+    });
   }
 
   handleChangeProfilePic(e) {
@@ -75,14 +75,13 @@ class Profile extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 Profile.propTypes = {
   doGetProfilePic: PropTypes.func.isRequired,
   photoURL: PropTypes.string.isRequired
-
-}
+};
 
 export default Profile;

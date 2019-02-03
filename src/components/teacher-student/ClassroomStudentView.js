@@ -21,12 +21,6 @@ function DeckRow(props) {
   );
 }
 
-DeckRow.propTypes = {
-  name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  classroomId: PropTypes.string.isRequired
-};
-
 class ClassroomStudentView extends React.Component {
 
   constructor(props) {
@@ -53,11 +47,11 @@ class ClassroomStudentView extends React.Component {
         teacherName: `ID ${classroom.data.teacherId}`,
         decks: classroom.decks,
         period: classroomUser.data().period
-      }))
+      }));
 
     }).catch((err) => {
       console.error(err);
-    })
+    });
   }
 
   render() {
@@ -69,17 +63,31 @@ class ClassroomStudentView extends React.Component {
         <p>Period: {period}</p>
         <p>Id: {classroomId} </p>
         <div>
-          {decks.map((deck) => {
-            return <DeckRow name={deck.data().name} 
-                      classroomId={classroomId}
-                      period={period}
-                      id={deck.id} 
-                      key={deck.id} />
-          })}
+          {decks.map((deck) => <DeckRow name={deck.data().name} 
+            classroomId={classroomId}
+            period={period}
+            id={deck.id} 
+            key={deck.id} />
+          )}
         </div>
       </div>
-    )
+    );
   }
 }
 
 export default ClassroomStudentView;
+
+ClassroomStudentView.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  })
+};
+
+DeckRow.propTypes = {
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  classroomId: PropTypes.string.isRequired,
+  period: PropTypes.string.isRequired
+};

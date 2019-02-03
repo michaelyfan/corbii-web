@@ -12,12 +12,12 @@ function PeriodLink(props) {
       </Link>
       <br />
     </span>
-  )
+  );
 }
 
 PeriodLink.propTypes = {
   period: PropTypes.string.isRequired
-}
+};
 
 export default function TeacherSideBar(props) {
   const { id, periods } = props;
@@ -35,15 +35,17 @@ export default function TeacherSideBar(props) {
         </button>
       </Link>
       <br />
-      <Link to={routes.teacher.getViewTeacherRoute(id)}>
+      <Link to={routes.teacher.getViewStudentsRoute(id)}>
         <button className = 'dash-nav'>view student analytics</button>
       </Link>
       <br />
-      <button className = 'dash-nav'>view deck analytics</button>
+      <Link to={routes.teacher.getViewDecksRoute(id)}>
+        <button className = 'dash-nav'>view deck analytics</button>
+      </Link>
       <br />
       {periods.map((period) => 
         <PeriodLink period={period} id={id} key={`${id}_${period}`} />
       )}
     </div>
-  )
+  );
 }

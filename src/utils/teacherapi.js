@@ -29,15 +29,19 @@ export function getClassrooms() {
 }
 
 /**
- * Gets all students that are in a classroom.
+ * Gets all students that are in a classroom, and period if desired.
  *
- * @param {String} classroomId The ID of the classroom
+ * @param {String} classroomId - The ID of the classroom
+ * @param {String} period - (Optional) The desired period
  *
  * @return {Object} An array of student objects. Each object has attributes 'period' and 'id',
  *    both of type {String}.
  */
-export function getClassStudents(classroomId) {
+export function getStudents(classroomId, period) {
   let colRef = db.collection('classrooms').doc(classroomId).collection('users');
+  if (period) {
+    colRef = colRef.where('period', '==', period);
+  }
   
   return colRef.get().then((result) => {
     let ids = [];
@@ -53,33 +57,7 @@ export function getClassStudents(classroomId) {
 }
 
 /**
- * Gets all students that are in a classroom period.
- *
- * @param {String} classroomId The ID of the classroom
- * @param {String} period The desired period
- *
- * @return An promise resolving to an array of student objects.
- *    Each object has attributes 'period' and 'id', both of
- *    type {String}.
- */
-export function getPeriodStudents(classroomId, period) {
-  let colRef = db.collection('classrooms').doc(classroomId).collection('users').where('period', '==', period);
-
-  return colRef.get().then((result) => {
-    let ids = [];
-    result.forEach((studentDataObject) => {
-      ids.push({
-        period: studentDataObject.data().period,
-        id: studentDataObject.id
-      });
-    });
-
-    return ids;
-  });
-}
-
-/**
- * Gets profile information of a student.
+ * Gets profile information of a student, including a student's period.
  *
  * @param {String} userId - The ID of the student
  *
@@ -87,7 +65,7 @@ export function getPeriodStudents(classroomId, period) {
  *    Each object has attributes 'period' and 'id', both of
  *    type {String}.
  */
-export function getStudentInfo(userId, classroomId) {
+export function getStudentInfo(classroomId, userId) {
   const profileRef = db.collection('users').doc(userId);
   const classProfileRef = db.collection('classrooms').doc(classroomId)
     .collection('users').doc(userId);
@@ -106,7 +84,7 @@ export function getStudentInfo(userId, classroomId) {
 }
 
 /**
- * Gets info for multiple students
+ * Gets info for multiple students. This does not include the students' periods.
  *
  * @param {String} students - an array of userId's, belonging to students
  *
@@ -135,14 +113,61 @@ export function getStudentsInfo(students) {
 }
 
 /**
- * Gets the average card rating of a classroom.
+ * Generic function to get class data points.
  *
- * @param {String} classroomId The ID of the classroom
+ * @param {String} classroomId - The ID of the datapts' classroom
+ * @param {String} period - (Optional) The period of the datapts
+ * @param {String} deckId - (Optional) The ID of the datapts' deck
+ * @param {String} userId - (Optional) The ID of the datapts' user
  *
- * @return The average card rating of a classroom, a number of type int.
+ * @return The average card rating of a given filter of card data points, of type number.
  */
-export function getClassCardAverage(classroomId) {
+export function getClassData(classroomId, period, deckId, userId) {
+  // set db reference
   let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId);
+  if (period && userId == null) {
+    colRef = colRef.where('period', '==', period);
+  }
+  if (deckId) {
+    colRef = colRef.where('deckId', '==', deckId);
+  }
+  if (userId) {
+    colRef = colRef.where('userId', '==', userId);  
+  }
+
+  // get db reference and filter before sending back
+  return colRef.get().then((res) => {
+    const toReturn = [];
+    res.forEach((datapt) => {
+      const data = datapt.data();
+      data.id = datapt.id;
+      toReturn.push(data);
+    });
+    return toReturn;
+  });
+}
+
+/**
+ * Gets an average card rating of a given filter of cards data points.
+ *
+ * @param {String} classroomId - The ID of the datapts' classroom
+ * @param {String} period - (Optional) The period of the datapts
+ * @param {String} deckId - (Optional) The ID of the datapts' deck
+ * @param {String} userId - (Optional) The ID of the datapts' user
+ *
+ * @return The average card rating of a given filter of card data points, of type number.
+ */
+export function getCardAverage(classroomId, period, deckId, userId) {
+  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId);
+  if (period && userId == null) {
+    colRef = colRef.where('period', '==', period);
+  }
+  if (deckId) {
+    colRef = colRef.where('deckId', '==', deckId);
+  }
+  if (userId) {
+    colRef = colRef.where('userId', '==', userId);  
+  }
 
   return colRef.get().then((result) => {
     let accumulation = 0;
@@ -156,63 +181,32 @@ export function getClassCardAverage(classroomId) {
 }
 
 /**
- * Gets the average card rating of a classroom.
+ * Gets an average card time of a given filter of cards data points.
  *
- * @param {String} classroomId The ID of the classroom
- * @param {String} period The desired period
+ * @param {String} classroomId - The ID of the datapts' classroom
+ * @param {String} period - (Optional) The period of the datapts
+ * @param {String} deckId - (Optional) The ID of the datapts' deck
+ * @param {String} userId - (Optional) The ID of the datapts' user
  *
- * @return The average card rating of a classroom, a number of type int.
+ * @return The average card time of a given filter of card data points, of type number.
  */
-export function getPeriodCardAverage(classroomId, period) {
-  const colRef = db.collection('classSpacedRepData')
-    .where('classroomId', '==', classroomId)
-    .where('period', '==', period);
+export function getCardTimeAverage(classroomId, period, deckId, userId) {
+  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId);
+  if (period && userId == null) {
+    colRef = colRef.where('period', '==', period);
+  }
+  if (deckId) {
+    colRef = colRef.where('deckId', '==', deckId);
+  }
+  if (userId) {
+    colRef = colRef.where('userId', '==', userId);  
+  }
 
   return colRef.get().then((result) => {
     let accumulation = 0;
     let count = 0;
     result.forEach((dataPoint) => {
-      accumulation += dataPoint.data().quality;
-      count++;
-    });
-    return count == 0 ? accumulation : (accumulation/count);
-  });
-}
-
-/**
- * Gets the average card rating of a deck, filtered by classroom or period.
- *
- * @param {String} deckId - The ID of the deck
- * @param {String} classroomId - (Optional) The ID of the classroom to filter results by
- * @param {String} period - (Optional) The ID of the period to filter results by
- *
- * @return The average card rating of a deck, filtered by classroom or period. This will be a
- *    number of type int.
- */
-export function getDeckCardAverage(deckId, classroomId, periodId) {
-  // classroomId may not be necessary
-}
-
-/**
- * Gets the average card rating of a deck, filtered by classroom or period.
- *
- * @param {String} deckId - The ID of the deck
- * @param {String} classroomId - (Optional) The ID of the classroom to filter results by
- * @param {String} period - (Optional) The ID of the period to filter results by
- *
- * @return The average card rating of a deck, filtered by classroom or period. This will be a
- *    number of type int.
- */
-export function getStudentCardAverage(userId, classroomId) {
-  const colRef = db.collection('classSpacedRepData')
-    .where('userId', '==', userId)
-    .where('classroomId', '==', classroomId);
-
-  return colRef.get().then((result) => {
-    let accumulation = 0;
-    let count = 0;
-    result.forEach((dataPoint) => {
-      accumulation += dataPoint.data().quality;
+      accumulation += dataPoint.data().time;
       count++;
     });
     return count == 0 ? accumulation : (accumulation/count);
@@ -222,60 +216,161 @@ export function getStudentCardAverage(userId, classroomId) {
 /**
  * Gets the lowest rated cards of a classroom. Here, a 
  * "missed" card is defined as a card with a quality 
- * of 2 or under.
+ * of 2 or under. 
  *
  * @param {String} classroomId The ID of the desired classroom
+ * @param {String} period - (Optional) The desired period. This parameter is disregarded if userId
+ *    is passed in.
+ * @param {String} deckId - (Optional) The ID of the datapts' deck
+ * @param {String} userId - (Optional) The ID of the datapts' user
  *
  * @return A Promise resolving with an array of card objects. Each object has attributes
  *    'classroomId', 'deckId', 'cardId', 'userId', and 'period' of type String, and
  *    'averageQuality', of type number.
  */
-export function getClassCardsMissedMost(classroomId) {
+export function getCardsMissedMost(classroomId, period, deckId, userId) {
   // set and get database reference
-  let colRef = db.collection('classSpacedRepData')
-    .where('classroomId', '==', classroomId)
-    .where('quality', '<', 3);
+  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId);
+  if (period && userId == null) {
+    colRef = colRef.where('period', '==', period);
+  }
+  if (deckId) {
+    colRef = colRef.where('deckId', '==', deckId);
+  }
+  if (userId) {
+    colRef = colRef.where('userId', '==', userId);  
+  }
+  colRef = colRef.where('quality', '<', 3);
   return colRef.get().then((result) => {
     return calculateCardAverages(result);
   });
 }
 
 /**
- * Gets the lowest rated cards of a period. Here, a 
- * "missed" card is defined as a card with a quality 
- * of 2 or under.
+ * Gets consistently low cards. A card's "consistent" rating is all ratings' statistical
+ *    mode, but only if:
+ *    ( allRatings.count(mode(allRatings)) / allRatings.size ) >= 0.40
+ * And a low rating is defined as a rating <= 2.
  *
- * @param {String} classroomId - The ID of the desired classroom
- * @param {String} period - The desired period
+ * For more information on "consistent" ratings, see
+ *    https://docs.google.com/document/d/1U2vdl62Ae9HiT7krRUAPuhKaphRIHhufQNsnI9eS4YE/edit?disco=AAAACC24TFw
  *
- * @return A Promise resolving to an array of card objects. Each object has attributes
- *    'classroomId', 'deckId', 'cardId', and 'averageQuality', all of type String.
+ * @param {String} classroomId - the ID of the student's classroom
+ * @param {String} userId - (Optional) the ID of the student
+ * @param {String} period - (Optional) The student's period
+ *
+ * @return A Promise resolving to an array of the student's consistently low cards. Each object has
+ *    attributes 'cardId', 'deckId', 'classroomId', and 'userId' of type String, and 'quality'
+ *    of type number.
  */
-export function getPeriodCardsMissedMost(classroomId, period) {
-  // set and get database reference
-  let colRef = db.collection('classSpacedRepData')
-    .where('classroomId', '==', classroomId)
-    .where('period', '==', period)
-    .where('quality', '<', 3);
-  return colRef.get().then((result) => {
-    return calculateCardAverages(result);
+export function getConsistentLowCards(classroomId, deckId, userId) {
+  // set db reference
+  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId);
+  if (deckId) {
+    colRef = colRef.where('deckId', '==', deckId);
+  }
+  if (userId) {
+    colRef = colRef.where('userId', '==', userId);  
+  }
+
+  // get db reference
+  return colRef.get().then((res) => {
+    const toReturn = [];
+    const cardRecord = {};
+    // organize datapoints by card
+    res.forEach((datapoint) => {
+      if (!cardRecord[datapoint.data().cardId]) {
+        cardRecord[datapoint.data().cardId] = [datapoint];
+      } else {
+        cardRecord[datapoint.data().cardId].push(datapoint);
+      }
+    });
+    // iterate through all cards to find consistent rating (if any)
+    Object.keys(cardRecord).forEach((key) => {
+      const datapoints = cardRecord[key];
+      // find statistical mode of all datapoints (by quality)
+      const modeMap = {};
+      let mode = datapoints[0].data().quality, maxCount = 1;
+      datapoints.forEach((point) => {
+        const thisPointQuality = point.data().quality;
+        if (modeMap[thisPointQuality] == null) 
+          modeMap[thisPointQuality] = 1;
+        else
+          modeMap[thisPointQuality] += 1;
+        if (modeMap[thisPointQuality] > maxCount) {
+          mode = thisPointQuality;
+          maxCount = modeMap[thisPointQuality];
+        }
+      });
+
+      // determine if this mode is low enough to be low quality (<= 2)
+      if (mode <= 2) {
+        // determine if this mode is consistent
+        if ((maxCount / datapoints.length) >= 0.4) {
+          toReturn.push({
+            cardId: datapoints[0].data().cardId, // any of the datapoints will have this card's ID
+            deckId: datapoints[0].data().deckId, // any of the datapoints will have this card's deck's ID
+            quality: mode,
+            classroomId: classroomId,
+            userId: userId
+          });
+        }
+      }
+    });
+    return toReturn;
   });
 }
 
 /**
- * Gets the lowest rated cards of a deck. Here, a 
- * "missed" card is defined as a card with a quality 
- * of 2 or under. This can be filtered by classroom or period.
+ * Gets the average time studied per day for the given filter(s). TODO: IN PROGRESS, finish
  *
- * @param {String} deckId - The ID of the deck
- * @param {String} classroomId - (Optional) The ID of the desired classroom
- * @param {String} period - (Optional) The desired period
+ * @param {String} classroomId The ID of the desired classroom
+ * @param {String} period - (Optional) The desired period. This parameter is disregarded if userId
+ *    is passed in.
+ * @param {String} deckId - (Optional) The ID of the datapts' deck
+ * @param {String} userId - (Optional) The ID of the datapts' user
  *
- * @return A Promise resolving to an array of card objects. Each object has attributes
- *    'classroomId', 'deckId', 'cardId', and 'averageQuality', all of type String.
+ * @return A Promise resolving to the average time studied per day for the given filter(s),
+ *    as the type number
  */
-export function getDeckCardsMissedMost(deckId, classroomId, period) {
+export function getAverageTimeStudied(classroomId, period, deckId, userId) {
+  let colRef = db.collection('classSpacedRepData').where('classroomId', '==', classroomId);
+  if (period && userId == null) {
+    colRef = colRef.where('period', '==', period);
+  }
+  if (deckId) {
+    colRef = colRef.where('deckId', '==', deckId);
+  }
+  if (userId) {
+    colRef = colRef.where('userId', '==', userId);  
+  }
 
+  // separate data points by day
+  return colRef.get().then((result) => {
+    const dayRecord = {};
+    result.forEach((res) => {
+      // get date string (m/d/yyyy)
+      const dateObj = res.data().timestamp.toDate();
+      const dateString = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${dateObj.getFullYear()}`;
+
+      // if dayRecord doesn't have this date, add it to dayRecord
+      if (!dayRecord[dateString]) {
+        dayRecord[dateString] = [res.data()];
+      } else {
+        // add this datapoint to dayRecord under the pt's respective date
+        dayRecord[dateString].push(res.data());
+      }
+    });
+    let accumulation = 0;
+    let numDays = 0;
+    Object.keys(dayRecord).forEach((key) => {
+      const dayDataArray = dayRecord[key];
+      dayDataArray.forEach((datapoint) => {
+
+      });
+    });
+    return accumulation / numDays;
+  });
 }
 
 /**
@@ -285,38 +380,42 @@ export function getDeckCardsMissedMost(deckId, classroomId, period) {
  *
  * @param {String} classroomId - the ID of the student's classroom
  * @param {String} userId - the ID of the student
- * @param {String} period - The student's period
+ * @param {String} period - the period of this student
  *
  * @return A Promise resolving to an array where the first element is the number of cards the
  *    student has studied, and the second element is the number of all cards available to the
  *    student (the number of all cards in all decks assigned to the student's period).
  */
-export function getStudentStudyRatio(classroomId, userId, period) {
-   
+export async function getStudentStudyRatio(classroomId, userId, period) {
+  const dataRef = db.collection('classSpacedRepData')
+    .where('classroomId', '==', classroomId)
+    .where('userId', '==', userId);
+  const decksRef = db.collection('decks')
+    .where('isClassroomPrivate', '==', true)
+    .where('classroomId', '==', classroomId)
+    .where(`periods.${period}`, '==', true);
+
+  let dataRes;
+  let decksRes;
+  try {
+    ([ dataRes, decksRes ] = await Promise.all([dataRef.get(), decksRef.get()]));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+  // count the number of cards among retrieved datapoints
+  const cardRecord = {};
+  dataRes.forEach((datapt) => {
+    if (!cardRecord[datapt.data().cardId]) {
+      cardRecord[datapt.data().cardId] = true;
+    }
+  });
+  // sum up the number of cards in retrieved decks
+  let numCards = 0;
+  decksRes.forEach((deck) => {
+    numCards += deck.data().count;
+  });
+  return Promise.resolve([Object.keys(cardRecord).length, numCards]);
 }
-
-/**
- * Gets a student's consistently low cards. A card's "consistent" rating is all ratings' mode,
- *    but only if:
- *    ( allRatings.count(mode(allRatings)) / allRatings.size ) >= 0.40
- * And a low rating is defined as a rating <= 2.
- *
- * For more information on "consistent" ratings, see
- *    https://docs.google.com/document/d/1U2vdl62Ae9HiT7krRUAPuhKaphRIHhufQNsnI9eS4YE/edit?disco=AAAACC24TFw
- *
- * @param {String} classroomId - the ID of the student's classroom
- * @param {String} userId - the ID of the student
- * @param {String} period - The student's period
- *
- * @return A Promise resolving to an array of the student's consistently low cards. A card object
- *    has the structure:
- *    TODO: fillout
- */
-export function getStudentLowCards(classroomId, userId, period) {
-  // may require helper functions
-}
-
-
 
 /**
  * Calculates card quality averages, given a Firebase collection result object
@@ -380,12 +479,8 @@ export function createJoinCode(id, period) {
   return `${id}-&${period}`;
 }
 
-function main() {
-  getClassCardsMissedMost('ABCD1234').then((res) => {
-    res.forEach((thing) => {
-      console.log(thing);
-    })
-  });
+async function main() {
+  getAverageTimeStudied('ABCD1234', null, null, 'CwKF8VR2HSQDTJ5WdQqy17xoZSM2');
 }
 
-// main();
+main();

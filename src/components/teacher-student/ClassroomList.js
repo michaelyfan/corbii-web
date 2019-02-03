@@ -57,7 +57,7 @@ function ClassroomRow(props) {
     <div>
       <Link to={routes.classroom.getRoute(classroomId)}><button>classroom with id: {classroomId}</button></Link>
     </div>
-  )
+  );
 }
 
 class ClassroomList extends React.Component {
@@ -66,7 +66,7 @@ class ClassroomList extends React.Component {
     super(props);
     this.state = {
       classrooms: []
-    }
+    };
 
     this.getClassrooms = this.getClassrooms.bind(this);
   }
@@ -81,11 +81,11 @@ class ClassroomList extends React.Component {
       if (classrooms) {
         this.setState(() => ({
           classrooms: classrooms
-        }))
+        }));
       }
     }).catch((err) => {
       console.error(err);
-    })
+    });
   }
 
   render() {
@@ -98,17 +98,17 @@ class ClassroomList extends React.Component {
           isEmpty
             ? <p>You are not in any classrooms</p> 
             : classrooms.map((classroomId) => {
-                return <ClassroomRow key={shortid.generate()} classroomId={classroomId} />
-              })
+              return <ClassroomRow key={shortid.generate()} classroomId={classroomId} />;
+            })
         }
         <JoinClassroomForm getClassrooms={this.getClassrooms} />
       </div>
-    )
+    );
   }
 }
 
 ClassroomList.propTypes = {
   
-}
+};
 
 export default ClassroomList;
