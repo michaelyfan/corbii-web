@@ -483,4 +483,4 @@ async function main() {
   getAverageTimeStudied('ABCD1234', null, null, 'CwKF8VR2HSQDTJ5WdQqy17xoZSM2');
 }
 
-main();
+// main();

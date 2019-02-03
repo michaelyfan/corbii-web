@@ -38,7 +38,7 @@ function NewCardOptions(props) {
           <button className = 'accuracy-button green' onClick={() => {submitCard(2, true);}}>i know this card</button>
         </div>
       </div>;
-  } else { // first time seeing card
+  } else { // first time seeing card (this card has not gone through learner function yet)
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
@@ -73,8 +73,8 @@ function NotNewCardOptions(props) {
       <div className = 'rating-buttons'>
         {/* Send cards under a quality of 3 back into the learner function with a quality of 0 */}
         <button className = 'accuracy-button maroon number-scale' onClick={() => {submitCard(0, true);}}>1</button>
-        <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(0, true);}}>2</button>
-        <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(0, true);}}>3</button>
+        <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(1, true);}}>2</button>
+        <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(2, true);}}>3</button>
         <button className = 'accuracy-button yellow number-scale' onClick={() => {submitCard(3, false);}}>4</button>
         <button className = 'accuracy-button lime number-scale' onClick={() => {submitCard(4, false);}}>5</button>
         <button className = 'accuracy-button green number-scale' onClick={() => {submitCard(5, false);}}>6</button>
@@ -140,8 +140,8 @@ function CardOptions(props) {
       };
       keyHandlers = {
         'one': () => {submitCard(0, true);},
-        'two': () => {submitCard(0, true);},
-        'three': () => {submitCard(0, true);},
+        'two': () => {submitCard(1, true);},
+        'three': () => {submitCard(2, true);},
         'four': () => {submitCard(3, false);},
         'five': () => {submitCard(4, false);},
         'six': () => {submitCard(5, false);}
@@ -236,6 +236,16 @@ class CardWrapper extends React.Component {
     const { card, learner, isForClassroom, deckId, incrementIndex } = this.props;
     const { seconds } = this.state;
 
+    // sets this card's lowest selected quality
+    if (card.lowestSelectedQuality == null) {
+      // add lowestSelectedQuality attribute to card if not existing
+      card.lowestSelectedQuality = quality;
+    } else {
+      // replace card's lowest selected quality if current quality is lower
+      if (quality < card.lowestSelectedQuality) { 
+        card.lowestSelectedQuality = quality;
+      }
+    }
     if (isLearner) {
       // set card easinessFactor. If the card is new, there is no easiness factor. If the
       //    card is old but reentered learner func, then maintain old easiness factor
@@ -245,9 +255,25 @@ class CardWrapper extends React.Component {
       }
 
       // determine whether learner card will continue being learner, or can exit learner func
-      if (quality >= 2) {
+      // learner card may exit the learner func if quality is greater than or equal to 2,
+      //    unless this card is an old card that reentered the learner function
+      if (quality <= 1 || (quality === 2 && card.data != null && card.lastSelectedQuality == null )) {
+        // sends learner card back into learner func with the provided quality, or with a quality
+        //    of 0 if this card is not new but reentering the learner function on this submit
+        // note that the index is not incremented during this step because of the array shift.
+        if (card.data && card.lastSelectedQuality == null) {
+          learner(0);
+        } else {
+          learner(quality);
+        }
+        this.setState(() => ({
+          isFlipped: false,
+          seconds: 0
+        }));
+      } else {
         // sends learner card to learnerSubmit since performance on learner card
-        //    was adequate enough
+        //    was adequate enough, unless this is an old card reentering the
+        //    learner function
         this.learnerSubmit(card.id, quality, easinessFactor, seconds);
 
         // flips back to front, resets time count, and moves onto the next card
@@ -255,17 +281,12 @@ class CardWrapper extends React.Component {
           isFlipped: false,
           seconds: 0
         }), incrementIndex);
-      } else {
-        // sends learner card back into learner func.
-        // note that the index is not incremented during this step because of the
-        //    array shift.
-        learner(quality);
-        this.setState(() => ({
-          isFlipped: false,
-          seconds: 0
-        }));
       }
     } else {
+      if (card.lowestSelectedQuality !== quality) {
+        console.error('Non-learner cards shouldn\'t have a different lowestSelectedQuality from quality');
+      }
+
       // update card data doc
       let interval, easinessFactor, id;
       if (card.data) {
@@ -292,15 +313,7 @@ class CardWrapper extends React.Component {
 
     // submit card to class data points if applicable
     if (isForClassroom) {
-      let qualityToSubmit;
-      // artificially change the submission quality to make class data points more intelligible
-      // TODO: change how this works...ask Owen
-      if (quality == 2) {
-        qualityToSubmit = 1;
-      } else { // quality == 3
-        qualityToSubmit = 3;
-      }
-      this.addClassDataPoint(qualityToSubmit, cardId, time);
+      this.addClassDataPoint(card.lowestSelectedQuality, cardId, time);
     }
 
     updateCardPersonalDataLearner(dataId, deckId, cardId, quality, easinessFactor)
@@ -368,11 +381,14 @@ class StudyDeck extends React.Component {
      *      data: { // may be null
      *        ...spacedRepData data attributes...
      *        id: '' // dataId
-     *      }
+     *      },
+     *      isLearner: boolean // only exists when a card is marked as learner
+     *      lastSelectedQuality: number // only exists when a card is marked as learner
+     *      lowestSelectedQuality: number // only exists after a card has been studied this session
      *    }
      */
     this.state = {
-      name: '',
+      name: 'Loading...',
       creatorName: '',
       index: 0,
       arrayTodo: [],
