@@ -419,25 +419,42 @@ export function getClassroomCurrentUser(classroomId) {
   return getClassroomUser(classroomId, uid);
 }
 
+/*
+ * Gets classroom information for the current user, which includes classroom's user doc,
+ *    classroom doc, and all decks assigned to the current user's period.
+ *
+ * @param {String} classroomId - the ID of the desired classroom
+ *
+ * @return -- a Promise resolving to an object with attributes 'data' (Firebase result for
+ *    classroom document), 'id' (ID of the classroom), 'period', and 'decks'. An object
+ *    in 'decks' is a Firebase result for a deck doc
+ *
+ */
 export function getClassroomForUser(classroomId) {
-  return getClassroomCurrentUser(classroomId).then((result) => {
+  return Promise.all([
+    getClassroomCurrentUser(classroomId),
+    getClassroomInfo(classroomId)
+  ]).then((result) => {
     const period = result.data().period;
     return Promise.all([
-      getClassroomInfo(classroomId),
-      getDecksInClassroom(classroomId, period)
-    ]).then((result) => {
-      const [ classRes, decksRes ] = result;
-      let decks = [];
-      decksRes.forEach((deck) => {
-        decks.push(deck);
-      });
-      return {
-        data: classRes,
-        id: classRes.id,
-        decks: decks
-      };
+      getDecksInClassroom(classroomId, period),
+      Promise.resolve(result[0]),
+      Promise.resolve(result[1])
+    ]);
+  }).then((result) => {
+    const [ decksRes, classUserRes, classRes ] = result;
+    let decks = [];
+    decksRes.forEach((deck) => {
+      decks.push(deck);
     });
+    return {
+      data: classRes,
+      id: classRes.id, // TODO: is this even necessary?
+      period: classUserRes.data().period,
+      decks: decks
+    };
   });
+
 }
 
 export function getUserOnLogin() {

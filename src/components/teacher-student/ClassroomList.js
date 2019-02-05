@@ -11,7 +11,7 @@ class JoinClassroomForm extends React.Component {
 
     this.state = {
       code: ''
-    }
+    };
 
     this.handleChangeCode = this.handleChangeCode.bind(this);
     this.handleSubmitCode = this.handleSubmitCode.bind(this);
@@ -22,7 +22,7 @@ class JoinClassroomForm extends React.Component {
 
     this.setState(() => ({
       code: e.target.value
-    }))
+    }));
   }
 
   handleSubmitCode(e) {
@@ -32,10 +32,10 @@ class JoinClassroomForm extends React.Component {
       this.props.getClassrooms();
       this.setState(() => ({
         code: ''
-      }))
+      }));
     }).catch((err) => {
       console.error(err);
-    })
+    });
   }
 
   render() {
@@ -47,7 +47,7 @@ class JoinClassroomForm extends React.Component {
           <input type='submit' text='Join classroom' />
         </form>
       </div>
-    )
+    );
   }
 }
 
@@ -107,8 +107,7 @@ class ClassroomList extends React.Component {
   }
 }
 
-ClassroomList.propTypes = {
-  
-};
+ClassroomRow.propTypes = { classroomId: PropTypes.string.isRequired };
+JoinClassroomForm.propTypes = { getClassrooms: PropTypes.func.isRequired };
 
 export default ClassroomList;

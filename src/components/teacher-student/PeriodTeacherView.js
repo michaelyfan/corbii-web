@@ -55,9 +55,9 @@ class PeriodTeacherView extends React.Component {
     try {
       // get card average, classroom info, and cards missed most
       ([ averageRating, classroomInfo, missedCards ] = await Promise.all([
-        getCardAverage(id, period),
+        getCardAverage({ classroomId: id, period }),
         getClassroomInfo(id),
-        getCardsMissedMost(id, period)
+        getCardsMissedMost({ classroomId: id, period })
       ]));
       cardsInfo = await getCardsInfo(missedCards);
 

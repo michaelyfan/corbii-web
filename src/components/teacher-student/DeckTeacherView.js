@@ -59,10 +59,10 @@ class DeckTeacherView extends React.Component {
 
     try {
       const [ cardsMissedMost, deckInfo, classroomInfo, averageRating ] = await Promise.all([
-        getCardsMissedMost(classroomId, null, deckId),
+        getCardsMissedMost({ classroomId, deckId }),
         getDeckInfo(deckId),
         getClassroomInfo(classroomId),
-        getCardAverage(classroomId, null, deckId),
+        getCardAverage({ classroomId, deckId }),
       ]);
       const cardsInfo = await getCardsInfo(cardsMissedMost);
       

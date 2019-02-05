@@ -81,11 +81,11 @@ class StudentTeacherView extends React.Component {
     try {
       const [ consistentLowCards, studentInfo, classroomInfo, averageRating,
         averageTime, datapts, photoUrl ] = await Promise.all([
-        getConsistentLowCards(classroomId, null, userId),
+        getConsistentLowCards({ classroomId, userId }),
         getStudentInfo(classroomId, userId),
         getClassroomInfo(classroomId),
-        getCardAverage(classroomId, null, null, userId),
-        getCardTimeAverage(classroomId, null, null, userId),
+        getCardAverage({ classroomId, userId }),
+        getCardTimeAverage({ classroomId, userId }),
         getClassData(classroomId, null, null, userId),
         getProfilePic(userId)
       ]);

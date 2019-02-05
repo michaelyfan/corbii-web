@@ -36,19 +36,14 @@ class ClassroomStudentView extends React.Component {
   componentDidMount() {
     const { id } = this.props.match.params;
     
-    // put check here to determine class presence
-    Promise.all([
-      getClassroomForUser(id),
-      getClassroomCurrentUser(id)
-    ]).then((result) => {
-      const [ classroom, classroomUser ] = result;
+    // TODO: put check here to determine class presence
+    getClassroomForUser(id).then((result) => {
       this.setState(() => ({
-        classroomId: classroom.id,
-        teacherName: `ID ${classroom.data.teacherId}`,
-        decks: classroom.decks,
-        period: classroomUser.data().period
+        classroomId: result.id,
+        teacherName: `ID ${result.data.teacherId}`,
+        decks: result.decks,
+        period: result.period
       }));
-
     }).catch((err) => {
       console.error(err);
     });
