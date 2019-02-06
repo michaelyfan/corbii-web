@@ -5,14 +5,14 @@ import routes from '../../routes/routes';
 import BackButton from '../reusables/BackButton';
 import TeacherSidebar from './TeacherSidebar';
 import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api.js';
-import { getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
+import { getClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 
 function LowRatedCard(props) {
   const { deckName, front, rating } = props;
 
   return (
     <div className = 'card-info inline-display'>
-      <h1 className = 'score'> {rating} </h1>
+      <h1 className = 'score'> {rating.toFixed(2)} </h1>
       <div className= 'nav'>
         <h3 className = 'question'> {front} </h3>
         <h4 className = 'deck-from'> in
@@ -53,11 +53,12 @@ class PeriodTeacherView extends React.Component {
 
     let averageRating, classroomInfo, missedCards, cardsInfo, deckInfos;
     try {
+      const data = await getClassDataRaw(id, period);
       // get card average, classroom info, and cards missed most
       ([ averageRating, classroomInfo, missedCards ] = await Promise.all([
-        getCardAverage({ classroomId: id, period }),
+        getCardAverage(null, data),
         getClassroomInfo(id),
-        getCardsMissedMost({ classroomId: id, period })
+        getCardsMissedMost(null, data)
       ]));
       cardsInfo = await getCardsInfo(missedCards);
 
@@ -119,7 +120,7 @@ class PeriodTeacherView extends React.Component {
               <div className = 'inline-display center-button'>
                 <div className = 'classroom-basic'>
                   <h2 className = 'class-stat-title'> average rating per card </h2>
-                  <h2 className = 'class-stats'> {averageRatingPerCard} </h2>
+                  <h2 className = 'class-stats'> {averageRatingPerCard.toFixed(2)} </h2>
                 </div>
               </div>
             </div>

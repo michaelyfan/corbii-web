@@ -54,7 +54,7 @@ export function getClassData(classroomId, period, deckId, userId) {
 
 /**
  * Generic function to get class data points 'raw' -- class data will be returned as a Firebase
- *    result, without the formatting step done by getClassData.
+ *    result, without the formatting step done by getClassData().
  *
  * @param {String} classroomId - The ID of the datapts' classroom
  * @param {String} period - (Optional) The period of the datapts
@@ -451,24 +451,36 @@ export async function getConsistentLowCards(queryOptions, data) {
  * @param {String} classroomId - the ID of the student's classroom
  * @param {String} userId - the ID of the student
  * @param {String} period - the period of this student
+ * @param {Object} data - (Optional) A Firebase collection result object containing the data
+ *    points that will be used in this function. Unlike other functions, other params will still
+ *    be used for the decksRef
  *
  * @return A Promise resolving to an array where the first element is the number of cards the
  *    student has studied, and the second element is the number of all cards available to the
  *    student (the number of all cards in all decks assigned to the student's period).
  */
-export async function getStudentStudyRatio(classroomId, userId, period) {
-  const dataRef = db.collection('classSpacedRepData')
-    .where('classroomId', '==', classroomId)
-    .where('userId', '==', userId);
+export async function getStudentStudyRatio(classroomId, userId, period, data) {
+  let dataRes;
+  let decksRes;
+  if (data) {
+    dataRes = data;
+  } else {
+    const dataRef = db.collection('classSpacedRepData')
+      .where('classroomId', '==', classroomId)
+      .where('userId', '==', userId);
+    try {
+      dataRes = await dataRef.get();
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+  
   const decksRef = db.collection('decks')
     .where('isClassroomPrivate', '==', true)
     .where('classroomId', '==', classroomId)
     .where(`periods.${period}`, '==', true);
-
-  let dataRes;
-  let decksRes;
   try {
-    ([ dataRes, decksRes ] = await Promise.all([dataRef.get(), decksRef.get()]));
+    decksRes = await decksRef.get();
   } catch (e) {
     return Promise.reject(e);
   }

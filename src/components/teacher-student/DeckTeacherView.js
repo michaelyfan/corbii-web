@@ -7,14 +7,14 @@ import shortid from 'shortid';
 import BackButton from '../reusables/BackButton';
 import TeacherSidebar from './TeacherSidebar';
 import routes from '../../routes/routes';
-import { getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
+import { getClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 import { getClassroomInfo, getCardsInfo, getDeckInfo } from '../../utils/api.js';
 
 function LowRatedCard(props) {
   const { deckName, front, rating } = props;
   return (
     <div className = 'card-info inline-display'>
-      <h1 className = 'score'> {rating} </h1>
+      <h1 className = 'score'> {rating.toFixed(2)} </h1>
       <div className= 'nav'>
         <h3 className = 'question'> {front} </h3>
         <h4 className = 'deck-from'> in
@@ -58,11 +58,13 @@ class DeckTeacherView extends React.Component {
     const { classroomId, deckId } = this.props.match.params;
 
     try {
+      const data = await getClassDataRaw(classroomId, null, deckId, null);
+
       const [ cardsMissedMost, deckInfo, classroomInfo, averageRating ] = await Promise.all([
-        getCardsMissedMost({ classroomId, deckId }),
+        getCardsMissedMost(null, data),
         getDeckInfo(deckId),
         getClassroomInfo(classroomId),
-        getCardAverage({ classroomId, deckId }),
+        getCardAverage(null, data),
       ]);
       const cardsInfo = await getCardsInfo(cardsMissedMost);
       
@@ -71,14 +73,14 @@ class DeckTeacherView extends React.Component {
       cardsMissedMost.forEach((cardObj) => {
         deckNameCalls.push(getDeckInfo(cardObj.deckId));
       });
-      const deckInfos = await Promise.all(deckNameCalls);
+      const decksInfo = await Promise.all(deckNameCalls);
 
-      // create cardsMissedMost state object from cardsMissedMost, using deckInfos for deck
+      // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
       //    names and cardsInfo for card front
       let cardsMissedMostState = [];
       cardsMissedMost.forEach((cardObj, i) => {
         cardsMissedMostState.push({
-          deckName: deckInfos[i].name,
+          deckName: decksInfo[i].name,
           front: cardsInfo[cardObj.cardId].front,
           rating: cardObj.averageQuality
         });

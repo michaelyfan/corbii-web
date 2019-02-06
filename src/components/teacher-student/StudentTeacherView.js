@@ -7,7 +7,7 @@ import shortid from 'shortid';
 import BackButton from '../reusables/BackButton';
 import TeacherSidebar from './TeacherSidebar';
 import routes from '../../routes/routes';
-import { getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getClassData, getStudentStudyRatio } from '../../utils/teacherapi.js';
+import { getClassDataRaw, getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getClassData, getStudentStudyRatio } from '../../utils/teacherapi.js';
 import { getClassroomInfo, getCardsInfo, getDeckInfo, getProfilePic } from '../../utils/api.js';
 
 function LowRatedCard(props) {
@@ -79,14 +79,14 @@ class StudentTeacherView extends React.Component {
     const { classroomId, userId } = this.props.match.params;
 
     try {
+      const data = await getClassDataRaw(classroomId, null, null, userId);
       const [ consistentLowCards, studentInfo, classroomInfo, averageRating,
-        averageTime, datapts, photoUrl ] = await Promise.all([
-        getConsistentLowCards({ classroomId, userId }),
+        averageTime, photoUrl ] = await Promise.all([
+        getConsistentLowCards(null, data),
         getStudentInfo(classroomId, userId),
         getClassroomInfo(classroomId),
-        getCardAverage({ classroomId, userId }),
-        getCardTimeAverage({ classroomId, userId }),
-        getClassData(classroomId, null, null, userId),
+        getCardAverage(null, data),
+        getCardTimeAverage(null, data),
         getProfilePic(userId)
       ]);
       const { name, period } = studentInfo;
@@ -111,6 +111,14 @@ class StudentTeacherView extends React.Component {
           front: cardsInfo[cardObj.cardId].front,
           rating: cardObj.quality
         });
+      });
+
+      // TODO: transform data
+      const datapts = [];
+      data.forEach((datapt) => {
+        const thisData = datapt.data();
+        thisData.id = datapt.id;
+        datapts.push(thisData);
       });
 
       this.setState(() => ({
