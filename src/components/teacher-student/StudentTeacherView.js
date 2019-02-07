@@ -7,8 +7,8 @@ import shortid from 'shortid';
 import BackButton from '../reusables/BackButton';
 import TeacherSidebar from './TeacherSidebar';
 import routes from '../../routes/routes';
-import { getClassDataRaw, getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getClassData, getStudentStudyRatio } from '../../utils/teacherapi.js';
-import { getClassroomInfo, getCardsInfo, getDeckInfo, getProfilePic } from '../../utils/api.js';
+import { getClassDataRaw, filterClassDataRaw, getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getClassData, getStudentStudyRatio } from '../../utils/teacherapi.js';
+import { getClassroomInfo, getCardsInfo, getDeckInfo, getProfilePic, getDecksInClassroom } from '../../utils/api.js';
 
 function LowRatedCard(props) {
   const { deckName, front, rating } = props;
@@ -57,8 +57,14 @@ class StudentTeacherView extends React.Component {
      *
      * datapoints has the standard class data point .data() structure.
      *
+     * decks is an object containing decks where student has data:
+     {
+      'deckIdHere': deckName
+     }
+     *
      */
     this.state = {
+      allData: null,
       name: 'Loading...',
       period: '0',
       periods: [],
@@ -67,34 +73,76 @@ class StudentTeacherView extends React.Component {
       averageRating: 0,
       averageTime: 0,
       consistentLowCards: [],
-      datapoints: []
+      datapoints: [],
+      deckFilter: undefined,
+      decks: {}
     };
   }
 
   componentDidMount() {
-    this.getInfo();
+    this.getDataAndInfo().then(() => {
+      this.filterData();
+    });
   }
 
-  async getInfo() {
-    const { classroomId, userId } = this.props.match.params;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.deckFilter !== prevState.deckFilter) {
+      this.filterData();
+    }
+  }
 
+  async getDataAndInfo() {
+    const { classroomId, userId } = this.props.match.params;
     try {
-      const data = await getClassDataRaw(classroomId, null, null, userId);
-      const [ consistentLowCards, studentInfo, classroomInfo, averageRating,
-        averageTime, photoUrl ] = await Promise.all([
-        getConsistentLowCards(null, data),
+      const [ data, studentInfo, classroomInfo, photoUrl ] = await Promise.all([
+        getClassDataRaw(classroomId, null, null, userId),
         getStudentInfo(classroomId, userId),
         getClassroomInfo(classroomId),
-        getCardAverage(null, data),
-        getCardTimeAverage(null, data),
         getProfilePic(userId)
       ]);
+
       const { name, period } = studentInfo;
-      const [ studyRatio, cardsInfo ] = await Promise.all([
+      const [ studyRatio, deckDocs ] = await Promise.all([
         getStudentStudyRatio(classroomId, userId, period),
-        getCardsInfo(consistentLowCards)
+        getDecksInClassroom(classroomId, period)
       ]);
-      
+
+      let deckObj = {};
+      // transform deckDocs into decks state attribute
+      deckDocs.forEach((snap) => {
+        deckObj[snap.id] = snap.data().name;
+      });
+
+      this.setState(() => ({
+        allData: data,
+        name: name,
+        period: period,
+        periods: classroomInfo.periods,
+        numCardsStudied: studyRatio[0],
+        photoUrl: photoUrl,
+        decks: deckObj
+      }), () => {
+        return Promise.resolve();
+      });
+    } catch (e) {
+      alert('Apologies -- there was an error!');
+      console.error(e);
+    }
+  }
+
+  async filterData() {
+    const { allData, deckFilter } = this.state;
+    // filter allData based on state filter
+    const filteredData = filterClassDataRaw({ deckId: deckFilter }, allData);
+
+    try {
+      const [ consistentLowCards, averageRating, averageTime ] = await Promise.all([
+        getConsistentLowCards(null, filteredData),
+        getCardAverage(null, filteredData),
+        getCardTimeAverage(null, filteredData)
+      ]);
+      // get missed cards' information (front, back, etc)
+      const cardsInfo = await getCardsInfo(consistentLowCards);
       // get missed cards' decks' names
       const deckNameCalls = [];
       consistentLowCards.forEach((cardObj) => {
@@ -113,33 +161,92 @@ class StudentTeacherView extends React.Component {
         });
       });
 
-      // TODO: transform data
+      // transform data
       const datapts = [];
-      data.forEach((datapt) => {
+      filteredData.forEach((datapt) => {
         const thisData = datapt.data();
         thisData.id = datapt.id;
         datapts.push(thisData);
       });
 
       this.setState(() => ({
-        name: name,
-        period: period,
-        periods: classroomInfo.periods,
-        numCardsStudied: studyRatio[0],
         averageRating: averageRating,
         averageTime: averageTime,
         consistentLowCards: consistentLowCardsState,
-        datapoints: datapts,
-        photoUrl: photoUrl
+        datapoints: datapts
       }));
+
     } catch (e) {
       alert('Apologies -- there was an error!');
       console.error(e);
     }
   }
 
+  // async getInfo() {
+  //   const { classroomId, userId } = this.props.match.params;
+
+  //   try {
+  //     const data = await getClassDataRaw(classroomId, null, null, userId);
+  //     const [ consistentLowCards, studentInfo, classroomInfo, averageRating,
+  //       averageTime, photoUrl ] = await Promise.all([
+  //       getConsistentLowCards(null, data),
+  //       getStudentInfo(classroomId, userId),
+  //       getClassroomInfo(classroomId),
+  //       getCardAverage(null, data),
+  //       getCardTimeAverage(null, data),
+  //       getProfilePic(userId)
+  //     ]);
+  //     const { name, period } = studentInfo;
+  //     const [ studyRatio, cardsInfo ] = await Promise.all([
+  //       getStudentStudyRatio(classroomId, userId, period),
+  //       getCardsInfo(consistentLowCards)
+  //     ]);
+      
+  //     // get missed cards' decks' names
+  //     const deckNameCalls = [];
+  //     consistentLowCards.forEach((cardObj) => {
+  //       deckNameCalls.push(getDeckInfo(cardObj.deckId));
+  //     });
+  //     const deckInfos = await Promise.all(deckNameCalls);
+
+  //     // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
+  //     //    names and cardsInfo for card front
+  //     let consistentLowCardsState = [];
+  //     consistentLowCards.forEach((cardObj, i) => {
+  //       consistentLowCardsState.push({
+  //         deckName: deckInfos[i].name,
+  //         front: cardsInfo[cardObj.cardId].front,
+  //         rating: cardObj.quality
+  //       });
+  //     });
+
+  //     // transform data
+  //     const datapts = [];
+  //     data.forEach((datapt) => {
+  //       const thisData = datapt.data();
+  //       thisData.id = datapt.id;
+  //       datapts.push(thisData);
+  //     });
+
+  //     this.setState(() => ({
+  //       name: name,
+  //       period: period,
+  //       periods: classroomInfo.periods,
+  //       numCardsStudied: studyRatio[0],
+  //       averageRating: averageRating,
+  //       averageTime: averageTime,
+  //       consistentLowCards: consistentLowCardsState,
+  //       datapoints: datapts,
+  //       photoUrl: photoUrl
+  //     }));
+  //   } catch (e) {
+  //     alert('Apologies -- there was an error!');
+  //     console.error(e);
+  //   }
+  // }
+
   render() {
-    const { name, period, periods, numCardsStudied, averageRating, averageTime, datapoints, consistentLowCards, photoUrl } = this.state;
+    const { name, period, periods, numCardsStudied, averageRating, averageTime, datapoints, consistentLowCards, photoUrl, decks } = this.state;
     const { classroomId } = this.props.match.params;
     return (
       <div className = 'dashboard'>
@@ -160,6 +267,13 @@ class StudentTeacherView extends React.Component {
           </div>
 
           <div className = 'active-view top-border'>
+            <div>
+              <h5>Filter:</h5>
+              <button onClick={() => {this.setState(() => ({ deckFilter: undefined }));}}>None</button>
+              {Object.entries(decks).map((pair) =>
+                <button onClick={() => {this.setState(() => ({ deckFilter: pair[0] }));}} key={pair[0]}>{pair[1]}</button>
+              )}
+            </div>
             <div id='student-stats-wrapper'>
               <div className = 'student-stats student-stats-individual navigation'>
                 <h3 className = 'stat'>cards studied: {numCardsStudied}</h3>

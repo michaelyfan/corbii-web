@@ -48,7 +48,19 @@ class PeriodTeacherView extends React.Component {
     this.getInfo();
   }
 
+  componentDidUpdate(prevProps) {
+    const prevPeriod = prevProps.match.params.period;
+    const { period } = this.props.match.params;
+    if (prevPeriod != null && period != null
+        && prevPeriod != period) {
+      this.setState(() => ({
+        classroomName: 'Loading...'
+      }), this.getInfo);
+    }
+  }
+
   async getInfo() {
+    console.log('Executed');
     const { id, period } = this.props.match.params;
 
     let averageRating, classroomInfo, missedCards, cardsInfo, deckInfos;

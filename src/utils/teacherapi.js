@@ -25,7 +25,7 @@ db.settings(settings);
  * @param {String} deckId - (Optional) The ID of the datapts' deck
  * @param {String} userId - (Optional) The ID of the datapts' user
  *
- * @return The average card rating of a given filter of card data points, of type number.
+ * @return A Promise resolving to a Firebase QuerySnapshot object with the retrieved data points.
  */
 export function getClassData(classroomId, period, deckId, userId) {
   // set db reference
@@ -61,7 +61,7 @@ export function getClassData(classroomId, period, deckId, userId) {
  * @param {String} deckId - (Optional) The ID of the datapts' deck
  * @param {String} userId - (Optional) The ID of the datapts' user
  *
- * @return The average card rating of a given filter of card data points, of type number.
+ * @return A Promise resolving to a Firebase QuerySnapshot object with the retrieved data points.
  */
 export function getClassDataRaw(classroomId, period, deckId, userId) {
   // set db reference
@@ -77,6 +77,49 @@ export function getClassDataRaw(classroomId, period, deckId, userId) {
   }
 
   return colRef.get();
+}
+
+/**
+ * Filters data points based on provided filter options. The data points operated on by this
+ *    function is a Firebase collection object. If no filter options are provided or filterOptions
+ *    is null, this function returns a copy of the original data.
+ *
+ * @param {Object} filterOptions - an object containing filtering options for the datapoints
+ * @param {String} filterOptions.classroomId - (Optional) The ID of the datapts' classroom.
+ * @param {String} filterOptions.period - (Optional) The period of the datapts
+ * @param {String} filterOptions.deckId - (Optional) The ID of the datapts' deck
+ * @param {String} filterOptions.userId - (Optional) The ID of the datapts' user
+ * @param {Object} data - A Firebase collection result object containing the data to filter.
+ *
+ * @return An array of filtered data points. Note that this function is not asynchronous.
+ */
+export function filterClassDataRaw(filterOptions, data) {
+  // declare array to return
+  const filteredDocs = [];
+
+  // iterate through data points and pick out points that pass filters
+  data.forEach((datapoint) => {
+    // add this datapoint if filterOptions is null
+    if (filterOptions === null) {
+      filteredDocs.push(datapoint);
+      return;
+    }
+    const { classroomId, period, deckId, userId } = filterOptions;
+    if (classroomId != null && datapoint.data().classroomId !== classroomId) {
+      return;
+    }
+    if (period != null && datapoint.data().period !== period) {
+      return;
+    }
+    if (deckId != null && datapoint.data().deckId !== deckId) {
+      return;
+    }
+    if (userId != null && datapoint.data().userId !== userId) {
+      return;
+    }
+    filteredDocs.push(datapoint);
+  });
+  return filteredDocs;
 }
 
 /**

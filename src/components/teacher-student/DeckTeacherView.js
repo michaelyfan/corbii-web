@@ -7,7 +7,7 @@ import shortid from 'shortid';
 import BackButton from '../reusables/BackButton';
 import TeacherSidebar from './TeacherSidebar';
 import routes from '../../routes/routes';
-import { getClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
+import { getClassDataRaw, filterClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 import { getClassroomInfo, getCardsInfo, getDeckInfo } from '../../utils/api.js';
 
 function LowRatedCard(props) {
@@ -40,6 +40,8 @@ class DeckTeacherView extends React.Component {
      *
      */
     this.state = {
+      allData: null,
+      periodFilter: undefined,
       classroomName: 'Loading...',
       periods: [],
       deckName: 'Loading...',
@@ -51,23 +53,63 @@ class DeckTeacherView extends React.Component {
   }
 
   componentDidMount() {
-    this.getInfo();
+    this.getDataAndInfo().then(() => {
+      this.filterData();
+    });
   }
 
-  async getInfo() {
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.periodFilter !== prevState.periodFilter) {
+      this.filterData();
+    }
+  }
+
+  /*
+   * Gets all of this deck's data points and this deck's metaInfo (non-data  related info such as
+   *    classroomName, number of content cards, etc)
+   */
+  async getDataAndInfo() {
     const { classroomId, deckId } = this.props.match.params;
+    try {
+      const [ data, classroomInfo, deckInfo ] = await Promise.all([
+        getClassDataRaw(classroomId, null, deckId, null),
+        getClassroomInfo(classroomId),
+        getDeckInfo(deckId)
+      ]);
+
+      this.setState(() => ({
+        allData: data,
+        classroomName: classroomInfo.name,
+        periods: classroomInfo.periods,
+        deckName: deckInfo.name,
+        deckPeriods: Object.keys(deckInfo.periods),
+        count: deckInfo.count,
+      }), () => {
+        return Promise.resolve();
+      });
+    } catch (e) {
+      alert('Apologies -- there was an error!');
+      console.error(e);
+    }
+  }
+
+  /*
+   * Filters allData state attribute and sets data-related state based on filtered data.
+   */
+  async filterData() {
+    const { allData, periodFilter } = this.state;
+
+    // filter allData based on state filter
+    const filteredData = filterClassDataRaw({ period: periodFilter }, allData);
 
     try {
-      const data = await getClassDataRaw(classroomId, null, deckId, null);
-
-      const [ cardsMissedMost, deckInfo, classroomInfo, averageRating ] = await Promise.all([
-        getCardsMissedMost(null, data),
-        getDeckInfo(deckId),
-        getClassroomInfo(classroomId),
-        getCardAverage(null, data),
+      const [ cardsMissedMost, averageRating ] = await Promise.all([
+        getCardsMissedMost(null, filteredData),
+        getCardAverage(null, filteredData)
       ]);
+
+      // get card content information (front, back) for the missed cards
       const cardsInfo = await getCardsInfo(cardsMissedMost);
-      
       // get missed cards' decks' names
       const deckNameCalls = [];
       cardsMissedMost.forEach((cardObj) => {
@@ -87,14 +129,10 @@ class DeckTeacherView extends React.Component {
       });
 
       this.setState(() => ({
-        classroomName: classroomInfo.name,
-        periods: classroomInfo.periods,
-        deckName: deckInfo.name,
-        deckPeriods: Object.keys(deckInfo.periods),
-        count: deckInfo.count,
         averageRating: averageRating,
         cardsMissedMost: cardsMissedMostState,
       }));
+
     } catch (e) {
       alert('Apologies -- there was an error!');
       console.error(e);
@@ -117,6 +155,13 @@ class DeckTeacherView extends React.Component {
           </div>
 
           <div className = 'active-view top-border'>
+            <div>
+              <h5>Filter:</h5>
+              <button onClick={() => {this.setState(() => ({ periodFilter: undefined }))}}>None</button>
+              {periods.map((period) => 
+                <button onClick={() => {this.setState(() => ({ periodFilter: period }))}} key={period}>{period}</button>
+              )}
+            </div>
             <div id='student-stats-wrapper'>
               <div className = 'student-stats student-stats-individual navigation'>
                 <h3 className = 'stat'>this deck has: {count} cards</h3>

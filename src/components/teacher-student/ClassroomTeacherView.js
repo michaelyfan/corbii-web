@@ -103,7 +103,6 @@ class ClassroomTeacherView extends React.Component {
       alert('Apologies -- there was an error!');
       console.error(e);
     }
-
   }
 
   render() {
