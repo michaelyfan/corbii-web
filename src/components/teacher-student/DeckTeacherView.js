@@ -157,9 +157,9 @@ class DeckTeacherView extends React.Component {
           <div className = 'active-view top-border'>
             <div>
               <h5>Filter:</h5>
-              <button onClick={() => {this.setState(() => ({ periodFilter: undefined }))}}>None</button>
+              <button onClick={() => {this.setState(() => ({ periodFilter: undefined }));}}>None</button>
               {periods.map((period) => 
-                <button onClick={() => {this.setState(() => ({ periodFilter: period }))}} key={period}>{period}</button>
+                <button onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
               )}
             </div>
             <div id='student-stats-wrapper'>

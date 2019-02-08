@@ -56,6 +56,8 @@ const routes = {
     dashboard: '/teacher/dashboard',
     create: '/teacher/create',
 
+    viewDeckEditTemplate: '/teacher/editdeck/:classroomId/:id',
+
     viewClassroomTemplate: '/teacher/classroom/:id',
     viewPeriodTemplate: '/teacher/classroom/:id/:period',
     viewStudentsTemplate: '/teacher/students/:id',
@@ -63,6 +65,7 @@ const routes = {
     viewDecksTemplate: '/teacher/decks/:id',
     viewDeckTemplate: '/teacher/deck/:classroomId/:deckId',
 
+    getViewDeckEditRoute: ((classroomId, deckId) => `/teacher/editdeck/${classroomId}/${deckId}`),
     getViewClassroomRoute: ((id) => `/teacher/classroom/${id}`),
     getViewPeriodRoute: ((id, period) => `/teacher/classroom/${id}/${period}`),
     getViewStudentsRoute: ((id) => `/teacher/students/${id}`),

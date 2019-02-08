@@ -121,7 +121,8 @@ export function getClassroomInfo(classroomId) {
  *
  * @return a Promise that resolves with an object containing the deck's content. The
  *    object's attributes are deckName (the deck's name), creatorId (the ID of the
- *    deck's creator), and cards (an array of card objects). A card object's attributes
+ *    deck's creator), periods (the deck's periods if this is a classroom deck, null otherwise),
+ *    and cards (an array of card objects). A card object's attributes
  *    are id (the ID of the card in the deck), front (the card's front content), and
  *    back (the card's back content).
  */
@@ -144,6 +145,7 @@ export function getDeck(deckId) {
     return {
       deckName: deck.data().name,
       creatorId: deck.data().creatorId,
+      periods: deck.data().periods,
       cards: cardsArr
     };
   });
@@ -608,8 +610,7 @@ export function createCard(front, back, deckId) {
   const deckRef = db.collection('decks').doc(deckId);
   return deckRef.collection('cards').add({
     front: front,
-    back: back,
-    internal: 0
+    back: back
   }).then(() => {
     return updateDeckCountByOne(deckId, true);
   });

@@ -20,6 +20,15 @@ function DeckRow(props) {
           <p>periods: {periods.toString()}</p>
         </div>
       </Link>
+      <Link to={{
+        pathname: routes.teacher.getViewDeckEditRoute(classroomId, deckId),
+        state: {
+          isForClassroom: true,
+          classroomId
+        }
+      }}>
+        <button>Edit this deck</button>
+      </Link>
     </div>
   );
 }

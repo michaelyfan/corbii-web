@@ -1,10 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
-import Profile from './Profile.js';
-import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
+import { createDeckCurrentUser, createConceptListCurrentUser, getClassroomInfo } from '../utils/api';
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
+
+function SelectPeriods(props) {
+  const { periods, handlePeriodChange } = props;
+  return (
+    <div>
+      <p>Select the periods you&apos;d like to assign this deck to.</p>
+      <form>
+        {Object.keys(periods).map((period) =>
+          <label key={period}> Period {period}:
+            <input
+              name={period}
+              type='checkbox'
+              checked={periods[period]}
+              onChange={handlePeriodChange} />
+          </label>
+        )}
+      </form>
+    </div>
+  );
+}
 
 class CreateDeckCard extends React.Component {
 
@@ -14,7 +33,7 @@ class CreateDeckCard extends React.Component {
       // Below is normally bad practice, but this use case is valid.
       front: props.initialFront,
       back: props.initialBack
-    }
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
@@ -27,7 +46,7 @@ class CreateDeckCard extends React.Component {
       this.setState(() => ({
         front: this.props.initialFront,
         back: this.props.initialBack
-      }))
+      }));
     }
   }
 
@@ -60,7 +79,7 @@ class CreateDeckCard extends React.Component {
           className = 'flashcard-text'
           key='front'
           value={this.state.front}
-          onChange={(e) => {this.handleChange('front', e)}}
+          onChange={(e) => {this.handleChange('front', e);}}
           onBlur={this.handleSave}
           placeholder='front' />
         <div className = 'side-menu'>
@@ -72,7 +91,7 @@ class CreateDeckCard extends React.Component {
           maxLength='1000'
           key='back'
           value={this.state.back}
-          onChange={(e) => {this.handleChange('back', e)}}
+          onChange={(e) => {this.handleChange('back', e);}}
           onBlur={this.handleSave}
           placeholder='back' />
 
@@ -80,15 +99,8 @@ class CreateDeckCard extends React.Component {
           <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
         </div>
       </div>
-    )
+    );
   }
-}
-
-CreateDeckCard.propTypes = {
-  initialFront: PropTypes.string.isRequired,
-  initialBack: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  save: PropTypes.func.isRequired
 }
 
 class CreateConceptCard extends React.Component {
@@ -98,7 +110,7 @@ class CreateConceptCard extends React.Component {
     this.state = {
       // Below is normally bad practice, but this use case is valid.
       question: props.initialQuestion,
-    }
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSave = this.handleSave.bind(this);
@@ -137,14 +149,8 @@ class CreateConceptCard extends React.Component {
           <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
         </div>
       </div>
-    )
+    );
   }
-}
-
-CreateConceptCard.propTypes = {
-  initialQuestion: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  save: PropTypes.func.isRequired
 }
 
 class CreateDeck extends React.Component {
@@ -165,7 +171,7 @@ class CreateDeck extends React.Component {
         back: '',
         id: shortid.generate()
       }]
-    }
+    };
 
     this.handleAddCard = this.handleAddCard.bind(this);
     this.save = this.save.bind(this);
@@ -183,7 +189,7 @@ class CreateDeck extends React.Component {
       });
       return {
         cards: cards
-      }
+      };
     });
   }
 
@@ -193,7 +199,7 @@ class CreateDeck extends React.Component {
       cards.splice(index, 1);
       return {
         cards: cards
-      }
+      };
     });
   }
 
@@ -205,12 +211,12 @@ class CreateDeck extends React.Component {
         id: oldCard.id,
         front: newFront,
         back: newBack
-      }
+      };
 
       return {
         cards: cards
-      }
-    })
+      };
+    });
   }
 
   switch(index) {
@@ -221,8 +227,8 @@ class CreateDeck extends React.Component {
       cards[index].back = temp;
       return {
         cards: cards
-      }
-    })
+      };
+    });
   }
 
   render() {
@@ -249,7 +255,7 @@ class CreateDeck extends React.Component {
           </div>
           <div className = 'add-more-card'>
             <button
-              onClick={() => {this.props.handleCreateDeck(this.state.cards)}}
+              onClick={() => {this.props.handleCreateDeck(this.state.cards);}}
               className = 'primary-button'
               id = 'finalize-deck'>
                 create deck
@@ -257,7 +263,7 @@ class CreateDeck extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -270,7 +276,7 @@ class CreateList extends React.Component {
         question: '',
         id: shortid.generate()
       }]
-    }
+    };
 
     this.handleAddConcept = this.handleAddConcept.bind(this);
     this.deleteConcept = this.deleteConcept.bind(this);
@@ -286,7 +292,7 @@ class CreateList extends React.Component {
       });
       return {
         concepts: concepts
-      }
+      };
     });
   }
 
@@ -296,7 +302,7 @@ class CreateList extends React.Component {
       concepts.splice(index, 1);
       return {
         concepts: concepts,
-      }
+      };
     });
   }
 
@@ -307,12 +313,12 @@ class CreateList extends React.Component {
       concepts[index] = {
         id: oldConcept.id,
         question: newQuestion
-      }
+      };
 
       return {
         concepts: concepts
-      }
-    })
+      };
+    });
   }
 
   render() {
@@ -337,7 +343,7 @@ class CreateList extends React.Component {
           </div>
           <div className = 'add-more-card'>
             <button
-              onClick={() => {this.props.handleCreateList(this.state.concepts)}}
+              onClick={() => {this.props.handleCreateList(this.state.concepts);}}
               className = 'primary-button'
               id = 'finalize-list'>
                 create list
@@ -345,7 +351,7 @@ class CreateList extends React.Component {
           </div>
         </div>        
       </div>
-    )
+    );
   }
 }
 
@@ -353,30 +359,57 @@ class Create extends React.Component {
 
   constructor(props) {
     super(props);
+
+    /*
+     * periods has the format:
+       {
+         '1': true,
+         '2': false,
+         etc...
+         '<period number here>': boolean
+       }
+     */
     this.state = {
       isList: false,
       title: '',
       isForClassroom: false,
-      periods: '1,2,3,4,5,6,7,8',
+      periods: {},
       classroomId: ''
-    }
+    };
 
     this.handleChangeTitle = this.handleChangeTitle.bind(this);
     this.handleCreateList = this.handleCreateList.bind(this);
     this.handleCreateDeck = this.handleCreateDeck.bind(this);
-    this.changePeriods = this.changePeriods.bind(this);
+    this.handlePeriodChange = this.handlePeriodChange.bind(this);
   }
 
   componentDidMount() {
+    this.determineClassroom();
+  }
+
+  async determineClassroom() {
     const routeState = this.props.location.state;
     if (this.props.location.pathname === routes.teacher.create
         && routeState
         && routeState.isForClassroom
-        && routeState.classroomId) {
-      this.setState(() => ({
-        isForClassroom: true,
-        classroomId: routeState.classroomId
-      }))
+        && routeState.classroomId != null) {
+      try {
+        // get this classroom's periods to display in SelectPeriods
+        const classroomInfo = await getClassroomInfo(routeState.classroomId);
+        const periodState = {}; 
+        classroomInfo.periods.forEach((pd) => {
+          periodState[pd] = true;
+        });
+        this.setState(() => ({
+          isForClassroom: true,
+          classroomId: routeState.classroomId,
+          periods: periodState
+        }));
+      } catch (e) {
+        alert('Apologies, there was an error!');
+        console.error(e);
+        return;
+      }
     }
   }
 
@@ -384,7 +417,7 @@ class Create extends React.Component {
     e.persist();
     this.setState(() => ({
       title: e.target.value
-    }))
+    }));
   }
 
   handleCreateList(concepts) {
@@ -393,7 +426,6 @@ class Create extends React.Component {
     } else if (this.hasEmptyEntries('concepts', concepts)) {
       alert('One or more of your concepts is empty.');
     } else {
-      console.log(concepts);
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
         this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
@@ -404,20 +436,26 @@ class Create extends React.Component {
 
   handleCreateDeck(cards) {
     const { title, isForClassroom, classroomId, periods } = this.state;
+    const validPeriods = Object.keys(periods).filter(pd => periods[pd]);
     if (title.trim() === '') {
       alert('Title cannot be empty.');
     } else if (this.hasEmptyEntries('decks', cards)) {
       alert('One or more of your card entries is empty.');
+    } else if (isForClassroom && classroomId != null && validPeriods.length == 0) {
+      alert('You must select at least one period to assign this deck to.');
     } else {
-
       createDeckCurrentUser({
         deckName: title, 
         cards: cards,
         isForClassroom: isForClassroom,
         classroomId: classroomId,
-        periods: periods.split(',')
+        periods: validPeriods
       }).then(() => {
-        this.props.history.push(routes.dashboard.base);
+        if (isForClassroom) {
+          this.props.history.push(routes.teacher.getViewClassroomRoute(classroomId));
+        } else {
+          this.props.history.push(routes.dashboard.base);
+        }
       }).catch((err) => {
         console.error(err);
       });
@@ -443,14 +481,19 @@ class Create extends React.Component {
     return false;
   }
 
-  changePeriods(e) {
+  handlePeriodChange(e) {
     e.persist();
-    this.setState(() => ({
-      periods: e.target.value
-    }))
+    this.setState((prevState) => {
+      const newPeriods = prevState.periods;
+      newPeriods[e.target.name] = e.target.checked;
+      return {
+        periods: newPeriods
+      };
+    });
   }
 
   render() {
+    const { title, isList, periods, isForClassroom } = this.state;
     return (
       <div>
         <div className = 'deck-info'>
@@ -458,41 +501,75 @@ class Create extends React.Component {
             maxLength='150'
             className = 'deck-title'
             onChange={this.handleChangeTitle}
-            value={this.state.title}
+            value={title}
             placeholder =
-            { this.state.isList 
-              ? 'title your list here'
-              : 'title your deck here'
-           }
+              { isList 
+                ? 'title your list here'
+                : 'title your deck here'
+              }
           />
 
           <p className = 'small-caption' id = 'deck-subtitle'>
-          { this.state.isList 
+            { isList 
               ? 'concept list title'
               : 'deck title'
-           } 
+            } 
           </p>
         </div>
 
         <div className = 'button-wrapper'>
           <div className = 'create-buttons'>
-            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: false}))}}>create a study deck</button>
-            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: true}))}}>create a concept list</button>
-            { this.state.isList 
+            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: false}));}}>create a study deck</button>
+            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: true}));}}>create a concept list</button>
+            { isList 
               ? <CreateList handleCreateList={this.handleCreateList} />
               : <CreateDeck handleCreateDeck={this.handleCreateDeck} />
             }
           </div>
         </div>
 
-        {this.state.isForClassroom
-          && <div>
-              <p>Enter the periods you want to have this deck, separated by commas</p>
-              <input type='text' value={this.state.periods} onChange={this.changePeriods} />
-            </div>}
+        {isForClassroom
+          && <SelectPeriods periods={periods} handlePeriodChange={this.handlePeriodChange} /> }
       </div>
-    )
+    );
   }
 }
+
+Create.propTypes = {
+  location: PropTypes.shape({
+    state: PropTypes.shape({
+      isForClassroom: PropTypes.bool,
+      classroomId: PropTypes.string
+    }),
+    pathname: PropTypes.string.isRequired
+  }),
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+};
+CreateDeck.propTypes = {
+  handleCreateDeck: PropTypes.func.isRequired
+};
+CreateList.propTypes = {
+  handleCreateList: PropTypes.func.isRequired
+};
+CreateDeckCard.propTypes = {
+  initialFront: PropTypes.string.isRequired,
+  initialBack: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  save: PropTypes.func.isRequired,
+  switch: PropTypes.func.isRequired,
+  delete: PropTypes.func.isRequired
+};
+CreateConceptCard.propTypes = {
+  initialQuestion: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  save: PropTypes.func.isRequired,
+  delete: PropTypes.func.isRequired
+};
+SelectPeriods.propTypes = {
+  periods: PropTypes.object.isRequired,
+  handlePeriodChange: PropTypes.func.isRequired
+};
 
 export default Create;

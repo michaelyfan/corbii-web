@@ -15,10 +15,6 @@ function PeriodLink(props) {
   );
 }
 
-PeriodLink.propTypes = {
-  period: PropTypes.string.isRequired
-};
-
 export default function TeacherSideBar(props) {
   const { id, periods } = props;
   return (
@@ -49,3 +45,12 @@ export default function TeacherSideBar(props) {
     </div>
   );
 }
+
+TeacherSideBar.propTypes = {
+  id: PropTypes.string.isRequired,
+  periods: PropTypes.array.isRequired
+};
+PeriodLink.propTypes = {
+  id: PropTypes.string.isRequired,
+  period: PropTypes.string.isRequired
+};

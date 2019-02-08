@@ -604,6 +604,26 @@ export function createJoinCode(id, period) {
   return `${id}-&${period}`;
 }
 
+/*
+ * Updates the periods available to a deck.
+ *
+ * @param {String} deckId -- the deckId of this deck
+ * @param {array} periods -- a periods object to update this deck with. structure
+ *    is:
+ {
+  'period key here': boolean
+ }
+ *
+ * @return a Promise resolving to a successful Firebase update result
+ */
+export function updateDeckPeriods(deckId, periods) {
+  const docRef = db.collection('decks').doc(deckId);
+
+  return docRef.update({
+    periods: periods
+  });
+}
+
 async function main() {
   const classroomId = '1234';
   const deckId = '5678';

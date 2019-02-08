@@ -9,15 +9,15 @@ export default function BackButton(props) {
     <Link to={redirectTo}>
       <button className = 'back-to-deck'>back to {destination}</button>
     </Link>
-  )
+  );
 }
 
 BackButton.propTypes = {
   redirectTo: PropTypes.string,
   destination: PropTypes.string
-}
+};
 
 BackButton.defaultProps = {
   redirectTo: routes.dashboard.base,
   destination: 'dashboard'
-}
+};

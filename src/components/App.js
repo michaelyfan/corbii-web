@@ -96,7 +96,7 @@ class App extends React.Component {
                 signedIn: true,
                 isTeacher: this.state.teacherIsRegistering,
                 loading: false
-              }))
+              }));
               this.doGetProfilePic();
             });
           }
@@ -261,6 +261,12 @@ class App extends React.Component {
               isTeacher={isTeacher}
               loading={loading}
               component={Create} />
+            <TeacherPrivateRoute
+              exact path={routes.teacher.viewDeckEditTemplate}
+              signedIn={signedIn}
+              isTeacher={isTeacher}
+              loading={loading}
+              component={Deck} />
             <Route
               path={routes.denied.base}
               component={DeniedNoAuth} />
