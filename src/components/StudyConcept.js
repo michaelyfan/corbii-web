@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getConceptListForStudy, getUserProfileInfo, updateConceptPersonalData } from '../utils/api';
-import { Link, NavLink, withRouter } from 'react-router-dom';
 import routes from '../routes/routes';
 import Title from './reusables/Title';
 
@@ -11,7 +10,7 @@ class SingleConcept extends React.Component {
     super(props);
     this.state = {
       text: ''
-    }
+    };
 
     this.handleChangeText = this.handleChangeText.bind(this);
     this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
@@ -21,7 +20,7 @@ class SingleConcept extends React.Component {
     e.persist();
     this.setState(() => ({
       text: e.target.value
-    }))
+    }));
   }
 
   handleSubmitAnswer(e) {
@@ -62,15 +61,8 @@ class SingleConcept extends React.Component {
           <span className = 'content-info'>{data ? data.answer : 'none'}</span>
         </p>
       </div>
-    )
+    );
   }
-}
-
-SingleConcept.propTypes = {
-  data: PropTypes.object,
-  content: PropTypes.object,
-  listId: PropTypes.string.isRequired,
-  getList: PropTypes.func.isRequired
 }
 
 class StudyConcept extends React.Component {
@@ -78,13 +70,13 @@ class StudyConcept extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      listName: '',
+      listName: 'Loading...',
       creatorName: '',
       concepts: [],
       listId: '',
       conceptsData: {},
       index: 0
-    }
+    };
 
     this.getList = this.getList.bind(this);
     this.changeIndex = this.changeIndex.bind(this);
@@ -109,10 +101,12 @@ class StudyConcept extends React.Component {
         concepts: concepts,
         conceptsData: conceptsData,
         listId: id
-      }))
+      }));
     }).catch((err) => {
+      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
-    })
+      return;
+    });
   }
   
   changeIndex(isDecrement) {
@@ -130,9 +124,7 @@ class StudyConcept extends React.Component {
 
   render() {
     const { listName, creatorName, index, concepts, conceptsData, listId } = this.state;
-
-    const conceptContent = concepts[index] || {};
-    const conceptData = conceptsData ? conceptsData[conceptContent.id] : null;
+    const conceptContent = concepts[index];
 
     return (
       <div>
@@ -146,20 +138,40 @@ class StudyConcept extends React.Component {
           { index > 0 && 
             <img src = '/src/resources/prev-arrow.png'
               className = 'arrows' 
-              onClick={() => {this.changeIndex(true)}} /> }
-          <SingleConcept
-            listId={listId}
-            content={conceptContent}
-            data={conceptData}
-            getList={this.getList} />
+              onClick={() => {this.changeIndex(true);}} /> }
+          { conceptContent
+            ? <SingleConcept
+              listId={listId}
+              content={conceptContent}
+              data={conceptsData ? conceptsData[conceptContent.id] : null}
+              getList={this.getList} />
+            : <h2>This list doesn&apos;t have any concepts in it!</h2>}
+          
           { index < concepts.length - 1 && 
             <img src = '/src/resources/next-arrow.png' 
               className = 'arrows'
-              onClick={() => {this.changeIndex(false)}} /> }
+              onClick={() => {this.changeIndex(false);}} /> }
         </div>
       </div>
-    )
+    );
   }
 }
 
 export default StudyConcept;
+
+StudyConcept.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  }),
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+};
+SingleConcept.propTypes = {
+  data: PropTypes.object,
+  content: PropTypes.object,
+  listId: PropTypes.string.isRequired,
+  getList: PropTypes.func.isRequired
+};

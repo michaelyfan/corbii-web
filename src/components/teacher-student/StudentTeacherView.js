@@ -5,24 +5,53 @@ import shortid from 'shortid';
 
 /* Required modules */
 import BackButton from '../reusables/BackButton';
-import TeacherSidebar from './TeacherSidebar';
+import TeacherSidebar from './reusables/TeacherSidebar';
+import LowRatedCards from './reusables/LowRatedCards';
 import routes from '../../routes/routes';
-import { getClassDataRaw, filterClassDataRaw, getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getClassData, getStudentStudyRatio } from '../../utils/teacherapi.js';
+import { getClassDataRaw, filterClassDataRaw, getConsistentLowCards, getStudentInfo,  getCardAverage, getCardTimeAverage, getStudentStudyRatio } from '../../utils/teacherapi.js';
 import { getClassroomInfo, getCardsInfo, getDeckInfo, getProfilePic, getDecksInClassroom } from '../../utils/api.js';
+import { getNow, getHoursBeforeNow, arraysAreSame } from '../../utils/tools';
 
-function LowRatedCard(props) {
-  const { deckName, front, rating } = props;
-  return (
-    <div className = 'card-info inline-display'>
-      <h1 className = 'score'> {rating} </h1>
-      <div className= 'nav'>
-        <h3 className = 'question'> {front} </h3>
-        <h4 className = 'deck-from'> in
-          <span className = 'italics'> {deckName} </span>
-        </h4>
+class FilterTime extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      startTime: '',
+      endTime: ''
+    };
+    this.handleInput = this.handleInput.bind(this);
+  }
+
+  handleInput(e) {
+    e.persist();
+    this.setState(() => ({
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  render() {
+    const { changeTimeFilter } = this.props;
+    const { startTime, endTime } = this.state;
+    return (
+      <div>
+        <span>Filter time by:</span>
+        <button onClick={() => {changeTimeFilter(null, null);}}>None</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24), getNow());}}>Last day</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7), getNow());}}>Last week</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7 * 30), getNow());}}>Last 30 days</button>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          changeTimeFilter(startTime, endTime);
+        }}>
+          <p>Custom time range...</p>
+          <input type='text' name='startTime' value={startTime} onChange={this.handleInput} />
+          <input type='text' name='endTime' value={endTime} onChange={this.handleInput} />
+          <input type='submit' value='submit' />
+        </form>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 function CardGraph(props) {
@@ -75,8 +104,10 @@ class StudentTeacherView extends React.Component {
       consistentLowCards: [],
       datapoints: [],
       deckFilter: undefined,
+      timeFilter: null,
       decks: {}
     };
+    this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
   componentDidMount() {
@@ -89,15 +120,24 @@ class StudentTeacherView extends React.Component {
     if (this.state.deckFilter !== prevState.deckFilter) {
       this.filterData();
     }
+
+    // check for time update
+    if (!arraysAreSame(this.state.timeFilter, prevState.timeFilter)) {
+      this.filterData();
+    }
   }
 
   async getDataAndInfo() {
     const { classroomId, userId } = this.props.match.params;
     try {
-      const [ data, studentInfo, classroomInfo, photoUrl ] = await Promise.all([
-        getClassDataRaw(classroomId, null, null, userId),
+      // get student info and classroom info first to allow error to catch if neither exist
+      const [ studentInfo, classroomInfo ] = await Promise.all([
         getStudentInfo(classroomId, userId),
         getClassroomInfo(classroomId),
+      ]);
+
+      const [ data, photoUrl ] = await Promise.all([
+        getClassDataRaw(classroomId, null, null, userId),
         getProfilePic(userId)
       ]);
 
@@ -125,15 +165,16 @@ class StudentTeacherView extends React.Component {
         return Promise.resolve();
       });
     } catch (e) {
-      alert('Apologies -- there was an error!');
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
+      return Promise.reject(e);
     }
   }
 
   async filterData() {
-    const { allData, deckFilter } = this.state;
+    const { allData, deckFilter, timeFilter } = this.state;
     // filter allData based on state filter
-    const filteredData = filterClassDataRaw({ deckId: deckFilter }, allData);
+    const filteredData = filterClassDataRaw({ deckId: deckFilter, times: timeFilter }, allData);
 
     try {
       const [ consistentLowCards, averageRating, averageTime ] = await Promise.all([
@@ -182,68 +223,19 @@ class StudentTeacherView extends React.Component {
     }
   }
 
-  // async getInfo() {
-  //   const { classroomId, userId } = this.props.match.params;
-
-  //   try {
-  //     const data = await getClassDataRaw(classroomId, null, null, userId);
-  //     const [ consistentLowCards, studentInfo, classroomInfo, averageRating,
-  //       averageTime, photoUrl ] = await Promise.all([
-  //       getConsistentLowCards(null, data),
-  //       getStudentInfo(classroomId, userId),
-  //       getClassroomInfo(classroomId),
-  //       getCardAverage(null, data),
-  //       getCardTimeAverage(null, data),
-  //       getProfilePic(userId)
-  //     ]);
-  //     const { name, period } = studentInfo;
-  //     const [ studyRatio, cardsInfo ] = await Promise.all([
-  //       getStudentStudyRatio(classroomId, userId, period),
-  //       getCardsInfo(consistentLowCards)
-  //     ]);
-      
-  //     // get missed cards' decks' names
-  //     const deckNameCalls = [];
-  //     consistentLowCards.forEach((cardObj) => {
-  //       deckNameCalls.push(getDeckInfo(cardObj.deckId));
-  //     });
-  //     const deckInfos = await Promise.all(deckNameCalls);
-
-  //     // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
-  //     //    names and cardsInfo for card front
-  //     let consistentLowCardsState = [];
-  //     consistentLowCards.forEach((cardObj, i) => {
-  //       consistentLowCardsState.push({
-  //         deckName: deckInfos[i].name,
-  //         front: cardsInfo[cardObj.cardId].front,
-  //         rating: cardObj.quality
-  //       });
-  //     });
-
-  //     // transform data
-  //     const datapts = [];
-  //     data.forEach((datapt) => {
-  //       const thisData = datapt.data();
-  //       thisData.id = datapt.id;
-  //       datapts.push(thisData);
-  //     });
-
-  //     this.setState(() => ({
-  //       name: name,
-  //       period: period,
-  //       periods: classroomInfo.periods,
-  //       numCardsStudied: studyRatio[0],
-  //       averageRating: averageRating,
-  //       averageTime: averageTime,
-  //       consistentLowCards: consistentLowCardsState,
-  //       datapoints: datapts,
-  //       photoUrl: photoUrl
-  //     }));
-  //   } catch (e) {
-  //     alert('Apologies -- there was an error!');
-  //     console.error(e);
-  //   }
-  // }
+  changeTimeFilter(startTimestamp, endTimestamp) {
+    this.setState(() => {
+      if (startTimestamp == null || endTimestamp == null) {
+        return {
+          timeFilter: null
+        };
+      } else {
+        return {
+          timeFilter: [startTimestamp, endTimestamp]
+        };
+      }
+    });
+  }
 
   render() {
     const { name, period, periods, numCardsStudied, averageRating, averageTime, datapoints, consistentLowCards, photoUrl, decks } = this.state;
@@ -263,7 +255,7 @@ class StudentTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <TeacherSidebar id={classroomId} periods={periods} />
+            <TeacherSidebar id={classroomId} />
           </div>
 
           <div className = 'active-view top-border'>
@@ -274,6 +266,7 @@ class StudentTeacherView extends React.Component {
                 <button onClick={() => {this.setState(() => ({ deckFilter: pair[0] }));}} key={pair[0]}>{pair[1]}</button>
               )}
             </div>
+            <FilterTime changeTimeFilter={this.changeTimeFilter} />
             <div id='student-stats-wrapper'>
               <div className = 'student-stats student-stats-individual navigation'>
                 <h3 className = 'stat'>cards studied: {numCardsStudied}</h3>
@@ -289,14 +282,7 @@ class StudentTeacherView extends React.Component {
             </div>
 
             <div>
-              <div className = 'low-card'>
-                <h2 className = 'low-card-header'>lowest rated cards</h2>
-                {consistentLowCards.length === 0
-                  ? <p>You don&apos;t have any data yet! Try making a deck, and encourage your students to study.</p>
-                  : consistentLowCards.map((card) => {
-                    return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />;
-                  })}
-              </div>
+              <LowRatedCards cards={consistentLowCards} description='consistently low cards' />
 
               {/* HIGHEST RATED CARDS SECTION
               <div className = 'low-card'>
@@ -330,13 +316,9 @@ StudentTeacherView.propTypes = {
     })
   })
 };
-
 CardGraph.propTypes = {
   cards: PropTypes.array.isRequired
 };
-
-LowRatedCard.propTypes = {
-  deckName: PropTypes.string.isRequired,
-  front: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
+FilterTime.propTypes = {
+  changeTimeFilter: PropTypes.func.isRequired
 };

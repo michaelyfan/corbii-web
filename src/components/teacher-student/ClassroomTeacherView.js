@@ -1,39 +1,54 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import shortid from 'shortid';
 import BackButton from '../reusables/BackButton';
 import routes from '../../routes/routes';
-import TeacherSidebar from './TeacherSidebar';
-import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api.js';
-import { getClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
+import TeacherSidebar from './reusables/TeacherSidebar';
+import LowRatedCards from './reusables/LowRatedCards';
+import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api';
+import { getClassDataRaw, filterClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi';
+import { getNow, getHoursBeforeNow, arraysAreSame } from '../../utils/tools';
 
-function LowRatedCard(props) {
-  const { deckName, front, rating } = props;
 
-  return (
-    <div className = 'card-info inline-display'>
-      <h1 className = 'score'> {rating.toFixed(2)} </h1>
-      <div className= 'nav'>
-        <h3 className = 'question'> {front} </h3>
-        <h4 className = 'deck-from'> in
-          <span className = 'italics'> {deckName} </span>
-        </h4>
+class FilterTime extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      startTime: '',
+      endTime: ''
+    };
+    this.handleInput = this.handleInput.bind(this);
+  }
+
+  handleInput(e) {
+    e.persist();
+    this.setState(() => ({
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  render() {
+    const { changeTimeFilter } = this.props;
+    const { startTime, endTime } = this.state;
+    return (
+      <div>
+        <span>Filter time by:</span>
+        <button onClick={() => {changeTimeFilter(null, null);}}>None</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24), getNow());}}>Last day</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7), getNow());}}>Last week</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7 * 30), getNow());}}>Last 30 days</button>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          changeTimeFilter(startTime, endTime);
+        }}>
+          <p>Custom time range...</p>
+          <input type='text' name='startTime' value={startTime} onChange={this.handleInput} />
+          <input type='text' name='endTime' value={endTime} onChange={this.handleInput} />
+          <input type='submit' value='submit' />
+        </form>
       </div>
-    </div>
-  );
-}
-
-function PeriodLink(props) {
-  const { id, period } = props;
-  return (
-    <span>
-      <Link to={routes.teacher.getViewPeriodRoute(id, period)}>
-        <button className='dash-nav'>period {period}</button>
-      </Link>
-      <br />
-    </span>
-  );
+    );
+  }
 }
 
 class ClassroomTeacherView extends React.Component {
@@ -50,59 +65,122 @@ class ClassroomTeacherView extends React.Component {
      * }
      */
     this.state = {
+      allData: null,
+      periodFilter: undefined,
+      timeFilter: null,
       name: 'Loading...',
       periods: [],
       cardsMissedMost: [],
       averageRatingPerCard: 0
     };
+
+    this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
-  async componentDidMount() {
-    this.getInfo();
+  componentDidMount() {
+    this.getDataAndInfo().then(() => {
+      this.filterData();
+    });
   }
 
-  async getInfo() {
+  componentDidUpdate(prevProps, prevState) {
+    // check for period update
+    if (this.state.periodFilter !== prevState.periodFilter) {
+      this.filterData();
+    }
+
+    // check for time update
+    if (!arraysAreSame(this.state.timeFilter, prevState.timeFilter)) {
+      this.filterData();
+    }
+  }
+
+  /*
+   * Gets all of this classroom's data points and metaInfo (non-data related info such as
+   *    name, number of content cards, etc)
+   */
+  async getDataAndInfo() {
     const { id } = this.props.match.params;
 
-    // get necessary info for this view
     try {
-      // get class data points
-      const data = await getClassDataRaw(id);
-      // get card average, worst cards, and classroomInfo
-      const [ average, missedCards, classInfo ] = await Promise.all([
-        getCardAverage(null, data),
-        getCardsMissedMost(null, data),
-        getClassroomInfo(id)
+      // get classroom info first to allow error catch if classroom doesn't exist
+      const [ classroomInfo ] = await Promise.all([
+        getClassroomInfo(id),
       ]);
-      // get worst cards' content
-      const cardsInfo = await getCardsInfo(missedCards);
-      // get worst cards' decks' names
+
+      const data = await getClassDataRaw(id, null, null, null);
+
+      this.setState(() => ({
+        allData: data,
+        name: classroomInfo.name,
+        periods: classroomInfo.periods,
+      }), () => {
+        return Promise.resolve();
+      });
+    } catch (e) {
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
+      console.error(e);
+      return Promise.reject(e);
+    }
+  }
+
+  /*
+   * Filters allData state attribute and sets data-related state based on filtered data.
+   */
+  async filterData() {
+    const { allData, periodFilter, timeFilter } = this.state;
+
+    // filter allData based on state filter
+    const filteredData = filterClassDataRaw({ period: periodFilter, times: timeFilter }, allData);
+
+    try {
+      const [ cardsMissedMost, averageRating ] = await Promise.all([
+        getCardsMissedMost(null, filteredData),
+        getCardAverage(null, filteredData)
+      ]);
+
+      // get card content information (front, back) for the missed cards
+      const cardsInfo = await getCardsInfo(cardsMissedMost);
+      // get missed cards' decks' names
       const deckNameCalls = [];
-      missedCards.forEach((cardObj) => {
+      cardsMissedMost.forEach((cardObj) => {
         deckNameCalls.push(getDeckInfo(cardObj.deckId));
       });
-      const decksInfo = await(Promise.all(deckNameCalls));
-
-      // create cardsMissedMost state object from missedCards, decksInfo, and cardsInfo
+      const decksInfo = await Promise.all(deckNameCalls);
+      // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
+      //    names and cardsInfo for card front
       let cardsMissedMostState = [];
-      missedCards.forEach((cardObj, i) => {
+      cardsMissedMost.forEach((cardObj, i) => {
         cardsMissedMostState.push({
           deckName: decksInfo[i].name,
           front: cardsInfo[cardObj.cardId].front,
           rating: cardObj.averageQuality
         });
       });
-      
+
       this.setState(() => ({
-        name: classInfo.name,
-        averageRatingPerCard: average,
-        periods: classInfo.periods,
-        cardsMissedMost: cardsMissedMostState
+        averageRatingPerCard: averageRating,
+        cardsMissedMost: cardsMissedMostState,
       }));
+
     } catch (e) {
-      alert('Apologies -- there was an error!');
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
     }
+  }
+
+  changeTimeFilter(startTimestamp, endTimestamp) {
+    this.setState(() => {
+      if (startTimestamp == null || endTimestamp == null) {
+        return {
+          timeFilter: null
+        };
+      } else {
+        return {
+          timeFilter: [startTimestamp, endTimestamp]
+        };
+      }
+    });
   }
 
   render() {
@@ -118,10 +196,19 @@ class ClassroomTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <TeacherSidebar id={id} periods={periods} />
+            <TeacherSidebar id={id}/>
           </div>
 
           <div className = 'active-view'>
+            <div>
+              <span>Period filter:</span>
+              <button onClick={() => {this.setState(() => ({ periodFilter: undefined }));}}>None</button>
+              {periods.map((period) => 
+                <button onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
+              )}
+            </div>
+            <FilterTime changeTimeFilter={this.changeTimeFilter} />
+
             <div className= 'needs-border'>
               <div className = 'inline-display center-button'>
                 <div className = 'classroom-basic'>
@@ -131,15 +218,8 @@ class ClassroomTeacherView extends React.Component {
               </div>
             </div>
 
-            <div className = 'low-card'>
-              <h2 className = 'low-card-header'>cards missed most</h2>
-              {cardsMissedMost.length === 0
-                ? <p>You don&apos;t have any data yet! Try making a deck, and encourage your students to study.</p>
-                : cardsMissedMost.map((card) => {
-                  return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />;
-                })}
-              
-            </div>
+            <LowRatedCards cards={cardsMissedMost} />
+            
           </div>
         </div>
       </div>
@@ -156,14 +236,6 @@ ClassroomTeacherView.propTypes = {
     })
   })
 };
-
-PeriodLink.propTypes = {
-  period: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
-};
-
-LowRatedCard.propTypes = {
-  deckName: PropTypes.string.isRequired,
-  front: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
+FilterTime.propTypes = {
+  changeTimeFilter: PropTypes.func.isRequired
 };

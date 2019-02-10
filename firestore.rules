@@ -54,33 +54,36 @@ service cloud.firestore {
       allow update: if request.auth.uid == resource.data.userId;
     }
     
+    function userIsTeacher() {
+      return request.auth.uid != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isTeacher == true;
+    }
+
     match /classrooms/{classroomId} {
-      function userIsTeacher() {
-        return request.auth.uid != null && request.auth.uid == resource.data.teacherId;
+      function userIsTeacherOfClass() {
+        return userIsTeacher() && request.auth.uid == resource.data.teacherId;
       }
 
-      function userIsTeacherOnCreate() {
-        return request.auth.uid != null && request.auth.uid == request.resource.data.teacherId;
+      function userIsTeacherOfClassOnCreate() {
+        return userIsTeacher() && request.auth.uid == request.resource.data.teacherId;
       }
 
       function userIsStudent() {
         return exists(/databases/$(database)/documents/classrooms/$(classroomId)/users/$(request.auth.uid));
       }
 
-      allow read: if userIsTeacher() || userIsStudent();
+      allow read: if userIsTeacherOfClass() || userIsStudent();
       
-      allow create: if userIsTeacherOnCreate()
-                      && request.auth.uid == request.resource.data.teacherId
+      allow create: if userIsTeacherOfClassOnCreate()
                       && request.resource.data.name != null
                       && request.resource.data.periods != null
                       && request.resource.data.name.size() <= 75
                       && request.resource.data.periods.size() <= 15;
-      allow update: if userIsTeacher();
-      allow delete: if userIsTeacher();
+      allow update: if userIsTeacherOfClass();
+      allow delete: if userIsTeacherOfClass();
 
       match /users/{userId} {
         function userIsTeacherNested() {
-          return request.auth.uid != null && request.auth.uid == get(/databases/$(database)/documents/classrooms/$(classroomId)).data.teacherId;
+          return userIsTeacher() && request.auth.uid == get(/databases/$(database)/documents/classrooms/$(classroomId)).data.teacherId;
         }
 
 

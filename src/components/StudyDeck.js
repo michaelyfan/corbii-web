@@ -415,9 +415,9 @@ class StudyDeck extends React.Component {
       deckForStudy = await(getDeckForStudy(id));
       profileInfo = await(getUserProfileInfo(deckForStudy.creatorId));
     } catch (e) {
-      alert(`Our apologies -- there was an error! Please go back to the 
-        dashboard or refresh the page.`);
+      alert(`Our apologies -- there was an error!\n${e}`);
       console.error(e);
+      return;
     }
     
     // constructs state after getting deck
@@ -584,7 +584,6 @@ StudyDeck.propTypes = {
     push: PropTypes.func.isRequired
   })
 };
-
 CardWrapper.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({

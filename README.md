@@ -1,6 +1,10 @@
 # corbii-web
 Corbii's web platform.
 
+* malicious unauthorized user
+* malicious student acc
+* malicious teacher acc
+
 Check the Zenhub board for TODOs.
 
 ## HIGH-LEVEL COMPONENT RETRIEVAL RECORDS

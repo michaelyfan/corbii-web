@@ -334,16 +334,26 @@ class Deck extends React.Component {
   async updateDeck() {
     const { id } = this.props.match.params;
     const { state, pathname } = this.props.location;
+
     try {
       // determine if this is a classroom deck
       let periodsState = {};
-      if (state && state.isForClassroom
-          && state.classroomId != null
-          && pathname === routes.teacher.getViewDeckEditRoute(state.classroomId, id)) {
-        const classroomInfo = await getClassroomInfo(state.classroomId);
-        classroomInfo.periods.forEach((pd) => {
-          periodsState[pd] = false;
-        });
+      if (pathname.includes(routes.teacher.viewDeckEditBase)) {
+        if (state
+            && state.isForClassroom
+            && state.classroomId != null) {
+          // get classroom info if location state for classroom is there
+          const classroomInfo = await getClassroomInfo(state.classroomId);
+          classroomInfo.periods.forEach((pd) => {
+            periodsState[pd] = false;
+          });
+        } else {
+          // redirect to teacher dashboard if user is at a teacher route, but location state is
+          //    missing
+          this.props.history.push(routes.teacher.dashboard);
+          return;
+        }
+
       }
 
       let deck = await getDeck(id);
@@ -369,7 +379,7 @@ class Deck extends React.Component {
         periods: periodsState
       }));
     } catch(err) {
-      alert('Our apologies -- there was an error!');
+      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
     }
   }
@@ -442,8 +452,9 @@ class Deck extends React.Component {
     const { isLoading, deckName, creatorName, cards, userIsOwner, periods } = this.state;
     const { id } = this.props.match.params;
     let isForClassroom;
+    let classroomId;
     if (this.props.location.state) {
-      ({ isForClassroom } = this.props.location.state);
+      ({ isForClassroom, classroomId } = this.props.location.state);
     }
     const numberOfCards = cards.length;
 
@@ -453,7 +464,7 @@ class Deck extends React.Component {
         <div>
           <div className = 'deck-info'>
             { isForClassroom
-              ? <BackButton redirectTo={routes.teacher.dashboard} destination='dashboard' />
+              ? <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />
               : <BackButton redirectTo={routes.dashboard.base} destination='dashboard' /> }
             <DeckTitle
               userIsOwner={userIsOwner}

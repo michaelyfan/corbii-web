@@ -35,6 +35,9 @@ export function getDeckInfo(deckId) {
   // set and get database reference
   const cardRef = db.collection('decks').doc(deckId);
   return cardRef.get().then((res) => {
+    if (!res.exists) {
+      throw new Error('This deck doesn\'t exist.');
+    }
     const dataToReturn = res.data();
     dataToReturn.id = res.id;
     return dataToReturn;
@@ -105,6 +108,9 @@ export function getCardsInfo(cards) {
 export function getClassroomInfo(classroomId) {
   const docRef = db.collection('classrooms').doc(classroomId);
   return docRef.get().then((res) => {
+    if (!res.exists) {
+      throw new Error(`This classroom does not exist. Invalid ID ${classroomId}`);
+    }
     return {
       id: res.id,
       name: res.data().name,
@@ -134,6 +140,9 @@ export function getDeck(deckId) {
     deckRef.get(),
     cardsRef.get(),
   ]).then(([ deck, cards ]) => {
+    if (!deck.exists) {
+      throw new Error('This deck doesn\'t exist.');
+    }
     let cardsArr = [];
     cards.forEach((card) => {
       cardsArr.push({
@@ -254,6 +263,9 @@ export function getConceptList(listId) {
     listRef.get(), 
     listRef.collection('concepts').get()
   ]).then(([ list, concepts ]) => {
+    if (!list.exists) {
+      throw new Error('This list doesn\'t exist.');
+    }
     let conceptArr = [];
     concepts.forEach((concept) => {
       conceptArr.push({
@@ -312,7 +324,12 @@ export function getConceptListForStudy(listId) {
 }
 
 export function getUserProfileInfo(uid) {
-  return db.collection('users').doc(uid).get();
+  return db.collection('users').doc(uid).get().then((res) => {
+    if (!res.exists) {
+      throw new Error('This user does not exist.');
+    }
+    return res;
+  });
 }
 
 /**
@@ -355,12 +372,15 @@ export function getUserConceptLists(uid) {
 }
 
 export function getUserAll(uid) {
-  return Promise.all([
-    getUserProfileInfo(uid),
-    getUserDecks(uid),
-    getUserConceptLists(uid),
-    getProfilePic(uid)
-  ]).then((results) => {
+  // get user profile info first to allow error to catch if this user doesn't exist
+  return getUserProfileInfo(uid).then((res) => {
+    return Promise.all([
+      Promise.resolve(res),
+      getUserDecks(uid),
+      getUserConceptLists(uid),
+      getProfilePic(uid)
+    ]);
+  }).then((results) => {
     const [ user, decks, conceptLists, url ] = results;
     return {
       name: user.data().name,
@@ -437,7 +457,7 @@ export function getClassroomForUser(classroomId) {
     getClassroomCurrentUser(classroomId),
     getClassroomInfo(classroomId)
   ]).then((result) => {
-    const period = result.data().period;
+    const period = result[0].data().period;
     return Promise.all([
       getDecksInClassroom(classroomId, period),
       Promise.resolve(result[0]),

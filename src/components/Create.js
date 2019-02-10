@@ -420,17 +420,16 @@ class Create extends React.Component {
     }));
   }
 
-  handleCreateList(concepts) {
+  handleCreateList(concepts) { 
     if (this.state.title.trim() === '') {
-      alert('Title cannot be empty.');
-    } else if (this.hasEmptyEntries('concepts', concepts)) {
+      alert('Title cannot be empty.'); 
+    } else if (this.hasEmptyEntries('concepts',concepts)) {
       alert('One or more of your concepts is empty.');
     } else {
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
         this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
-        console.error(err);
-      });  
+        console.error(err); });
     }
   }
 

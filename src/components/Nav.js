@@ -64,8 +64,8 @@ class Nav extends React.Component {
                 value={this.state.searchQuery} />
               <Link
                 to={{
-                  pathname: routes.search.results,
-                  search: `?mode=decks&q=${this.state.searchQuery}`
+                  pathname: routes.search.base,
+                  search: routes.search.getQueryString('decks', this.state.searchQuery)
                 }}>
                 <button style={{display: 'none'}} type='submit'>Search</button>
               </Link>
@@ -76,8 +76,8 @@ class Nav extends React.Component {
         <div id= 'navbar-usercard'>
           {photoURL 
             && <Link to={routes.profile.base}>
-                  <img className='nav-profile-img' src={photoURL} />
-               </Link>}
+              <img className='nav-profile-img' src={photoURL} />
+            </Link>}
 
           <LoginModalPersist 
             header = "log in"

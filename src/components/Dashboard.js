@@ -18,7 +18,7 @@ class Dashboard extends React.Component {
     this.state = {
       name: '', 
       active: 0
-    }
+    };
   }
 
   componentDidMount() {
@@ -32,14 +32,14 @@ class Dashboard extends React.Component {
 
   renderSwitch() {
     switch(this.state.active) {
-      case 0:
-        return <DeckList />;
-      case 1:
-        return <ConceptListList />;
-      case 2:
-        return <ClassroomList />;
-      case 3:
-        return <Profile />;
+    case 0:
+      return <DeckList />;
+    case 1:
+      return <ConceptListList />;
+    case 2:
+      return <ClassroomList />;
+    case 3:
+      return <Profile />;
     }
   }
 
@@ -60,12 +60,15 @@ class Dashboard extends React.Component {
               <Link to={routes.create.base}>
                 <button className = 'dash-nav'>create deck or concept list</button>
               </Link>
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 0}))}}>my decks</button>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 0}));}}>my decks</button>
               <br />
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 1}))}}>my concept lists</button>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 1}));}}>my concept lists</button>
               <br />
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 2}))}}>my classrooms</button>
+              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 2}));}}>my classrooms</button>
               <br />
+              <Link to={routes.teacher.dashboard}>
+                TEST
+              </Link>
               <Link to={routes.profile.base}>
                 <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
               </Link>
@@ -77,7 +80,7 @@ class Dashboard extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 

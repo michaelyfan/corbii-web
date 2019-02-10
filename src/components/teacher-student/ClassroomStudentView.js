@@ -38,6 +38,7 @@ class ClassroomStudentView extends React.Component {
     
     // TODO: put check here to determine class presence
     getClassroomForUser(id).then((result) => {
+      console.log(result.data);
       this.setState(() => ({
         classroomId: result.id,
         teacherName: `ID ${result.data.teacherId}`,

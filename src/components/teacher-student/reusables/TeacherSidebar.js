@@ -1,22 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import routes from '../../routes/routes';
+import routes from '../../../routes/routes';
 import PropTypes from 'prop-types';
 
-function PeriodLink(props) {
-  const { id, period } = props;
-  return (
-    <span>
-      <Link to={routes.teacher.getViewPeriodRoute(id, period)}>
-        <button className='dash-nav'>period {period}</button>
-      </Link>
-      <br />
-    </span>
-  );
-}
-
 export default function TeacherSideBar(props) {
-  const { id, periods } = props;
+  const { id } = props;
   return (
     <div className ='navigation'>
       <Link to={{
@@ -39,18 +27,10 @@ export default function TeacherSideBar(props) {
         <button className = 'dash-nav'>view deck analytics</button>
       </Link>
       <br />
-      {periods.map((period) => 
-        <PeriodLink period={period} id={id} key={`${id}_${period}`} />
-      )}
     </div>
   );
 }
 
 TeacherSideBar.propTypes = {
-  id: PropTypes.string.isRequired,
-  periods: PropTypes.array.isRequired
-};
-PeriodLink.propTypes = {
-  id: PropTypes.string.isRequired,
-  period: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired
 };

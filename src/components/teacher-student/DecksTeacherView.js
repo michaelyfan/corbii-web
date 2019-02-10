@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import routes from '../../routes/routes';
 import { Link } from 'react-router-dom';
 import BackButton from '../reusables/BackButton';
-import TeacherSidebar from './TeacherSidebar';
+import TeacherSidebar from './reusables/TeacherSidebar';
 import { getDecksInClassroom, getClassroomInfo  } from '../../utils/api.js';
 
 function DeckRow(props) {
@@ -56,11 +56,11 @@ class DecksTeacherView extends React.Component {
   async getInfo() {
     try {
       const { id } = this.props.match.params;
+      // get classroom info first to allow error catch if this classroom doesn't exist
+      const classroomInfo = await getClassroomInfo(id);
+
       // get classrooms' decks and info
-      const [ decks, classroomInfo ] = await Promise.all([
-        getDecksInClassroom(id),
-        getClassroomInfo(id)
-      ]);
+      const decks = await getDecksInClassroom(id);
       
       // construct decks attribute of state
       const decksState = [];
@@ -79,6 +79,7 @@ class DecksTeacherView extends React.Component {
         decks: decksState
       }));
     } catch (e) {
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
     }
   }
@@ -86,7 +87,6 @@ class DecksTeacherView extends React.Component {
   render() {
     const { decks, name, periods } = this.state;
     const { id } = this.props.match.params;
-
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
@@ -96,7 +96,7 @@ class DecksTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <TeacherSidebar id={id} periods={periods} />
+            <TeacherSidebar id={id} />
           </div>
 
           <div className = 'active-view top-border flex-display'>

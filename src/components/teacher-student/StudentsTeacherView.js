@@ -7,7 +7,7 @@ import shortid from 'shortid';
 import routes from '../../routes/routes';
 import { Link } from 'react-router-dom';
 import BackButton from '../reusables/BackButton';
-import TeacherSidebar from './TeacherSidebar';
+import TeacherSidebar from './reusables/TeacherSidebar';
 import { getClassroomInfo } from '../../utils/api.js';
 import { getStudents, getStudentsInfo } from '../../utils/teacherapi.js';
 
@@ -93,6 +93,7 @@ class StudentsTeacherView extends React.Component {
         students: studentsState
       }));
     } catch (e) {
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
     }
   }
@@ -110,7 +111,7 @@ class StudentsTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <TeacherSidebar id={id} periods={periods} />
+            <TeacherSidebar id={id} />
           </div>
 
           <div className = 'active-view top-border flex-display'>
@@ -142,7 +143,11 @@ class StudentsTeacherView extends React.Component {
 export default StudentsTeacherView;
 
 StudentsTeacherView.propTypes = {
-  // TODO: fill out PropTypes
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  })
 };
 
 StudentRow.propTypes = {

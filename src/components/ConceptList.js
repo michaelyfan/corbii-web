@@ -16,7 +16,7 @@ class Concept extends React.Component {
     this.state = {
       isUpdate: false,
       questionChangeValue: props.question.slice(0)
-    }
+    };
 
     this.handleUpdateConcept = this.handleUpdateConcept.bind(this);
     this.handleQuestionChange = this.handleQuestionChange.bind(this);
@@ -26,7 +26,7 @@ class Concept extends React.Component {
     const { doUpdateConcept, id } = this.props;
     const { questionChangeValue } = this.state;
     doUpdateConcept(id, questionChangeValue);
-    this.setState(() => ({isUpdate: false}))
+    this.setState(() => ({isUpdate: false}));
   }
 
   handleQuestionChange(e) {
@@ -45,10 +45,10 @@ class Concept extends React.Component {
             {
               this.state.isUpdate && this.props.userIsOwner
                 ? <textarea
-                    type='text' 
-                    value={this.state.questionChangeValue} 
-                    onChange={this.handleQuestionChange} 
-                    className = 'update-card'/>
+                  type='text' 
+                  value={this.state.questionChangeValue} 
+                  onChange={this.handleQuestionChange} 
+                  className = 'update-card'/>
                 : <p className = 'editable-card'>{question}</p>
             }
           </div>
@@ -58,29 +58,22 @@ class Concept extends React.Component {
           { 
             this.props.userIsOwner
               ? this.state.isUpdate
-                  ? <span className = 'edit-options'>
-                      <button className = 'modify-stuff editing' onClick={this.handleUpdateConcept}>update</button>
-                      <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>cancel</button>
-                    </span>            
-                  : <span className = 'edit-button'>
-                      <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}))}}>edit</button>
-                    </span>
+                ? <span className = 'edit-options'>
+                  <button className = 'modify-stuff editing' onClick={this.handleUpdateConcept}>update</button>
+                  <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}));}}>cancel</button>
+                </span>            
+                : <span className = 'edit-button'>
+                  <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}));}}>edit</button>
+                </span>
               : null
           }
           <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
-          { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteConcept(id)}}>delete</button>}
+          { this.props.userIsOwner && <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteConcept(id);}}>delete</button>}
+        </div>
       </div>
-     </div>
       
-    )
+    );
   }
-}
-
-Concept.propTypes = {
-  userIsOwner: PropTypes.bool.isRequired,
-  id: PropTypes.string.isRequired,
-  question: PropTypes.string.isRequired,
-  doUpdateConcept: PropTypes.func.isRequired
 }
 
 class Title extends React.Component {
@@ -91,7 +84,7 @@ class Title extends React.Component {
       isUpdate: false,
       originalListName: props.listName.slice(0),
       newListName: props.listName.slice(0)
-    }
+    };
 
     this.handleToggleUpdate = this.handleToggleUpdate.bind(this);
     this.handleUpdateList = this.handleUpdateList.bind(this);
@@ -108,7 +101,7 @@ class Title extends React.Component {
   handleToggleUpdate() {
     this.setState((prevState) => ({
       isUpdate: !prevState.isUpdate
-    })) 
+    }));
   }
 
   handleUpdateList() {
@@ -116,26 +109,26 @@ class Title extends React.Component {
       this.setState((prevState) =>({
         originalListName: prevState.newListName,
         isUpdate: false
-      }))
+      }));
     }).catch((err) => {
       console.log(err);
       alert(err);
-    })
+    });
   }
 
   render() {
     const { isUpdate, originalListName, newListName } = this.state;
-    const { listName, creatorName, userIsOwner } = this.props;
+    const { creatorName, userIsOwner } = this.props;
     return (
       <div>
         {isUpdate
           ? <input type='text'
-              maxLength='150'
-              className = 'deck-title'
-              value = {newListName}
-              onChange = {this.handleChangeNewDeckName}
-              placeholder = 'title your deck here' 
-            />
+            maxLength='150'
+            className = 'deck-title'
+            value = {newListName}
+            onChange = {this.handleChangeNewDeckName}
+            placeholder = 'title your deck here' 
+          />
           : <p className = 'deck-title edit-title'>{originalListName}</p>}
         <div className = 'inline-display center-subtitle'>
 
@@ -143,22 +136,15 @@ class Title extends React.Component {
           {userIsOwner && (
             isUpdate
               ? <span>
-                  <button onClick={this.handleUpdateList} className = 'small-caption change-title'>&nbsp;update</button>
-                  <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
-                </span>
+                <button onClick={this.handleUpdateList} className = 'small-caption change-title'>&nbsp;update</button>
+                <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;cancel</button>
+              </span>
               : <button onClick={this.handleToggleUpdate} className = 'small-caption change-title'>&nbsp;change list title</button>
           )}
         </div>
       </div>
-    )
+    );
   }
-}
-
-Title.propTypes = {
-  listName: PropTypes.string.isRequired,
-  creatorName: PropTypes.string.isRequired,
-  listId: PropTypes.string.isRequired,
-  userIsOwner: PropTypes.bool.isRequired
 }
 
 class AddConceptForm extends React.Component {
@@ -167,7 +153,7 @@ class AddConceptForm extends React.Component {
 
     this.state = {
       question: ''
-    }
+    };
 
     this.handleAddConcept = this.handleAddConcept.bind(this);
     this.handleChangeQuestion = this.handleChangeQuestion.bind(this);
@@ -185,9 +171,9 @@ class AddConceptForm extends React.Component {
         callback();
       }).catch((err) => {
         console.error(err);
-      })
+      });
     } else {
-      alert("'One of your inputs is empty. Check your inputs and try again.'");
+      alert('One of your inputs is empty. Check your inputs and try again.');
     }
   }
 
@@ -196,7 +182,7 @@ class AddConceptForm extends React.Component {
 
     this.setState(() => ({
       question: e.target.value
-    }))
+    }));
   }
 
   render() {
@@ -221,13 +207,8 @@ class AddConceptForm extends React.Component {
           </div>
         </form>
       </div>
-    )
+    );
   } 
-}
-
-AddConceptForm.propTypes = {
-  callback: PropTypes.func,
-  conceptId: PropTypes.string.isRequired
 }
 
 class ConceptList extends React.Component {
@@ -242,7 +223,7 @@ class ConceptList extends React.Component {
       userIsOwner: false,
       isLoading: true,
       creatorName: ''
-    }
+    };
 
     this.handleDeleteConcept = this.handleDeleteConcept.bind(this);
     this.doUpdateConcept = this.doUpdateConcept.bind(this);
@@ -257,10 +238,9 @@ class ConceptList extends React.Component {
 
   async updateConceptList() {
     const { id } = this.props.match.params;
-    let list;
     try {
       const list = await getConceptList(id);
-      const { listName, creatorId, concepts } = list;
+      const { creatorId } = list;
       const currentUser = firebase.auth().currentUser;
       let profileInfo = await getUserProfileInfo(creatorId);
       let creatorName = profileInfo.data().name;
@@ -273,6 +253,7 @@ class ConceptList extends React.Component {
         creatorName: creatorName,
       }));
     } catch (err) {
+      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
     }
   }
@@ -292,7 +273,7 @@ class ConceptList extends React.Component {
       this.updateConceptList();
     }).catch((err) => {
       console.error(err);
-    })
+    });
   }
 
   handleDeleteList() {
@@ -301,7 +282,7 @@ class ConceptList extends React.Component {
     }).catch((err) => {
       console.log(err);
       alert(err);
-    })
+    });
   }
 
   submitDelete() {
@@ -315,13 +296,13 @@ class ConceptList extends React.Component {
               <button className = 'no-button'onClick={onClose}>no</button>
               <button className = 'yes-button' onClick={() => {
                 this.handleDeleteList();
-                onClose()
+                onClose();
               }}>yes</button>
             </div>
           </div>
-        )
+        );
       }
-    })
+    });
   }
 
   render() {
@@ -365,9 +346,37 @@ class ConceptList extends React.Component {
             </div>
           </div>
         </div>
-      )
+      );
     
   }
 }
+
+ConceptList.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  }),
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+};
+AddConceptForm.propTypes = {
+  callback: PropTypes.func,
+  conceptId: PropTypes.string.isRequired
+};
+Title.propTypes = {
+  listName: PropTypes.string.isRequired,
+  creatorName: PropTypes.string.isRequired,
+  listId: PropTypes.string.isRequired,
+  userIsOwner: PropTypes.bool.isRequired
+};
+Concept.propTypes = {
+  userIsOwner: PropTypes.bool.isRequired,
+  id: PropTypes.string.isRequired,
+  question: PropTypes.string.isRequired,
+  doUpdateConcept: PropTypes.func.isRequired,
+  handleDeleteConcept: PropTypes.func.isRequired,
+};
 
 export default ConceptList;

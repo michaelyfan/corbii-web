@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import BackButton from './reusables/BackButton';
 import { getUserAll } from '../utils/api';
 import routes from '../routes/routes';
 
@@ -31,10 +33,10 @@ class User extends React.Component {
   }
 
   async updateDeck() {
-    const { u } = this.props.match.params;
+    const { id } = this.props.match.params;
     let user;
     try {
-      user = await getUserAll(u);
+      user = await getUserAll(id);
       this.setState(() => ({
         name: user.name,
         decks: user.decks,
@@ -43,6 +45,7 @@ class User extends React.Component {
       }));
 
     } catch(err) {
+      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
     }
   }
@@ -50,6 +53,7 @@ class User extends React.Component {
   render() {
     return (
       <div>
+        <BackButton redirectTo={routes.search.base} destination='search' />
         {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} /> }
         <h2>{this.state.name}</h2>
         {this.state.decks.map((deck) => 
@@ -64,3 +68,15 @@ class User extends React.Component {
 }
 
 export default User;
+
+User.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired
+    })
+  })
+};
+DeckMiniView.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
+};

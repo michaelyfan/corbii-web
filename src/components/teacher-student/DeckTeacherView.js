@@ -1,28 +1,56 @@
 /* Required dependency modules */
 import React from 'react';
 import PropTypes from 'prop-types';
-import shortid from 'shortid';
 
 /* Required modules */
 import BackButton from '../reusables/BackButton';
-import TeacherSidebar from './TeacherSidebar';
+import TeacherSidebar from './reusables/TeacherSidebar';
+import LowRatedCards from './reusables/LowRatedCards';
 import routes from '../../routes/routes';
 import { getClassDataRaw, filterClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 import { getClassroomInfo, getCardsInfo, getDeckInfo } from '../../utils/api.js';
+import { getNow, getHoursBeforeNow, arraysAreSame } from '../../utils/tools';
 
-function LowRatedCard(props) {
-  const { deckName, front, rating } = props;
-  return (
-    <div className = 'card-info inline-display'>
-      <h1 className = 'score'> {rating.toFixed(2)} </h1>
-      <div className= 'nav'>
-        <h3 className = 'question'> {front} </h3>
-        <h4 className = 'deck-from'> in
-          <span className = 'italics'> {deckName} </span>
-        </h4>
+class FilterTime extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      startTime: '',
+      endTime: ''
+    };
+    this.handleInput = this.handleInput.bind(this);
+  }
+
+  handleInput(e) {
+    e.persist();
+    this.setState(() => ({
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  render() {
+    const { changeTimeFilter } = this.props;
+    const { startTime, endTime } = this.state;
+    return (
+      <div>
+        <span>Filter time by:</span>
+        <button onClick={() => {changeTimeFilter(null, null);}}>None</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24), getNow());}}>Last day</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7), getNow());}}>Last week</button>
+        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7 * 30), getNow());}}>Last 30 days</button>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          changeTimeFilter(startTime, endTime);
+        }}>
+          <p>Custom time range...</p>
+          <input type='text' name='startTime' value={startTime} onChange={this.handleInput} />
+          <input type='text' name='endTime' value={endTime} onChange={this.handleInput} />
+          <input type='submit' value='submit' />
+        </form>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 class DeckTeacherView extends React.Component {
@@ -42,6 +70,7 @@ class DeckTeacherView extends React.Component {
     this.state = {
       allData: null,
       periodFilter: undefined,
+      timeFilter: null,
       classroomName: 'Loading...',
       periods: [],
       deckName: 'Loading...',
@@ -50,6 +79,7 @@ class DeckTeacherView extends React.Component {
       averageRating: 0,
       cardsMissedMost: []
     };
+    this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
   componentDidMount() {
@@ -62,6 +92,11 @@ class DeckTeacherView extends React.Component {
     if (this.state.periodFilter !== prevState.periodFilter) {
       this.filterData();
     }
+
+    // check for time update
+    if (!arraysAreSame(this.state.timeFilter, prevState.timeFilter)) {
+      this.filterData();
+    }
   }
 
   /*
@@ -70,12 +105,15 @@ class DeckTeacherView extends React.Component {
    */
   async getDataAndInfo() {
     const { classroomId, deckId } = this.props.match.params;
+
     try {
-      const [ data, classroomInfo, deckInfo ] = await Promise.all([
-        getClassDataRaw(classroomId, null, deckId, null),
+      // get classroom and deck info first to allow error catch if either don't exist
+      const [ classroomInfo, deckInfo ] = await Promise.all([
         getClassroomInfo(classroomId),
         getDeckInfo(deckId)
       ]);
+
+      const data = await getClassDataRaw(classroomId, null, deckId, null);
 
       this.setState(() => ({
         allData: data,
@@ -88,8 +126,9 @@ class DeckTeacherView extends React.Component {
         return Promise.resolve();
       });
     } catch (e) {
-      alert('Apologies -- there was an error!');
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
+      return Promise.reject(e);
     }
   }
 
@@ -97,10 +136,10 @@ class DeckTeacherView extends React.Component {
    * Filters allData state attribute and sets data-related state based on filtered data.
    */
   async filterData() {
-    const { allData, periodFilter } = this.state;
+    const { allData, periodFilter, timeFilter } = this.state;
 
     // filter allData based on state filter
-    const filteredData = filterClassDataRaw({ period: periodFilter }, allData);
+    const filteredData = filterClassDataRaw({ period: periodFilter, times: timeFilter }, allData);
 
     try {
       const [ cardsMissedMost, averageRating ] = await Promise.all([
@@ -134,9 +173,23 @@ class DeckTeacherView extends React.Component {
       }));
 
     } catch (e) {
-      alert('Apologies -- there was an error!');
+      alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
     }
+  }
+
+  changeTimeFilter(startTimestamp, endTimestamp) {
+    this.setState(() => {
+      if (startTimestamp == null || endTimestamp == null) {
+        return {
+          timeFilter: null
+        };
+      } else {
+        return {
+          timeFilter: [startTimestamp, endTimestamp]
+        };
+      }
+    });
   }
 
   render() {
@@ -151,7 +204,7 @@ class DeckTeacherView extends React.Component {
 
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
-            <TeacherSidebar id={classroomId} periods={periods} />
+            <TeacherSidebar id={classroomId} />
           </div>
 
           <div className = 'active-view top-border'>
@@ -162,6 +215,7 @@ class DeckTeacherView extends React.Component {
                 <button onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
               )}
             </div>
+            <FilterTime changeTimeFilter={this.changeTimeFilter} />
             <div id='student-stats-wrapper'>
               <div className = 'student-stats student-stats-individual navigation'>
                 <h3 className = 'stat'>this deck has: {count} cards</h3>
@@ -171,14 +225,7 @@ class DeckTeacherView extends React.Component {
             </div>
 
             <div>
-              <div className = 'low-card'>
-                <h2 className = 'low-card-header'>lowest rated cards</h2>
-                {cardsMissedMost.length === 0
-                  ? <p>You don&apos;t have any data yet! Try making a deck, and encourage your students to study.</p>
-                  : cardsMissedMost.map((card) => {
-                    return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />;
-                  })}
-              </div>
+              <LowRatedCards cards={cardsMissedMost} />
 
               {/* HIGHEST RATED CARDS SECTION
               <div className = 'low-card'>
@@ -212,9 +259,6 @@ DeckTeacherView.propTypes = {
     })
   })
 };
-
-LowRatedCard.propTypes = {
-  deckName: PropTypes.string.isRequired,
-  front: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
+FilterTime.propTypes = {
+  changeTimeFilter: PropTypes.func.isRequired
 };

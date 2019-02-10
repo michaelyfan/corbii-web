@@ -8,7 +8,7 @@ const routes = {
   },
   search: {
     base: '/search',
-    results: '/search/s' // has queries
+    getQueryString: ((mode, query) => `?mode=${mode}&q=${query}`)
   },
   dashboard: {
     base: '/dashboard'
@@ -56,10 +56,10 @@ const routes = {
     dashboard: '/teacher/dashboard',
     create: '/teacher/create',
 
+    viewDeckEditBase: '/teacher/editdeck',
     viewDeckEditTemplate: '/teacher/editdeck/:classroomId/:id',
 
     viewClassroomTemplate: '/teacher/classroom/:id',
-    viewPeriodTemplate: '/teacher/classroom/:id/:period',
     viewStudentsTemplate: '/teacher/students/:id',
     viewStudentTemplate: '/teacher/student/:classroomId/:userId',
     viewDecksTemplate: '/teacher/decks/:id',
@@ -67,7 +67,6 @@ const routes = {
 
     getViewDeckEditRoute: ((classroomId, deckId) => `/teacher/editdeck/${classroomId}/${deckId}`),
     getViewClassroomRoute: ((id) => `/teacher/classroom/${id}`),
-    getViewPeriodRoute: ((id, period) => `/teacher/classroom/${id}/${period}`),
     getViewStudentsRoute: ((id) => `/teacher/students/${id}`),
     getViewStudentRoute: ((classroomId, userId) => `/teacher/student/${classroomId}/${userId}`),
     getViewDecksRoute: ((id) => `/teacher/decks/${id}`),

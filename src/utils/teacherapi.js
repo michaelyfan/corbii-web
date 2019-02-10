@@ -89,37 +89,50 @@ export function getClassDataRaw(classroomId, period, deckId, userId) {
  * @param {String} filterOptions.period - (Optional) The period of the datapts
  * @param {String} filterOptions.deckId - (Optional) The ID of the datapts' deck
  * @param {String} filterOptions.userId - (Optional) The ID of the datapts' user
+ * @param {Array} filterOptions.times - (Optional) Times to filter the datapts, where times[0] is
+ *    the start time (number in unix epoch time) and times[1] is the end time (number in unix
+ *    epoch time)
  * @param {Object} data - A Firebase collection result object containing the data to filter.
  *
- * @return An array of filtered data points. Note that this function is not asynchronous.
+ * @return An array of filtered data points. Note that this function is synchronous.
  */
 export function filterClassDataRaw(filterOptions, data) {
   // declare array to return
   const filteredDocs = [];
 
-  // iterate through data points and pick out points that pass filters
-  data.forEach((datapoint) => {
-    // add this datapoint if filterOptions is null
-    if (filterOptions === null) {
+  if (data != null) {
+    // iterate through data points and pick out points that pass filters
+    data.forEach((datapoint) => {
+      // add this datapoint if filterOptions is null (there aren't any filters)
+      if (filterOptions === null) {
+        filteredDocs.push(datapoint);
+        return;
+      }
+      const { classroomId, period, deckId, userId, times } = filterOptions;
+      if (classroomId != null && datapoint.data().classroomId !== classroomId) {
+        return; // filter out this point if classroomId doesn't match
+      }
+      if (period != null && datapoint.data().period !== period) {
+        return; // filter out this point if period doesn't match
+      }
+      if (deckId != null && datapoint.data().deckId !== deckId) {
+        return; // filter out this point if deckId doesn't match
+      }
+      if (userId != null && datapoint.data().userId !== userId) {
+        return; // filter out this point if userId doesn't match
+      }
+      if (times != null && times.length === 2) {
+        // filter out this point if it isn't within the requested timerange
+        const thisUnix = datapoint.data().timestamp.seconds;
+        if (!(thisUnix >= times[0] && thisUnix <= times[1])) {
+          return;
+        }
+      }
       filteredDocs.push(datapoint);
-      return;
-    }
-    const { classroomId, period, deckId, userId } = filterOptions;
-    if (classroomId != null && datapoint.data().classroomId !== classroomId) {
-      return;
-    }
-    if (period != null && datapoint.data().period !== period) {
-      return;
-    }
-    if (deckId != null && datapoint.data().deckId !== deckId) {
-      return;
-    }
-    if (userId != null && datapoint.data().userId !== userId) {
-      return;
-    }
-    filteredDocs.push(datapoint);
-  });
-  return filteredDocs;
+    });
+    return filteredDocs;
+  }
+  return null;
 }
 
 /**
@@ -179,6 +192,9 @@ export function getStudentInfo(classroomId, userId) {
     classProfileRef.get()
   ]).then((res) => {
     const [profile, classProfile] = res;
+    if (!profile.exists) {
+      throw new Error('This user does not exist.');
+    }
     return {
       id: userId,
       name: profile.data().name,

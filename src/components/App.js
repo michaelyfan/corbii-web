@@ -23,7 +23,6 @@ import ClassroomStudentView from './teacher-student/ClassroomStudentView';
 import { BigLoading } from './reusables/Loading';
 
 import ClassroomTeacherView from './teacher-student/ClassroomTeacherView';
-import PeriodTeacherView from './teacher-student/PeriodTeacherView';
 import StudentsTeacherView from './teacher-student/StudentsTeacherView';
 import StudentTeacherView from './teacher-student/StudentTeacherView';
 import DeckTeacherView from './teacher-student/DeckTeacherView';
@@ -38,7 +37,19 @@ function TeacherPrivateRoute({ component: Component, render, signedIn, isTeacher
           ? <Component {...props} />
           : render()  
         : <Redirect to='/denied' />
-  )} />
+  )} />;
+}
+
+function StudentPrivateRoute({ component: Component, render, signedIn, isTeacher, loading, ...rest }) {
+  return <Route {...rest} render={(props) => (
+    loading
+      ? <BigLoading />
+      : signedIn && !isTeacher
+        ? Component
+          ? <Component {...props} />
+          : render()  
+        : <Redirect to='/denied' />
+  )} />;
 }
 
 function PrivateRoute({ component: Component, render, signedIn, loading, ...rest }) {
@@ -160,9 +171,10 @@ class App extends React.Component {
             <Route
               path={routes.search.base}
               component={Search} />
-            <PrivateRoute 
+            <StudentPrivateRoute 
               exact path={routes.dashboard.base}
               signedIn={signedIn}
+              isTeacher={isTeacher}
               loading={loading}
               component={Dashboard} />
             <PrivateRoute
@@ -172,6 +184,7 @@ class App extends React.Component {
               render={(props) => 
                 <Profile {...props} 
                   doGetProfilePic={this.doGetProfilePic}
+                  isTeacher={isTeacher}
                   photoURL={photoURL} />} />
             <PrivateRoute
               path={routes.create.base}
@@ -184,27 +197,31 @@ class App extends React.Component {
             <Route
               path={routes.viewConceptList.template}
               component={ConceptList} />
-            <PrivateRoute
+            <StudentPrivateRoute
               path={routes.study.deckTemplate}
               signedIn={signedIn}
+              isTeacher={isTeacher}
               loading={loading}
               component={StudyDeck} />
-            <PrivateRoute
+            <StudentPrivateRoute
               path={routes.study.conceptListTemplate}
               signedIn={signedIn}
+              isTeacher={isTeacher}
               loading={loading}
               component={StudyConcept} />
             <Route
               path={routes.viewUser.template}
               component={User} />
-            <PrivateRoute
+            <StudentPrivateRoute
               exact path={routes.classroom.template}
               signedIn={signedIn}
+              isTeacher={isTeacher}
               loading={loading}
               component={ClassroomStudentView} />
-            <PrivateRoute
+            <StudentPrivateRoute
               path={routes.classroomStudy.template}
               signedIn={signedIn}
+              isTeacher={isTeacher}
               loading={loading}
               component={StudyDeck} />
             <Route
@@ -225,12 +242,6 @@ class App extends React.Component {
               isTeacher={isTeacher}
               loading={loading}
               component={ClassroomTeacherView} />
-            <TeacherPrivateRoute
-              path={routes.teacher.viewPeriodTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={PeriodTeacherView} />
             <TeacherPrivateRoute
               path={routes.teacher.viewStudentsTemplate}
               signedIn={signedIn}
@@ -272,7 +283,7 @@ class App extends React.Component {
               component={DeniedNoAuth} />
             <Route component={NotFound} />
           </Switch>
-          <Footer />
+          <Footer isTeacher={isTeacher} signedIn={signedIn} />
         </div>
       </Router>
     );
