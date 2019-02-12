@@ -1,8 +1,7 @@
 import React from 'react';
 import { getCurrentUserConceptLists } from '../utils/api';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom'
-import { Loading } from './reusables/Loading';
+import { Link } from 'react-router-dom';
 import routes from '../routes/routes';
 
 
@@ -15,13 +14,8 @@ function ConceptListRow(props) {
         <button className = 'stuff-title'>{name}</button>
       </Link>
     </div>
-  )
+  );
 
-}
-
-ConceptListRow.propTypes = {
-  name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
 }
 
 class ConceptListList extends React.Component {
@@ -43,12 +37,12 @@ class ConceptListList extends React.Component {
     return getCurrentUserConceptLists().then((lists) => {
       this.setState(() => ({
         conceptListArr: lists
-      }))
+      }));
     }).catch((err) => {
       console.error(err);
-    })
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+    });
   }
-
 
   render() {
 
@@ -65,9 +59,13 @@ class ConceptListList extends React.Component {
           ))}
         </div>  
       </div>
-      
-    )
+    );
   }
 }
 
 export default ConceptListList;
+
+ConceptListRow.propTypes = {
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired
+};

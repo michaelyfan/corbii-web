@@ -112,7 +112,7 @@ class Title extends React.Component {
       }));
     }).catch((err) => {
       console.log(err);
-      alert(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -171,6 +171,7 @@ class AddConceptForm extends React.Component {
         callback();
       }).catch((err) => {
         console.error(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
     } else {
       alert('One of your inputs is empty. Check your inputs and try again.');
@@ -253,8 +254,8 @@ class ConceptList extends React.Component {
         creatorName: creatorName,
       }));
     } catch (err) {
-      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     }
   }
 
@@ -263,6 +264,7 @@ class ConceptList extends React.Component {
       await deleteConcept(this.state.id, conceptId);
     } catch(err) {
       console.log(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     }
     
     this.updateConceptList();
@@ -273,6 +275,7 @@ class ConceptList extends React.Component {
       this.updateConceptList();
     }).catch((err) => {
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -281,7 +284,7 @@ class ConceptList extends React.Component {
       this.props.history.push(routes.dashboard.base);
     }).catch((err) => {
       console.log(err);
-      alert(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 

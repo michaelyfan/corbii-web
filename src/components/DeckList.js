@@ -1,9 +1,8 @@
 import React from 'react';
 import { getCurrentUserDecks } from '../utils/api';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import routes from '../routes/routes';
-import { Loading, BigLoading } from './reusables/Loading';
 
 function DeckRow(props) {
   const { name, id } = props;
@@ -15,11 +14,6 @@ function DeckRow(props) {
       </Link>
     </div>
   );
-}
-
-DeckRow.propTypes = {
-  name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
 }
 
 class DeckList extends React.Component {
@@ -41,10 +35,11 @@ class DeckList extends React.Component {
     return getCurrentUserDecks().then((decks) => {
       this.setState(() => ({
         deckArr: decks
-      }))
+      }));
     }).catch((err) => {
       console.error(err);
-    })
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+    });
   }
   
   render() {
@@ -59,12 +54,14 @@ class DeckList extends React.Component {
               id={deck.id} />
           ))}
         </div>
-        
-        
       </div>
-      
-    )
+    );
   }
 }
 
 export default DeckList;
+
+DeckRow.propTypes = {
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired
+};

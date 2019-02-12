@@ -406,9 +406,8 @@ class Create extends React.Component {
           periods: periodState
         }));
       } catch (e) {
-        alert('Apologies, there was an error!');
         console.error(e);
-        return;
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${e}`);
       }
     }
   }
@@ -429,7 +428,9 @@ class Create extends React.Component {
       createConceptListCurrentUser(this.state.title, concepts).then(() => {
         this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
-        console.error(err); });
+        console.error(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+      });
     }
   }
 
@@ -457,6 +458,7 @@ class Create extends React.Component {
         }
       }).catch((err) => {
         console.error(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
     }
   }

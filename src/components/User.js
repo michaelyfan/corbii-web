@@ -45,8 +45,8 @@ class User extends React.Component {
       }));
 
     } catch(err) {
-      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     }
   }
 

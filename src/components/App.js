@@ -112,6 +112,7 @@ class App extends React.Component {
             });
           }
         }).catch((err) => {
+          alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
           console.error(err);
         });
       } else {
@@ -129,7 +130,7 @@ class App extends React.Component {
     getCurrentUserProfilePic().then((url) => {
       this.setState(() => ({photoURL: url}));
     }).catch((err) => {
-      console.error(err);
+      console.trace(err);
     });
   }
 

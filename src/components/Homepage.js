@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import { Carousel } from 'react-responsive-carousel';
 import PropTypes from 'prop-types';
@@ -19,7 +19,7 @@ class Slideshow extends React.Component {
         <div><img src = "/src/resources/slideshow-img/spaced-rep.jpg" /></div>
         <div><img src = "/src/resources/slideshow-img/self-exp.jpg" /></div>
       </Carousel>
-     );
+    );
   }
 }
 
@@ -39,7 +39,7 @@ class Homepage extends React.Component {
           <br />
           {signedIn && 
             <h3>
-              You're already signed in. Click <Link to={redirectLink}>here</Link> to view your dashboard.
+              You&apos;re already signed in. Click <Link to={redirectLink}>here</Link> to view your dashboard.
             </h3>}
           <div style={{visibility: signedIn ? 'hidden' : 'visible'}}>
             <LoginModal 
@@ -80,7 +80,7 @@ class Homepage extends React.Component {
         </div>
 
         <div className = 'home-info' id = 'info2'>
-          <p className = "answer-text" id = 'answer-text-left'>Corbii is an online learning platform that uses cognitive science research to make your learning more efficient and improve your long term memory. With our site, you'll be able to truly learn the material you want to know, not just memorize it.</p>
+          <p className = "answer-text" id = 'answer-text-left'>Corbii is an online learning platform that uses cognitive science research to make your learning more efficient and improve your long term memory. With our site, you&apos;ll be able to truly learn the material you want to know, not just memorize it.</p>
           <h1 className = "header-title">what do we 
             <span className = "emphasized-words"> do?</span>
           </h1>
@@ -93,7 +93,7 @@ class Homepage extends React.Component {
         
         <div className = 'learn-button'>
           {/*the function below, located inside the onClick handler, is very bad practice in React since it uses window, directly manipulating the DOM. I can't think of another way to do it though so I'm going to leave this documentation here.*/}
-          <button onClick={() => {window.scrollTo(0,0)}} className = "primary-button" id = 'start-learning' type = "button">start learning!</button>
+          <button onClick={() => {window.scrollTo(0,0);}} className = "primary-button" id = 'start-learning' type = "button">start learning!</button>
         </div>
         
       </div>
@@ -106,7 +106,6 @@ Homepage.propTypes = {
   isTeacher: PropTypes.bool.isRequired,
   handleStudentClickRegister: PropTypes.func.isRequired,
   handleTeacherClickRegister: PropTypes.func.isRequired
-
-}
+};
 
 export default Homepage;

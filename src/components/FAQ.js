@@ -27,5 +27,5 @@ export default function FAQ() {
       of  the card you are studying. When Corbii asks for your comfort level, you can use the number keys (1-6) to select your
       rating.</h5>
     </div>
-  )
+  );
 }

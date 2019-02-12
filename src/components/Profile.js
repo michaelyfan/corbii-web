@@ -31,6 +31,7 @@ class Profile extends React.Component {
       }));
     }).catch((err) => {
       console.log(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -49,6 +50,7 @@ class Profile extends React.Component {
         this.props.doGetProfilePic();
       }).catch((err) => {
         console.log(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
     } 
   }

@@ -1,7 +1,6 @@
 /* Required dependency modules */
 import React from 'react';
 import PropTypes from 'prop-types';
-import shortid from 'shortid';
 
 /* Required modules */
 import BackButton from '../reusables/BackButton';
@@ -218,7 +217,7 @@ class StudentTeacherView extends React.Component {
       }));
 
     } catch (e) {
-      alert('Apologies -- there was an error!');
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${e}`);
       console.error(e);
     }
   }

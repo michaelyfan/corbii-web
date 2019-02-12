@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from '../utils/firebase';
-import { Link, NavLink, withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import routes from '../routes/routes';
 import PropTypes from 'prop-types';
 import LoginModalPersist from './LoginModalPersist';
@@ -26,6 +26,7 @@ class Nav extends React.Component {
         this.props.history.push(routes.home.base);
       }).catch((err) => {
         console.log(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
     }
   }
@@ -95,7 +96,7 @@ class Nav extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -103,7 +104,10 @@ Nav.propTypes = {
   signedIn: PropTypes.bool.isRequired,
   isTeacher: PropTypes.bool.isRequired,
   handleStudentClickRegister: PropTypes.func.isRequired,
-  photoURL: PropTypes.string
-}
+  photoURL: PropTypes.string,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+};
 
 export default withRouter(Nav);

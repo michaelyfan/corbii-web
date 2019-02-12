@@ -29,7 +29,7 @@ class Auth extends React.Component {
           }
         }
       }
-    }
+    };
 
     return (
       <div>
@@ -38,7 +38,7 @@ class Auth extends React.Component {
           ? <h2>Loading...</h2>
           : <StyledFirebaseAuth uiConfig={firebaseUiConfig} firebaseAuth={firebase.auth()} />}
       </div>
-    )
+    );
   }
 }
 
@@ -46,6 +46,6 @@ Auth.propTypes = {
   signedIn: PropTypes.bool.isRequired,
   loginSuccessCallback: PropTypes.func,
   loginFailureCallback: PropTypes.func
-}
+};
 
 export default Auth;

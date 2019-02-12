@@ -183,8 +183,8 @@ class DeckTitle extends React.Component {
         isUpdate: false
       }));
     }).catch((err) => {
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       console.log(err);
-      alert(err);
     });
   }
 
@@ -254,6 +254,7 @@ class AddCardForm extends React.Component {
         })
         .catch((err) => {
           console.error(err);
+          alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
         });
     } else {
       alert('One of your inputs is empty. Check your inputs and try again.');
@@ -379,7 +380,7 @@ class Deck extends React.Component {
         periods: periodsState
       }));
     } catch(err) {
-      alert(`Our apologies -- there was an error!\n${err}`);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       console.error(err);
     }
   }
@@ -390,6 +391,7 @@ class Deck extends React.Component {
       await deleteCard(id, cardId);
     } catch(err) {
       console.log(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     }
     this.updateDeck();
   }
@@ -400,6 +402,7 @@ class Deck extends React.Component {
       this.updateDeck();
     }).catch((err) => {
       console.log(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -412,7 +415,7 @@ class Deck extends React.Component {
         this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
         console.log(err);
-        alert(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
     });
   }

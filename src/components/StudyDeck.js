@@ -319,6 +319,7 @@ class CardWrapper extends React.Component {
     updateCardPersonalDataLearner(dataId, deckId, cardId, quality, easinessFactor)
       .catch((err) => {
         console.error(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
   }
 
@@ -333,6 +334,7 @@ class CardWrapper extends React.Component {
       period: period
     }).catch((err) => {
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -412,11 +414,11 @@ class StudyDeck extends React.Component {
     let deckForStudy;
     let profileInfo;
     try {
-      deckForStudy = await(getDeckForStudy(id));
-      profileInfo = await(getUserProfileInfo(deckForStudy.creatorId));
+      deckForStudy = await getDeckForStudy(id);
+      profileInfo = await getUserProfileInfo(deckForStudy.creatorId);
     } catch (e) {
-      alert(`Our apologies -- there was an error!\n${e}`);
       console.error(e);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${e}`);
       return;
     }
     
@@ -585,18 +587,6 @@ StudyDeck.propTypes = {
   })
 };
 CardWrapper.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired
-    })
-  }),
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired,
-    state: PropTypes.shape({
-      classroomId: PropTypes.string,
-      period: PropTypes.string
-    })
-  }),
   classroomId: PropTypes.string,
   period: PropTypes.string,
   card: PropTypes.object, 
@@ -605,16 +595,13 @@ CardWrapper.propTypes = {
   incrementIndex: PropTypes.func.isRequired,
   learner: PropTypes.func.isRequired
 };
-
 NewCardOptions.propTypes = {
   lastSelectedQuality: PropTypes.number,
   submitCard: PropTypes.func.isRequired
 };
-
 NotNewCardOptions.propTypes = {
   submitCard: PropTypes.func.isRequired
 };
-
 CardOptions.propTypes = {
   isFlipped: PropTypes.bool.isRequired,
   submitCard: PropTypes.func.isRequired,
@@ -622,7 +609,6 @@ CardOptions.propTypes = {
   lastSelectedQuality: PropTypes.number,
   isLearnerCard: PropTypes.bool
 };
-
 CardContent.propTypes = {
   card: PropTypes.object,
   isFlipped: PropTypes.bool.isRequired

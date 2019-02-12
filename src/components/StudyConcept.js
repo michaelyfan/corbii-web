@@ -33,6 +33,7 @@ class SingleConcept extends React.Component {
       this.props.getList();
     }).catch((err) => {
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -103,9 +104,8 @@ class StudyConcept extends React.Component {
         listId: id
       }));
     }).catch((err) => {
-      alert(`Our apologies -- there was an error!\n${err}`);
       console.error(err);
-      return;
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
   

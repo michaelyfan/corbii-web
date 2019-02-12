@@ -18,7 +18,7 @@ const customStyles = {
 };
  
 // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
-Modal.setAppElement('#root')
+Modal.setAppElement('#root');
  
 
 /*
@@ -72,7 +72,7 @@ class LoginModal extends React.Component {
           <div className = 'modal-content'>
             <h3 className= 'header-title' id = 'log-in-header'>{header}</h3>
 
-{/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
+            {/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
             <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
             <button className = 'primary-button' id = 'submit-email'>{header}</button>     
 */}
@@ -90,13 +90,14 @@ LoginModal.propTypes = {
   redirectTeacherTo: PropTypes.string.isRequired,
   redirectStudentTo: PropTypes.string.isRequired,
   header: PropTypes.string,
-}
+  children: PropTypes.node.isRequired
+};
 
 LoginModal.defaultProps = {
   header: 'log in',
   isTeacher: false,
   redirectTeacherTo: routes.teacher.dashboard,
   redirectStudentTo: routes.dashboard.base
-}
+};
  
 export default LoginModal;

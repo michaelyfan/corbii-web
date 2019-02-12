@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import routes from '../routes/routes';
+import PropTypes from 'prop-types';
 
 function Footer(props) {
   const { signedIn, isTeacher } = props;
@@ -33,5 +34,10 @@ function Footer(props) {
     </div>
   );
 }
+
+Footer.propTypes = {
+  signedIn: PropTypes.bool.isRequired,
+  isTeacher: PropTypes.bool.isRequired
+};
 
 export default Footer;

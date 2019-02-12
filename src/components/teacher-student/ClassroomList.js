@@ -35,6 +35,7 @@ class JoinClassroomForm extends React.Component {
       }));
     }).catch((err) => {
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -84,6 +85,7 @@ class ClassroomList extends React.Component {
         }));
       }
     }).catch((err) => {
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       console.error(err);
     });
   }
@@ -106,7 +108,6 @@ class ClassroomList extends React.Component {
     );
   }
 }
-
 ClassroomRow.propTypes = { classroomId: PropTypes.string.isRequired };
 JoinClassroomForm.propTypes = { getClassrooms: PropTypes.func.isRequired };
 

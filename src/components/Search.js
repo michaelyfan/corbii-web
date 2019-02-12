@@ -33,6 +33,7 @@ class UserSearchResult extends React.Component {
       this.setState(() => ({profilePic: result}));
     }).catch((err) => {
       console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
     });
   }
 
@@ -106,6 +107,7 @@ class SearchResults extends React.Component {
         }));
       } catch(err) {
         console.log(err);
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       }
     }
   }
@@ -274,7 +276,7 @@ class Search extends React.Component {
 
 Search.propTypes = {
   location: PropTypes.shape({
-    search: PropTypes.String
+    search: PropTypes.string
   }),
   history: PropTypes.shape({
     push: PropTypes.func.isRequired

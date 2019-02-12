@@ -13,7 +13,7 @@ function Period(props) {
         <span className = 'period-emphasis'>{createJoinCode(classroomId, period)}</span>
       </p>
     </div>
-  )
+  );
 }
 
 class ClassroomRow extends React.Component {
@@ -29,12 +29,12 @@ class ClassroomRow extends React.Component {
         <Link to ={routes.teacher.getViewClassroomRoute(id)}>
           <h3 className = 'classroom-name'> {name} </h3>
         </Link>
-        {periods.map((period) => {
-          return <Period classroomId={id} period={period} key={period}  className = 'class-periods'/>
-        })}
+        {periods.map((period) => 
+          <Period classroomId={id} period={period} key={period}  className = 'class-periods'/>
+        )}
 
       </div>
-    )
+    );
   }
 }
 
@@ -45,6 +45,7 @@ const KeyCodes = {
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
+
 class CreateClassroomForm extends React.Component {
   constructor(props) {
     super(props);
@@ -52,7 +53,7 @@ class CreateClassroomForm extends React.Component {
     this.state = {
       name: '',
       tags: []
-    }
+    };
 
     this.submitClassroom = this.submitClassroom.bind(this);
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -64,45 +65,45 @@ class CreateClassroomForm extends React.Component {
   handleDelete(i) {
     const { tags } = this.state;
     this.setState({
-     tags: tags.filter((tag, index) => index !== i),
+      tags: tags.filter((tag, index) => index !== i),
     });
   }
 
   handleAddition(tag) {
-      this.setState(state => ({ tags: [...state.tags, tag] }));
+    this.setState(state => ({ tags: [...state.tags, tag] }));
   }
 
   handleChangeName(e) {
     e.persist();
     this.setState(() => ({
       name: e.target.value
-    }))
+    }));
   }
 
   handleChangePeriods(e) {
     e.persist();
     this.setState(() => ({
       periods: e.target.value
-    }))
+    }));
   }
 
   submitClassroom(e) {
     e.preventDefault();
-
     const { name, tags } = this.state;
-    
     const periodsArr = tags.map((tag) => {
       return tag.text;
-    })
-
+    });
     createClassroom(name, periodsArr).then(() => {
       this.props.doGetClassrooms();
-    })
-
+    }).catch((err) => {
+      // catches any error by createClassroom, but not by doGetClassrooms
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+      console.error(err);
+    });
   }
 
   render() {
-    const { name, periods, tags } = this.state;
+    const { name, tags } = this.state;
     return (
       <form>
         <div className = 'center-button'>
@@ -131,7 +132,7 @@ class CreateClassroomForm extends React.Component {
           <button className = 'primary-button' id = 'create-classroom' onClick={this.submitClassroom}>create classroom</button>
         </div>
       </form>
-    )
+    );
   }
 }
 
@@ -141,9 +142,7 @@ class TeacherDashboard extends React.Component {
     super(props);
     this.state = {
       classrooms: [],
-      students: [],
-      dataContent: null
-    }
+    };
 
     this.doGetClassrooms = this.doGetClassrooms.bind(this);
   }
@@ -152,20 +151,22 @@ class TeacherDashboard extends React.Component {
     this.doGetClassrooms();
   }
 
-  doGetClassrooms() {
-    getClassrooms().then((result) => {
-      let classrooms = [];
+  async doGetClassrooms() {
+    try {
+      const result = await getClassrooms();
+      const classrooms = [];
       result.forEach((classroom) => {
         classrooms.push(classroom);
-      })
-      this.setState(() => ({
-        classrooms: classrooms
-      }))
-    })
+      });
+      this.setState(() => ({ classrooms }));
+    } catch (err) {
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+      console.error(err);
+    }
   }
 
   render() {
-    const { dataContent, classrooms, students } = this.state;
+    const { classrooms } = this.state;
 
     return (
       <div className = 'dashboard'>
@@ -181,8 +182,21 @@ class TeacherDashboard extends React.Component {
           })}
         </div>
       </div>
-    )
+    );
   }
 }
 
 export default TeacherDashboard;
+
+CreateClassroomForm.propTypes = {
+  doGetClassrooms: PropTypes.func.isRequired
+};
+ClassroomRow.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  periods: PropTypes.array.isRequired
+};
+Period.propTypes = {
+  classroomId: PropTypes.string.isRequired,
+  period: PropTypes.string.isRequired
+};

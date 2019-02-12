@@ -7,7 +7,7 @@ class Boilerplate extends React.Component {
     super(props);
     this.state = {
       
-    }
+    };
   }
 
   
@@ -17,12 +17,12 @@ class Boilerplate extends React.Component {
       <div>
         <p>Boiler.</p>
       </div>
-    )
+    );
   }
 }
 
 Boilerplate.propTypes = {
   
-}
+};
 
 export default Boilerplate;

@@ -1,7 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Auth from './Auth.js';
 import routes from '../routes/routes';
@@ -18,8 +17,7 @@ const customStyles = {
 };
  
 // This binds the modal to the appElement (http://reactcommunity.org/react-modal/accessibility/)
-Modal.setAppElement('#root')
- 
+Modal.setAppElement('#root');
 
 /*
   The LoginModalPersist uses the Auth component, and does a
@@ -52,7 +50,7 @@ class LoginModalPersist extends React.Component {
     if (signedIn != prevProps.signedIn || shouldRedirect != prevState.shouldRedirect) {
       this.setState(() => ({
         displayStyle: signedIn ? 'none' : 'block'
-      }))
+      }));
 
       if (signedIn && shouldRedirect) {
         if (isTeacher) {
@@ -63,7 +61,7 @@ class LoginModalPersist extends React.Component {
         this.closeModal();
         this.setState(() => ({
           shouldRedirect: false
-        }))
+        }));
       }
     }
     
@@ -82,7 +80,7 @@ class LoginModalPersist extends React.Component {
   }
  
   render() {
-    const { redirectTo, header, signedIn } = this.props;
+    const { header, signedIn } = this.props;
 
 
     return (
@@ -101,7 +99,7 @@ class LoginModalPersist extends React.Component {
 
           <div className = 'modal-content'>
             <h3 className= 'header-title' id = 'log-in-header'>{header}</h3>
-{/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
+            {/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
             <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
             <button className = 'primary-button' id = 'submit-email'>{header}</button>     
 */}
@@ -120,13 +118,17 @@ LoginModalPersist.propTypes = {
   isTeacher: PropTypes.bool.isRequired,
   redirectStudentTo: PropTypes.string.isRequired,
   redirectTeacherTo: PropTypes.string.isRequired,
-  header: PropTypes.string
-}
+  header: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  })
+};
 
 LoginModalPersist.defaultProps = {
   redirectStudentTo: routes.dashboard.base,
   redirectTeacherTo: routes.teacher.dashboard,
   header: 'log in'
-}
+};
  
 export default withRouter(LoginModalPersist);

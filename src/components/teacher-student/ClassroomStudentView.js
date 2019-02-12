@@ -36,7 +36,6 @@ class ClassroomStudentView extends React.Component {
   componentDidMount() {
     const { id } = this.props.match.params;
     
-    // TODO: put check here to determine class presence
     getClassroomForUser(id).then((result) => {
       console.log(result.data);
       this.setState(() => ({
@@ -46,6 +45,7 @@ class ClassroomStudentView extends React.Component {
         period: result.period
       }));
     }).catch((err) => {
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       console.error(err);
     });
   }
