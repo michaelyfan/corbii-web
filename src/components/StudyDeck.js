@@ -14,49 +14,78 @@ function NewCardOptions(props) {
 
   const { lastSelectedQuality, submitCard } = props;
 
+  // define button options
+  const option1 = () => {submitCard(0, true);};
+  const option2 = () => {submitCard(1, true);};
+  const option3 = () => {submitCard(2, true);};
+  const option4 = () => {submitCard(3, true);};
+
+  // set keybindings
+  const keyMap = {
+    'one': '1',
+    'two': '2',
+    'three': '3',
+  };
+  let keyHandlers;
   let options;
   if (lastSelectedQuality == 0) { // 'very soon' was the last selected button ('i do not know this card')
+    keyHandlers = {
+      'one': option1,
+      'two': option2
+    };
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
-          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true);}}>i do not know this card</button>
+          <button className = 'accuracy-button red' onClick={option1}>i do not know this card</button>
         </div>
         <div className = 'center-button'>
-          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true);}}>i know this card</button>
+          <button className = 'accuracy-button yellow' onClick={option2}>i know this card</button>
         </div>
       </div>;
   } else if (lastSelectedQuality == 1) { // 'not soon' selected ('unsure')
+    keyHandlers = {
+      'one': option1,
+      'two': option2,
+      'three': option3
+    };
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
-          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true);}}>i do not know this card</button>
+          <button className = 'accuracy-button red' onClick={option1}>i do not know this card</button>
         </div>
         <div className = 'center-button'>
-          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true);}}>i am unsure about this card</button>
+          <button className = 'accuracy-button yellow' onClick={option2}>i am unsure about this card</button>
         </div>
         <div className = 'center-button'>  
-          <button className = 'accuracy-button green' onClick={() => {submitCard(2, true);}}>i know this card</button>
+          <button className = 'accuracy-button green' onClick={option3}>i know this card</button>
         </div>
       </div>;
   } else { // first time seeing card (this card has not gone through learner function yet)
+    keyHandlers = {
+      'one': option1,
+      'two': option2,
+      'three': option4
+    };
     options = 
       <div className = 'accuracy-center'>
         <div className = 'center-button'>
-          <button className = 'accuracy-button red' onClick={() => {submitCard(0, true);}}>i do not know this card</button>
+          <button className = 'accuracy-button red' onClick={option1}>i do not know this card</button>
         </div>
         <div className = 'center-button'>
-          <button className = 'accuracy-button yellow' onClick={() => {submitCard(1, true);}}>i am unsure about this card</button>
+          <button className = 'accuracy-button yellow' onClick={option2}>i am unsure about this card</button>
         </div>
         <div className = 'center-button'>  
-          <button className = 'accuracy-button green' onClick={() => {submitCard(3, true);}}>i definitely know this card</button>
+          <button className = 'accuracy-button green' onClick={option4}>i definitely know this card</button>
         </div>
       </div>;
   }
 
   return (
-    <div className = 'option-menu center-button'>
-      {options}
-    </div>
+    <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
+      <div className = 'option-menu center-button'>
+        {options}
+      </div>
+    </HotKeys>
   );
 }
 
@@ -65,21 +94,49 @@ function NewCardOptions(props) {
  */
 function NotNewCardOptions(props) {
   const { submitCard } = props;
+  
+  // define button options
+  const option1 = () => {submitCard(0, true);};
+  const option2 = () => {submitCard(1, true);};
+  const option3 = () => {submitCard(2, true);};
+  const option4 = () => {submitCard(3, false);};
+  const option5 = () => {submitCard(4, false);};
+  const option6 = () => {submitCard(5, false);};
+
+  // set keybindings
+  const keyMap = {
+    'one': '1',
+    'two': '2',
+    'three': '3',
+    'four': '4',
+    'five': '5',
+    'six': '6',
+  };
+  const keyHandlers = {
+    'one': option1,
+    'two': option2,
+    'three': option3,
+    'four': option4,
+    'five': option5,
+    'six': option6
+  };
 
   return (
-    <div>
-      <p className = 'rating-prompt' id = 'rating-question'> on a scale of one to six, how comfortable are you with this card?</p>
-      <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
-      <div className = 'rating-buttons'>
-        {/* Send cards under a quality of 3 back into the learner function with a quality of 0 */}
-        <button className = 'accuracy-button maroon number-scale' onClick={() => {submitCard(0, true);}}>1</button>
-        <button className = 'accuracy-button red number-scale' onClick={() => {submitCard(1, true);}}>2</button>
-        <button className = 'accuracy-button orange number-scale' onClick={() => {submitCard(2, true);}}>3</button>
-        <button className = 'accuracy-button yellow number-scale' onClick={() => {submitCard(3, false);}}>4</button>
-        <button className = 'accuracy-button lime number-scale' onClick={() => {submitCard(4, false);}}>5</button>
-        <button className = 'accuracy-button green number-scale' onClick={() => {submitCard(5, false);}}>6</button>
+    <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
+      <div>
+        <p className = 'rating-prompt' id = 'rating-question'> on a scale of one to six, how comfortable are you with this card?</p>
+        <p className = 'rating-prompt'> one = very uncomfortable &nbsp; &nbsp; six = very comfortable</p>
+        <div className = 'rating-buttons'>
+          {/* Send cards under a quality of 3 back into the learner function with a quality of 0 */}
+          <button className = 'accuracy-button maroon number-scale' onClick={option1}>1</button>
+          <button className = 'accuracy-button red number-scale' onClick={option2}>2</button>
+          <button className = 'accuracy-button orange number-scale' onClick={option3}>3</button>
+          <button className = 'accuracy-button yellow number-scale' onClick={option4}>4</button>
+          <button className = 'accuracy-button lime number-scale' onClick={option5}>5</button>
+          <button className = 'accuracy-button green number-scale' onClick={option6}>6</button>
+        </div>
       </div>
-    </div>
+    </HotKeys>
   );
 }
 
@@ -101,51 +158,10 @@ function CardOptions(props) {
       options = <NewCardOptions 
         submitCard={submitCard}
         lastSelectedQuality={lastSelectedQuality} />;
-
-      // keybindings
-      keyMap = {
-        'one': '1',
-        'two': '2',
-        'three': '3',
-      };
-      if (lastSelectedQuality == 0) {
-        keyHandlers = {
-          'one': () => {submitCard(0, true);},
-          'two': () => {submitCard(1, true);}
-        };
-      } else if (lastSelectedQuality == 1) {
-        keyHandlers = {
-          'one': () => {submitCard(0, true);},
-          'two': () => {submitCard(1, true);},
-          'three': () => {submitCard(2, true);}
-        };
-      } else {
-        keyHandlers = {
-          'one': () => {submitCard(0, true);},
-          'two': () => {submitCard(1, true);},
-          'three': () => {submitCard(3, true);}
-        };
-      }
+      return options;
     } else {
       options = <NotNewCardOptions submitCard={submitCard} />;
-
-      // keybindings
-      keyMap = {
-        'one': '1',
-        'two': '2',
-        'three': '3',
-        'four': '4',
-        'five': '5',
-        'six': '6',
-      };
-      keyHandlers = {
-        'one': () => {submitCard(0, true);},
-        'two': () => {submitCard(1, true);},
-        'three': () => {submitCard(2, true);},
-        'four': () => {submitCard(3, false);},
-        'five': () => {submitCard(4, false);},
-        'six': () => {submitCard(5, false);}
-      };
+      return options;
     }
   } else {
     // if not flipped, display flip card button
@@ -159,22 +175,22 @@ function CardOptions(props) {
       </div>
     );
 
-    // keybindings
+    // set keybindings
     keyMap = {
       'flip-card': 'space'
     };
     keyHandlers = {
       'flip-card': flip
     };
-  }
 
-  return (
-    <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
-      <div>
-        {options}
-      </div>              
-    </HotKeys>
-  );
+    return (
+      <HotKeys keyMap = {keyMap} handlers = {keyHandlers} focused={true} attach={window}>
+        <div>
+          {options}
+        </div>              
+      </HotKeys>
+    );
+  }
 }
 
 /**
