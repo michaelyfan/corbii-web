@@ -162,13 +162,13 @@ class AddConceptForm extends React.Component {
   handleAddConcept(e) {
     e.preventDefault();
     const question = this.state.question.trim();
-    const { callback, conceptId } = this.props;
-
-
+    const { updateConceptList, conceptListId } = this.props;
 
     if (question) {
-      createConcept(question, '', conceptId).then(() => {
-        callback();
+      createConcept(question, conceptListId).then(() => {
+        this.setState(() => ({
+          question: ''
+        }), updateConceptList);
       }).catch((err) => {
         console.error(err);
         alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
@@ -330,7 +330,7 @@ class ConceptList extends React.Component {
               <button className = 'primary-button'>study this list</button>
             </Link>
 
-            {userIsOwner && <AddConceptForm conceptId={id} callback={this.updateConceptList} />}
+            {userIsOwner && <AddConceptForm conceptListId={id} updateConceptList={this.updateConceptList} />}
 
             {concepts.map((concept) => 
               <Concept 
@@ -365,8 +365,8 @@ ConceptList.propTypes = {
   })
 };
 AddConceptForm.propTypes = {
-  callback: PropTypes.func,
-  conceptId: PropTypes.string.isRequired
+  updateConceptList: PropTypes.func.isRequired,
+  conceptListId: PropTypes.string.isRequired
 };
 Title.propTypes = {
   listName: PropTypes.string.isRequired,

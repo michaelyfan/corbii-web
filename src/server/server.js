@@ -2,7 +2,9 @@ require('dotenv').config();
 const admin = require('firebase-admin');
 const path = require('path');
 const bodyParser = require('body-parser');
-const express = require("express");
+const express = require('express');
+
+const port = process.env.PORT || 3000;
 const app = express();
 
 admin.initializeApp({
@@ -16,7 +18,6 @@ admin.initializeApp({
 const db = admin.firestore();
 
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '../../dist')));
 
 // removes a deck's content documents from the database, then removes the deck
 app.post('/api/deletedeck', (req, res) => {
@@ -76,14 +77,13 @@ app.post('/api/deletelist', (req, res) => {
 
 
 function deleteDocument(documentPath) {
-
   return new Promise((resolve, reject) => {
     db.doc(documentPath).delete()
       .then(() => {
         resolve();
       })
       .catch(reject);
-  })
+  });
 }
 
 function deleteCollection(collectionPath, batchSize, collectionRef) {
@@ -132,8 +132,14 @@ function deleteQueryBatch(query, batchSize, resolve, reject) {
     .catch(reject);
 }
 
-app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, '../../dist/index.html'));
-});
-var port = process.env.PORT || 3000;
+if (process.env.NODE_ENV === 'production') {
+  // serve any static files
+  app.use(express.static(path.join(__dirname, '../../dist')));
+
+  // serve index.html
+  app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+  });
+}
+
 app.listen(port, () => console.log(`Listening on port ${port}!`));

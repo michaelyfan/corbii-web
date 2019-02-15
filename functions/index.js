@@ -4,12 +4,11 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
 
-
 const ALGOLIA_ID = functions.config().algolia.app_id;
 const ALGOLIA_ADMIN_KEY = functions.config().algolia.admin_key;
 const ALGOLIA_INDEX_NAME_1 = 'decks';
 const ALGOLIA_INDEX_NAME_2 = 'users';
-const ALGOLIA_INDEX_NAME_3 = 'lists;'
+const ALGOLIA_INDEX_NAME_3 = 'lists';
 
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
@@ -20,7 +19,7 @@ function deleteDocument(documentPath) {
         resolve();
       })
       .catch(reject);
-  })
+  });
 }
 
 function deleteCollection(collectionPath, batchSize, collectionRef) {

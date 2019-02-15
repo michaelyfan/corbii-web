@@ -237,20 +237,19 @@ class AddCardForm extends React.Component {
   handleAddCard(e) {
     e.preventDefault();
     const { addCardFrontName, addCardBackName } = this.state;
-    const { callback, deckId } = this.props;
+    const { updateDeck, deckId } = this.props;
     const cardFront = addCardFrontName.trim();
     const cardBack = addCardBackName.trim();
 
     if (cardFront && cardBack) {
       createCard(cardFront, cardBack, deckId)
         .then(() => {
-          if (callback) {
-            callback();
-          }
           this.setState(() => ({
             addCardBackName: '',
             addCardFrontName: ''
-          }));
+          }), () => {
+            updateDeck();
+          });
         })
         .catch((err) => {
           console.error(err);
@@ -483,7 +482,7 @@ class Deck extends React.Component {
               : <Link id = 'study-deck' to={routes.study.getDeckRoute(id)}>
                 <button className = 'primary-button'>study this deck</button>
               </Link>}
-            { userIsOwner && <AddCardForm deckId={id} callback={this.updateDeck} /> }
+            { userIsOwner && <AddCardForm deckId={id} updateDeck={this.updateDeck} /> }
           
             {cards.map((card) => 
               <Card 
@@ -530,7 +529,7 @@ Deck.propTypes = {
   })
 };
 AddCardForm.propTypes = {
-  callback: PropTypes.func,
+  updateDeck: PropTypes.func.isRequired,
   deckId: PropTypes.string.isRequired
 };
 Card.propTypes = {

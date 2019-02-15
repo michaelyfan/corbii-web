@@ -12,24 +12,21 @@ class SingleConcept extends React.Component {
       text: ''
     };
 
-    this.handleChangeText = this.handleChangeText.bind(this);
     this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
-  }
-
-  handleChangeText(e) {
-    e.persist();
-    this.setState(() => ({
-      text: e.target.value
-    }));
   }
 
   handleSubmitAnswer(e) {
     e.preventDefault();
-
-    const { content, listId, data } = this.props;
-    const dataId = data ? data.id : null;
+    const { thisConcept, listId, answer } = this.props;
+    const dataId = thisConcept.data ? thisConcept.data.id : null;
     
-    updateConceptPersonalData(dataId, listId, content.id, this.state.text).then(() => {
+    // check for no answer
+    if (answer == null || answer.trim() === '') {
+      alert('Answer cannot be empty.');
+      return;
+    }
+
+    updateConceptPersonalData(dataId, listId, thisConcept.id, answer).then(() => {
       this.props.getList();
     }).catch((err) => {
       console.error(err);
@@ -38,17 +35,19 @@ class SingleConcept extends React.Component {
   }
 
   render() {
-    const { content, data } = this.props;
+    const { thisConcept, handleChangeAnswer, answer } = this.props;
+    const { data } = thisConcept;
     return (
       <div>
         <form onSubmit={this.handleSubmitAnswer}>
           <p className = 'question-answer'>explain or answer: 
-            <span className = 'content-info'> {content && content.question}</span>
+            <span className = 'content-info'> {thisConcept && thisConcept.question}</span>
           </p>
           <div className = 'center-button'>
             <textarea 
               className = 'self-exp-box'
-              onChange={this.handleChangeText} 
+              onChange={handleChangeAnswer}
+              value={answer || ''}
               rows='5' 
               cols='70'>
             </textarea>
@@ -70,17 +69,40 @@ class StudyConcept extends React.Component {
 
   constructor(props) {
     super(props);
+
+    /*
+     * where concepts is an array of objects:
+    {
+      id: the ID of this concept (similar to a deck's card's ID)
+      question: this concept's question
+      data: (Optional) a data object for this concept, might be null, of structure:
+        {
+          answer: this concept's previous answer (unique to current user)
+          conceptId: the ID of this concept
+          id: the ID of this data point
+          listId: the ID of this concept's list
+          userId: the ID of the user
+        }
+    }
+     *
+     * where answers is an object corresponding to the user's answers:
+    {
+      [concept-id-here]: answer-here
+    }
+    
+     */
     this.state = {
       listName: 'Loading...',
       creatorName: '',
       concepts: [],
+      answers: {},
       listId: '',
-      conceptsData: {},
       index: 0
     };
 
     this.getList = this.getList.bind(this);
     this.changeIndex = this.changeIndex.bind(this);
+    this.handleChangeAnswer = this.handleChangeAnswer.bind(this);
   }
 
   componentDidMount() {
@@ -95,17 +117,26 @@ class StudyConcept extends React.Component {
         return result;
       });
     }).then((result) => {
-      const { name, creatorName, concepts, conceptsData } = result;
+      const { name, creatorName, concepts } = result;
       this.setState(() => ({
         listName: name,
         creatorName: creatorName,
         concepts: concepts,
-        conceptsData: conceptsData,
         listId: id
       }));
     }).catch((err) => {
       console.error(err);
       alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+    });
+  }
+
+  handleChangeAnswer(e) {
+    e.persist();
+    this.setState(() => {
+      const { answers, concepts, index } = this.state;
+      const currentConceptId = concepts[index].id;
+      answers[currentConceptId] = e.target.value;
+      return { answers };
     });
   }
   
@@ -123,28 +154,28 @@ class StudyConcept extends React.Component {
   }
 
   render() {
-    const { listName, creatorName, index, concepts, conceptsData, listId } = this.state;
-    const conceptContent = concepts[index];
+    const { listName, creatorName, index, concepts, listId, answers } = this.state;
+    const thisConcept = concepts[index];
+    const thisUserAnswer = thisConcept ? answers[thisConcept.id] : null;
 
     return (
       <div>
-
         <Title 
           text={listName}
           titleLink={routes.viewConceptList.getRoute(listId)}
           subtitle={`created by ${creatorName}`} />
-          
         <div className = 'disp-inline center-button'>
           { index > 0 && 
             <img src = '/src/resources/prev-arrow.png'
               className = 'arrows' 
               onClick={() => {this.changeIndex(true);}} /> }
-          { conceptContent
+          { thisConcept
             ? <SingleConcept
               listId={listId}
-              content={conceptContent}
-              data={conceptsData ? conceptsData[conceptContent.id] : null}
-              getList={this.getList} />
+              thisConcept={thisConcept}
+              getList={this.getList}
+              answer={thisUserAnswer}
+              handleChangeAnswer={this.handleChangeAnswer} />
             : <h2>This list doesn&apos;t have any concepts in it!</h2>}
           
           { index < concepts.length - 1 && 
@@ -170,8 +201,9 @@ StudyConcept.propTypes = {
   })
 };
 SingleConcept.propTypes = {
-  data: PropTypes.object,
-  content: PropTypes.object,
+  thisConcept: PropTypes.object,
   listId: PropTypes.string.isRequired,
-  getList: PropTypes.func.isRequired
+  getList: PropTypes.func.isRequired,
+  handleChangeAnswer: PropTypes.func.isRequired,
+  answer: PropTypes.string
 };

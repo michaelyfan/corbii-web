@@ -290,36 +290,24 @@ export function getConceptListForStudy(listId) {
     getConceptList(listId),
     dataRef.get()
   ]).then(([ list, dataSnapshot ]) => {
-    let conceptsToBeDeleted = {};
-    dataSnapshot.forEach((concept) => {
-      let conceptData = concept.data();
-      conceptData.id = concept.id;
-      conceptsToBeDeleted[concept.data().conceptId] = conceptData;
+    let dataRecord = {};
+    dataSnapshot.forEach((datapt) => {
+      let conceptData = datapt.data();
+      conceptData.id = datapt.id;
+      dataRecord[datapt.data().conceptId] = conceptData;
     });
+
     let concepts = [];
-    let conceptsToBeKept = {};
     list.concepts.forEach((concept) => {
+      concept.data = dataRecord[concept.id];
       concepts.push(concept);
-      conceptsToBeKept[concept.id] = conceptsToBeDeleted[concept.id];
-      delete conceptsToBeDeleted[concept.id];
     });
 
-    // removes concepts in cardsToBeDeleted from the spaced-rep data. these concepts were concepts that no longer have content associated with them in the database, meaning the user chose to delete them.
-    let batch = db.batch();
-    Object.keys(conceptsToBeDeleted).forEach((id) => {
-      const dataId = conceptsToBeDeleted[id].id;
-      let badCardRef = db.collection('selfExData').doc(dataId);
-      batch.delete(badCardRef);
-    });
-
-    return batch.commit().then(() => {
-      return {
-        name: list.listName,
-        creatorId: list.creatorId,
-        concepts: concepts,
-        conceptsData: conceptsToBeKept
-      };
-    });
+    return {
+      name: list.listName,
+      creatorId: list.creatorId,
+      concepts: concepts
+    };
   });
 }
 
@@ -644,6 +632,7 @@ export function createConcept(question, listId) {
 
   return deckRef.collection('concepts').add({
     question: question,
+    answer: ''
   }).then(() => {
     return updateListCountByOne(listId, true);
   });
@@ -902,7 +891,7 @@ export function deleteDeckFromCurrentUser(deckId) {
       token: token,
       uid: firebase.auth().currentUser.uid, 
       deckId: deckId
-    }
+    };
     return fetch('/api/deletedeck', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -910,7 +899,7 @@ export function deleteDeckFromCurrentUser(deckId) {
         'Content-Type': 'application/json'
       }
     });
-  })
+  });
 }
 
 export function deleteListFromCurrentUser(listId) {
@@ -919,7 +908,7 @@ export function deleteListFromCurrentUser(listId) {
       token: token,
       uid: firebase.auth().currentUser.uid, 
       listId: listId
-    }
+    };
     return fetch('/api/deletelist', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -927,7 +916,7 @@ export function deleteListFromCurrentUser(listId) {
         'Content-Type': 'application/json'
       }
     });
-  })
+  });
 }
 // end delete functions
 
@@ -951,7 +940,7 @@ export function searchDecks(query) {
         resolve(content.hits);
       }
     );  
-  })
+  });
 }
 
 export function searchUsers(query) {
@@ -972,7 +961,7 @@ export function searchUsers(query) {
         resolve(content.hits);
       }
     );  
-  })
+  });
 }
 
 export function searchLists(query) {
