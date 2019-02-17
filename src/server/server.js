@@ -135,7 +135,8 @@ function deleteQueryBatch(query, batchSize, resolve, reject) {
     .catch(reject);
 }
 
-if (process.env.NODE_ENV === 'production') {
+if (typeof process.env.NODE_ENV === 'string' 
+    && process.env.NODE_ENV.trim() === 'production') {
   // serve any static files
   app.use(express.static(path.join(__dirname, '../../dist')));
 

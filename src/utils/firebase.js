@@ -2,6 +2,7 @@ import firebase from 'firebase';
 
 let config;
 if (process.env.NODE_ENV === 'production') {
+  console.log('1');
   config =  {
     apiKey: 'AIzaSyDPyV2GNIJ92g6cEthuLksRHW8pWqAApeA',
     authDomain: 'corbii-web.firebaseapp.com',
@@ -10,6 +11,7 @@ if (process.env.NODE_ENV === 'production') {
     storageBucket: 'corbii-web.appspot.com',
   };
 } else {
+  console.log('2');
   config = {
     apiKey: 'AIzaSyDRE4PF37C_8ceo8xWkKlSp2voJgmvfjws',
     authDomain: 'corbii-web-dev.firebaseapp.com',
