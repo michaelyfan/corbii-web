@@ -1,5 +1,6 @@
 /*eslint-env node*/
 
+// only require dotenv if this isn't production
 require('dotenv').config();
 const admin = require('firebase-admin');
 const path = require('path');
@@ -9,11 +10,21 @@ const express = require('express');
 const port = process.env.PORT || 3000;
 const app = express();
 
+// determine whether to parse privateKey or not
+let privateKey;
+if (process.env.PRODUCTION_SIM) { // this is 'simulated' production -- mock production, like README instructions
+  privateKey = process.env.PRIVATE_KEY;
+} else if (typeof process.env.NODE_ENV === 'string' && process.env.NODE_ENV.trim() === 'production') {
+  privateKey = JSON.parse(process.env.PRIVATE_KEY);
+} else {
+  privateKey = process.env.PRIVATE_KEY;
+}
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.PROJECT_ID,
     clientEmail: process.env.CLIENT_EMAIL,
-    privateKey: process.env.NODE_ENV === 'production' ? JSON.parse(process.env.PRIVATE_KEY) : process.env.PRIVATE_KEY
+    privateKey: privateKey
   }),
   databaseURL: process.env.DATABASE_URL
 });
