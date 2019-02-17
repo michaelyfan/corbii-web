@@ -1,3 +1,6 @@
+/*eslint-env node*/
+
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -35,7 +38,10 @@ const config = {
     new CopyWebpackPlugin([
       {from:'src/resources', to: 'src/resources'},
       {from: 'favicon.ico', to: 'favicon.ico'}
-    ])
+    ]),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    })
   ],
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
 };

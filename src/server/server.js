@@ -1,3 +1,5 @@
+/*eslint-env node*/
+
 require('dotenv').config();
 const admin = require('firebase-admin');
 const path = require('path');
@@ -9,12 +11,13 @@ const app = express();
 
 admin.initializeApp({
   credential: admin.credential.cert({
-    projectId: 'corbii-web',
+    projectId: process.env.PROJECT_ID,
     clientEmail: process.env.CLIENT_EMAIL,
-    privateKey: process.env.dev ? process.env.PRIVATE_KEY : JSON.parse(process.env.PRIVATE_KEY)
+    privateKey: process.env.NODE_ENV === 'production' ? JSON.parse(process.env.PRIVATE_KEY) : process.env.PRIVATE_KEY
   }),
-  databaseURL: 'https://corbii-web.firebaseio.com'
+  databaseURL: process.env.DATABASE_URL
 });
+
 const db = admin.firestore();
 
 app.use(bodyParser.json());

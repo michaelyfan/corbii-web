@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from '../utils/firebase';
-import { BrowserRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { getUserOnLogin, getCurrentUserProfilePic, createNewDbUser } from '../utils/api';
 import routes from '../routes/routes';
 import Nav from './Nav';

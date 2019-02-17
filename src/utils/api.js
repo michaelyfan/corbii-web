@@ -1,7 +1,6 @@
 import firebase from './firebase';
 import 'firebase/firestore';
-import alg from './algconfig';
-import algoliasearch from 'algoliasearch';
+import { deckIndex, userIndex, listIndex, algClient } from './algconfig';
 import { smAlgorithm } from './algorithms';
 import moment from 'moment';
 
@@ -9,12 +8,6 @@ import moment from 'moment';
 const db = firebase.firestore();
 const storage = firebase.storage();
 const storageRef = storage.ref();
-const algoliaclient = algoliasearch(alg.id, alg.publicKey);
-
-// variable declarations
-const ALGOLIA_INDEX_NAME_1 = 'decks';
-const ALGOLIA_INDEX_NAME_2 = 'users';
-const ALGOLIA_INDEX_NAME_3 = 'lists';
 
 // For suppressing a console error
 const settings = {timestampsInSnapshots: true};
@@ -927,7 +920,7 @@ export function searchDecks(query) {
     return Promise.reject(new Error('Query is too long.'));
   }
   return new Promise((resolve, reject) => {
-    const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_1);
+    const index = algClient.initIndex(deckIndex);
     index.search(
       {
         query: query,
@@ -948,7 +941,7 @@ export function searchUsers(query) {
     return Promise.reject(new Error('Query is too long.'));
   }
   return new Promise((resolve, reject) => {
-    const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_2);
+    const index = algClient.initIndex(userIndex);
     index.search(
       {
         query: query,
@@ -969,7 +962,7 @@ export function searchLists(query) {
     return Promise.reject(new Error('Query is too long.'));
   }
   return new Promise((resolve, reject) => {
-    const index = algoliaclient.initIndex(ALGOLIA_INDEX_NAME_3);
+    const index = algClient.initIndex(listIndex);
     index.search(
       {
         query: query,
@@ -982,7 +975,7 @@ export function searchLists(query) {
         resolve(content.hits);
       }
     );  
-  })
+  });
 }
 // end search functions
 
