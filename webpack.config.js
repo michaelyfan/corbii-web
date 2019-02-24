@@ -26,9 +26,6 @@ const config = {
   devServer: {
     port: 8080,
     open: true,
-    proxy: {
-      '/api': 'http://localhost:3000'
-    },
     historyApiFallback: true,
   },
   plugins: [
@@ -37,7 +34,7 @@ const config = {
     }),
     new CopyWebpackPlugin([
       {from:'src/resources', to: 'src/resources'},
-      {from: 'favicon.ico', to: 'favicon.ico'}
+      {from: 'corbii_favicon.ico', to: 'corbii_favicon.ico'}
     ]),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)

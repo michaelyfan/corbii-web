@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "client": "webpack-dev-server --devtool inline-source-map --hot",
-    "server": "nodemon src/server/server.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "\"npm run client\"",
     "build": "NODE_ENV=production webpack -p",
     "build-windows": "SET NODE_ENV=production&& webpack -p",
     "babel-version": "babel --version",
