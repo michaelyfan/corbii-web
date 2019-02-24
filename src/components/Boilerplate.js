@@ -22,7 +22,7 @@ class Boilerplate extends React.Component {
 }
 
 Boilerplate.propTypes = {
-  
+  example: PropTypes.string.isRequired
 };
 
 export default Boilerplate;

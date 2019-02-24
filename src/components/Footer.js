@@ -17,17 +17,17 @@ function Footer(props) {
       <div><Link to={routes.faq.base} className = 'footer-link'> faq</Link></div>
       <div><Link to={routes.search.base} className = 'footer-link' id = 'footer-search'>search</Link></div>
       <div className = 'footer-social'>
-        <a target = '_blank' href = 'https://www.instagram.com/corbiitech/'>
+        <a target = '_blank' rel="noopener noreferrer" href = 'https://www.instagram.com/corbiitech/'>
           <img src = '/src/resources/footer/ig.png' />
         </a>
       </div> 
       <div className = 'footer-social'>
-        <a target = '_blank' href = 'https://www.facebook.com/corbiitech/'>
+        <a target = '_blank' rel="noopener noreferrer" href = 'https://www.facebook.com/corbiitech/'>
           <img src = '/src/resources/footer/fb.png' />
         </a>
       </div>
       <div className = 'footer-social'>
-        <a target = '_blank' href = 'https://www.twitter.com/corbiitech/'>
+        <a target = '_blank' rel="noopener noreferrer" href = 'https://www.twitter.com/corbiitech/'>
           <img src = '/src/resources/footer/twitter.png' />
         </a>
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
 import queryString from 'query-string';
@@ -154,7 +154,7 @@ class SearchResults extends React.Component {
     } else {
       return (
         <div>
-          <h2>Enter a search term.</h2>
+          <p style={{ margin: '0', padding: '16px' }}>Enter a search term.</p>
         </div>
       );
     }

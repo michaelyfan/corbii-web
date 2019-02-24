@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { getUserOnLogin, getCurrentUserProfilePic, createNewDbUser } from '../utils/api';
@@ -157,133 +158,135 @@ class App extends React.Component {
             signedIn={signedIn} 
             isTeacher={isTeacher} 
             handleStudentClickRegister={this.handleStudentClickRegister} />
-          <Switch>
-            <Route 
-              exact path={routes.home.base} 
-              render={(props) => 
-                <Homepage {...props} 
-                  signedIn={signedIn}
-                  isTeacher={isTeacher}
-                  handleStudentClickRegister={this.handleStudentClickRegister}
-                  handleTeacherClickRegister={this.handleTeacherClickRegister} />} />
-            <Route
-              path={routes.faq.base}
-              component={FAQ} />
-            <Route
-              path={routes.search.base}
-              component={Search} />
-            <StudentPrivateRoute 
-              exact path={routes.dashboard.base}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={Dashboard} />
-            <PrivateRoute
-              exact path={routes.profile.base}
-              signedIn={signedIn}
-              loading={loading}
-              render={(props) => 
-                <Profile {...props} 
-                  doGetProfilePic={this.doGetProfilePic}
-                  isTeacher={isTeacher}
-                  photoURL={photoURL} />} />
-            <PrivateRoute
-              path={routes.create.base}
-              signedIn={signedIn}
-              loading={loading}
-              component={Create} />
-            <Route
-              path={routes.viewDeck.template}
-              component={Deck} />
-            <Route
-              path={routes.viewConceptList.template}
-              component={ConceptList} />
-            <StudentPrivateRoute
-              path={routes.study.deckTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={StudyDeck} />
-            <StudentPrivateRoute
-              path={routes.study.conceptListTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={StudyConcept} />
-            <Route
-              path={routes.viewUser.template}
-              component={User} />
-            <StudentPrivateRoute
-              exact path={routes.classroom.template}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={ClassroomStudentView} />
-            <StudentPrivateRoute
-              path={routes.classroomStudy.template}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={StudyDeck} />
-            <Route
-              exact path={routes.teacher.base}
-              render={() => (
-                <Redirect to={`${routes.home.base}`} />
-              )} />
+          <div className='app-content'>
+            <Switch>
+              <Route 
+                exact path={routes.home.base} 
+                render={(props) => 
+                  <Homepage {...props} 
+                    signedIn={signedIn}
+                    isTeacher={isTeacher}
+                    handleStudentClickRegister={this.handleStudentClickRegister}
+                    handleTeacherClickRegister={this.handleTeacherClickRegister} />} />
+              <Route
+                path={routes.faq.base}
+                component={FAQ} />
+              <Route
+                path={routes.search.base}
+                component={Search} />
+              <StudentPrivateRoute 
+                exact path={routes.dashboard.base}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={Dashboard} />
+              <PrivateRoute
+                exact path={routes.profile.base}
+                signedIn={signedIn}
+                loading={loading}
+                render={(props) => 
+                  <Profile {...props} 
+                    doGetProfilePic={this.doGetProfilePic}
+                    isTeacher={isTeacher}
+                    photoURL={photoURL} />} />
+              <PrivateRoute
+                path={routes.create.base}
+                signedIn={signedIn}
+                loading={loading}
+                component={Create} />
+              <Route
+                path={routes.viewDeck.template}
+                component={Deck} />
+              <Route
+                path={routes.viewConceptList.template}
+                component={ConceptList} />
+              <StudentPrivateRoute
+                path={routes.study.deckTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={StudyDeck} />
+              <StudentPrivateRoute
+                path={routes.study.conceptListTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={StudyConcept} />
+              <Route
+                path={routes.viewUser.template}
+                component={User} />
+              <StudentPrivateRoute
+                exact path={routes.classroom.template}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={ClassroomStudentView} />
+              <StudentPrivateRoute
+                path={routes.classroomStudy.template}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={StudyDeck} />
+              <Route
+                exact path={routes.teacher.base}
+                render={() => (
+                  <Redirect to={`${routes.home.base}`} />
+                )} />
 
-            <TeacherPrivateRoute
-              path={routes.teacher.dashboard}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={TeacherDashboard} />
-            <TeacherPrivateRoute
-              exact path={routes.teacher.viewClassroomTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={ClassroomTeacherView} />
-            <TeacherPrivateRoute
-              path={routes.teacher.viewStudentsTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={StudentsTeacherView} />
-            <TeacherPrivateRoute
-              exact path={routes.teacher.viewStudentTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={StudentTeacherView} />
-            <TeacherPrivateRoute
-              exact path={routes.teacher.viewDecksTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={DecksTeacherView} />
-            <TeacherPrivateRoute
-              exact path={routes.teacher.viewDeckTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={DeckTeacherView} />
-            <TeacherPrivateRoute
-              exact path={routes.teacher.create}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={Create} />
-            <TeacherPrivateRoute
-              exact path={routes.teacher.viewDeckEditTemplate}
-              signedIn={signedIn}
-              isTeacher={isTeacher}
-              loading={loading}
-              component={Deck} />
-            <Route
-              path={routes.denied.base}
-              component={DeniedNoAuth} />
-            <Route component={NotFound} />
-          </Switch>
+              <TeacherPrivateRoute
+                path={routes.teacher.dashboard}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={TeacherDashboard} />
+              <TeacherPrivateRoute
+                exact path={routes.teacher.viewClassroomTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={ClassroomTeacherView} />
+              <TeacherPrivateRoute
+                path={routes.teacher.viewStudentsTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={StudentsTeacherView} />
+              <TeacherPrivateRoute
+                exact path={routes.teacher.viewStudentTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={StudentTeacherView} />
+              <TeacherPrivateRoute
+                exact path={routes.teacher.viewDecksTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={DecksTeacherView} />
+              <TeacherPrivateRoute
+                exact path={routes.teacher.viewDeckTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={DeckTeacherView} />
+              <TeacherPrivateRoute
+                exact path={routes.teacher.create}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={Create} />
+              <TeacherPrivateRoute
+                exact path={routes.teacher.viewDeckEditTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={Deck} />
+              <Route
+                path={routes.denied.base}
+                component={DeniedNoAuth} />
+              <Route component={NotFound} />
+            </Switch>
+           </div>
           <Footer isTeacher={isTeacher} signedIn={signedIn} />
         </div>
       </Router>

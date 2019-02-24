@@ -12,7 +12,8 @@
     "prod": "NODE_ENV=production node src/server/server.js",
     "prod-windows": "SET NODE_ENV=production && node src/server/server.js",
     "heroku-postbuild": "npm install && npm run build",
-    "babel-version": "babel --version"
+    "babel-version": "babel --version",
+    "lint": "node node_modules/eslint/bin/eslint.js ./src/components"
   },
   "babel": {
     "presets": [
