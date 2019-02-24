@@ -5,21 +5,12 @@ Check the Zenhub board for TODOs.
 
 ## Deployment Specifications and Instructions
 
-During development, this app uses `concurrently` to run a webpack development server (port 8080) with hot reloading for react, and an express server (port 3000) with our api calls. `fetch` calls made on the client are proxied to the express server (this is specified in webpack settings). The dev environment can be started with `npm run dev`.
+During development, this app runs a webpack development server (port 8080) with hot reloading for react. The dev environment can be started with `npm run dev`.
 
-For production, the app's `master` branch can be pushed to the Heroku remote repo with `git push heroku master`. Heroku is configured to run the `prod` script, specified in `package.json`, which will start the Express server. Then, Heroku will run the `heroku-postbuild` script, which will install all needed dependencies and build the React app into a `dist` directory, which the Express server is configured to statically serve. At this point, all should be good.
+For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files.
 
-Before pushing to Heroku, you can test that the production process succeeds and is free of bugs by mimicking it (to an extent) on your machine. From the root directory:
+This app used to use Heroku, but that's behind us now.
 
-```
-npm i // if you haven't already
-
-npm run build // or npm run build-windows depending on your OS
-
-npm run prod // or npm run prod-windows depending on your OS
-```
-
-Then navigate to localhost:3000. Note that the local instance contains a mixture of production and development environment variables, making it unsuitable for testing the app itself. This will be resolved in future updates.
 
 ## Production Specifications
 

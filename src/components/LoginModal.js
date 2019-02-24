@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';

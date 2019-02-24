@@ -232,6 +232,7 @@ class AddCardForm extends React.Component {
     this.handleAddCard = this.handleAddCard.bind(this);
     this.handleChangeAddCardFront = this.handleChangeAddCardFront.bind(this);
     this.handleChangeAddCardBack = this.handleChangeAddCardBack.bind(this);
+    this.handleSwitch = this.handleSwitch.bind(this);
   }
 
   handleAddCard(e) {
@@ -274,6 +275,13 @@ class AddCardForm extends React.Component {
     }));
   }
 
+  handleSwitch() {
+    this.setState((prevState) => ({
+      addCardFrontName: prevState.addCardBackName,
+      addCardBackName: prevState.addCardFrontName
+    }));
+  }
+
   render() {
     const { addCardFrontName, addCardBackName } = this.state;
     return (
@@ -289,7 +297,10 @@ class AddCardForm extends React.Component {
               autoComplete='off'
               value={addCardFrontName}
               onChange={this.handleChangeAddCardFront} />
-            <img className = 'switch-front-and-back' src = {require('../resources/flashcard-img/switch.png')} />
+            <img className = 'switch-front-and-back'
+              style={{cursor: 'pointer'}}
+              src = {require('../resources/flashcard-img/switch.png')}
+              onClick={this.handleSwitch} />
             <TextareaAutosize
               placeholder='back information'
               maxLength='1000'

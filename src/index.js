@@ -10,7 +10,7 @@ import './css/search.css';
 import './css/profile.css';
 import './css/study.css';
 import './css/teacher.css';
+import styles from 'react-responsive-carousel/lib/styles/carousel.min.css'; // to work with react-responsive-carousel
 import App from'./components/App';
-import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 ReactDOM.render(<App />, document.getElementById('root'));

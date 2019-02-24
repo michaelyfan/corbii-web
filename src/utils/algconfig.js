@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const algClient = algoliasearch(id, publicKey);
 
-export default {
+export {
   deckIndex,
   userIndex,
   listIndex,

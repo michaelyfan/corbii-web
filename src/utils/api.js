@@ -597,7 +597,7 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
       const batch = db.batch();
       concepts.forEach((concept) => {
         const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
-        batch.set(newCardRef, {question: concept.question});
+        batch.set(newCardRef, { question: concept.question });
       });
       return batch.commit();
     }
@@ -623,10 +623,7 @@ export function createConcept(question, listId) {
   }
   const deckRef = db.collection('lists').doc(listId);
 
-  return deckRef.collection('concepts').add({
-    question: question,
-    answer: ''
-  }).then(() => {
+  return deckRef.collection('concepts').add({ question: question }).then(() => {
     return updateListCountByOne(listId, true);
   });
 }
@@ -728,9 +725,7 @@ export function updateConcept(listId, conceptId, question) {
 
   const cardRef = `lists/${listId}/concepts/${conceptId}`;
 
-  return db.doc(cardRef).update({ 
-    question: question
-  });
+  return db.doc(cardRef).update({ question: question });
 }
 
 export function updateConceptPersonalData(dataId, listId, conceptId, answer) {
@@ -879,37 +874,13 @@ export function deleteConcept(listId, conceptId) {
 }
 
 export function deleteDeckFromCurrentUser(deckId) {
-  return firebase.auth().currentUser.getIdToken(true).then((token) => {
-    const data = {
-      token: token,
-      uid: firebase.auth().currentUser.uid, 
-      deckId: deckId
-    };
-    return fetch('/api/deletedeck', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    });
-  });
+  const deckRef = db.collection('decks').doc(deckId);
+  return deckRef.delete();
 }
 
 export function deleteListFromCurrentUser(listId) {
-  return firebase.auth().currentUser.getIdToken(true).then((token) => {
-    const data = {
-      token: token,
-      uid: firebase.auth().currentUser.uid, 
-      listId: listId
-    };
-    return fetch('/api/deletelist', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    });
-  });
+  const listRef = db.collection('lists').doc(listId);
+  return listRef.delete();
 }
 // end delete functions
 

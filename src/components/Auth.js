@@ -18,12 +18,12 @@ class Auth extends React.Component {
       ],
       credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
       callbacks: {
-        signInSuccessWithAuthResult: (authResult)  => {
+        signInSuccessWithAuthResult: ()  => {
           if (loginSuccessCallback) {
             loginSuccessCallback();
           }
         },
-        signInFailure: (error) => {
+        signInFailure: () => {
           if (loginFailureCallback) {
             loginFailureCallback();
           }

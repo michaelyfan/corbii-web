@@ -198,7 +198,7 @@ class DeckTeacherView extends React.Component {
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
-          <BackButton redirectTo={routes.teacher.dashboard} destination='student pages' />
+          <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />
           <h3 className = 'emphasized-words' id='teacher-welcome'>{classroomName} - deck {deckName}</h3>
         </div>
 
