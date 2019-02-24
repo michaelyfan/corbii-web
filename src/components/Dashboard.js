@@ -55,8 +55,6 @@ class Dashboard extends React.Component {
         <div className = 'inline-display'>
           <div className = 'dashboard-menu' id = 'no-margin'>
             <div className ='navigation'>
-              <button className = 'dash-nav'>recent activity</button>
-              <br />
               <Link to={routes.create.base}>
                 <button className = 'dash-nav'>create deck or concept list</button>
               </Link>
@@ -66,9 +64,6 @@ class Dashboard extends React.Component {
               <br />
               <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 2}));}}>my classrooms</button>
               <br />
-              <Link to={routes.teacher.dashboard}>
-                TEST
-              </Link>
               <Link to={routes.profile.base}>
                 <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
               </Link>

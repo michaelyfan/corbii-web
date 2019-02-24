@@ -3,42 +3,50 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if true;
       allow create, update: if request.auth.uid == userId;
+      allow delete: if false;
     }
 
     match /decks/{deckId} {
       allow read: if true;
-
       allow create: if request.auth.uid == request.resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
       allow update: if request.auth.uid == resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
+      allow delete: if false;
+
+      function deckData() {
+        return get(/databases/$(database)/documents/decks/$(deckId)).data;
+      }
 
       match /cards/{cardId} {
         allow read: if true;
-        allow create, update: if request.auth.uid == get(/databases/$(database)/documents/decks/$(deckId)).data.creatorId
+        allow create, update: if request.auth.uid == deckData().creatorId
                               && request.resource.data.front.size() <= 1000
                               && request.resource.data.back.size() <= 1000;
 
-        allow delete: if request.auth.uid == get(/databases/$(database)/documents/decks/$(deckId)).data.creatorId;
+        allow delete: if request.auth.uid == deckData().creatorId;
       }
 
     }
 
     match /lists/{listId} {
       allow read: if true;
-
       allow create: if request.auth.uid == request.resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
       allow update: if request.auth.uid == resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
+      allow delete: if false;
+
+      function listData() {
+        return get(/databases/$(database)/documents/lists/$(listId)).data;
+      }
 
       match /concepts/{conceptId} {
         allow read: if true;
-        allow create, update: if request.auth.uid == get(/databases/$(database)/documents/lists/$(listId)).data.creatorId
-                              && request.resource.data.question.size() <= 200
-                              && request.resource.data.answer.size() <= 4000;
+        allow create, update: if request.auth.uid == listData().creatorId
+                              && request.resource.data.question.size() <= 200;
 
-        allow delete: if request.auth.uid == get(/databases/$(database)/documents/lists/$(listId)).data.creatorId;
+        allow delete: if request.auth.uid == listData().creatorId;
       }
     }
 
@@ -46,16 +54,21 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth.uid == request.resource.data.userId;
       allow update: if request.auth.uid == resource.data.userId;
+      allow delete: if false;
     }
 
     match /selfExData/{dataId} {
       allow read: if true; 
-      allow create: if request.auth.uid == request.resource.data.userId;
-      allow update: if request.auth.uid == resource.data.userId;
+      allow create: if request.auth.uid == request.resource.data.userId
+        && request.resource.data.answer.size() <= 4000;
+      allow update: if request.auth.uid == resource.data.userId
+        && request.resource.data.answer.size() <= 4000;
+      allow delete: if false;
     }
     
     function userIsTeacher() {
-      return request.auth.uid != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isTeacher == true;
+      return request.auth.uid != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isTeacher == true;
     }
 
     match /classrooms/{classroomId} {
@@ -67,11 +80,11 @@ service cloud.firestore {
         return userIsTeacher() && request.auth.uid == request.resource.data.teacherId;
       }
 
-      function userIsStudent() {
+      function userIsStudentOfClass() {
         return exists(/databases/$(database)/documents/classrooms/$(classroomId)/users/$(request.auth.uid));
       }
 
-      allow read: if userIsTeacherOfClass() || userIsStudent();
+      allow read: if userIsTeacherOfClass() || userIsStudentOfClass();
       
       allow create: if userIsTeacherOfClassOnCreate()
                       && request.resource.data.name != null
@@ -81,17 +94,16 @@ service cloud.firestore {
       allow update: if userIsTeacherOfClass();
       allow delete: if userIsTeacherOfClass();
 
+      function classroomData() {
+        return get(/databases/$(database)/documents/classrooms/$(classroomId)).data;
+      }
+
       match /users/{userId} {
-        function userIsTeacherNested() {
-          return userIsTeacher() && request.auth.uid == get(/databases/$(database)/documents/classrooms/$(classroomId)).data.teacherId;
-        }
-
-
-        allow read: if userIsStudent() || userIsTeacherNested();
-
-        allow create: if userIsTeacherNested() || request.auth.uid == userId;
-        allow update: if userIsTeacherNested() || request.auth.uid == userId;
-        allow delete: if userIsTeacherNested();
+        allow read: if userIsStudentOfClass()
+          || request.auth.uid == classroomData().teacherId;
+        allow create: if request.auth.uid == classroomData().teacherId || request.auth.uid == userId;
+        allow update: if request.auth.uid == classroomData().teacherId || request.auth.uid == userId;
+        allow delete: if request.auth.uid == classroomData().teacherId;
       }
     }
 
@@ -100,26 +112,11 @@ service cloud.firestore {
         return request.auth.uid == get(/databases/$(database)/documents/classrooms/$(resource.data.classroomId)).data.teacherId;
       }
 
-      function userIsTeacherOfClassOnCreate() {
-        return request.auth.uid == get(/databases/$(database)/documents/classrooms/$(request.resource.data.classroomId)).data.teacherId;
-      }
-
-      function userIsStudentOfClass() {
-        return exists(/databases/$(database)/documents/classrooms/$(resource.data.classroomId)/users/$(request.auth.uid));
-      }
-
-      function userIsStudentOfClassOnCreate() {
-        return exists(/databases/$(database)/documents/classrooms/$(request.resource.data.classroomId)/users/$(request.auth.uid));
-      }
-
       allow read: if userIsTeacherOfClass();
-
-      allow create: if userIsStudentOfClassOnCreate()
+      allow create: if exists(/databases/$(database)/documents/classrooms/$(request.resource.data.classroomId)/users/$(request.auth.uid))
         && request.auth.uid == request.resource.data.userId;
-
       allow update: if false;
-
-      allow delete: if userIsTeacherOfClass() || (userIsStudentOfClass() && resource.data.userId == request.auth.uid);
+      allow delete: if userIsTeacherOfClass();
     }
 
   }

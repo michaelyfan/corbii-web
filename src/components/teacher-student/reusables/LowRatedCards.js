@@ -65,7 +65,7 @@ class LowRatedCards extends React.Component {
 
 LowRatedCards.propTypes = {
   cards: PropTypes.array.isRequired,
-  description: PropTypes.array.isRequired
+  description: PropTypes.string.isRequired
 };
 LowRatedCards.defaultProps = {
   description: 'cards missed most'

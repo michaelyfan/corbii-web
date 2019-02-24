@@ -242,7 +242,7 @@ class StudentTeacherView extends React.Component {
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
-          <BackButton redirectTo={routes.teacher.dashboard} destination='student pages' />
+          <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />
           <div className='flex-center student-header-individual'>
             <img className='student-pic-individual' src={photoUrl} />
             <div>
@@ -275,7 +275,8 @@ class StudentTeacherView extends React.Component {
               <div>
                 <h2>GRAPH GOES HERE</h2>
                 <CardGraph cards={datapoints} />
-                {/* CARD QUALITY GRAPH -- TODO: replace with React bargraph module */}
+                {/* CARD QUALITY GRAPH -- TODO: replace with something like a React bargraph module, or something else */}
+                {/* The below placeholder image is what used to be here */}
                 {/* <img className='student-graph-individual' src='/src/resources/graph.jpg' /> */}
               </div>
             </div>

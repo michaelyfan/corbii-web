@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
+import { confirmAlert } from 'react-confirm-alert';
 import { createDeckCurrentUser, createConceptListCurrentUser, getClassroomInfo } from '../utils/api';
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
@@ -381,6 +382,7 @@ class Create extends React.Component {
     this.handleCreateList = this.handleCreateList.bind(this);
     this.handleCreateDeck = this.handleCreateDeck.bind(this);
     this.handlePeriodChange = this.handlePeriodChange.bind(this);
+    this.handleGoBack = this.handleGoBack.bind(this);
   }
 
   componentDidMount() {
@@ -493,10 +495,36 @@ class Create extends React.Component {
     });
   }
 
+  handleGoBack() {
+    const { isForClassroom, classroomId } = this.state;
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1 className = 'delete-deck-confirm'>are you sure you want to go back?</h1>
+            <h1 className = 'delete-deck-confirm' id = 'small-confirm'>this will delete your deck in progress.</h1>
+            <div className = 'inline-display center-subtitle'>
+              <button className = 'no-button' onClick={onClose}>no</button>
+              <button className = 'yes-button' onClick={() => {
+                if (isForClassroom) {
+                  this.props.history.push(routes.teacher.getViewClassroomRoute(classroomId));
+                } else {
+                  this.props.history.push(routes.dashboard.base);
+                }
+                onClose();
+              }}>yes</button>
+            </div>
+          </div>
+        );
+      }
+    });
+  }
+
   render() {
     const { title, isList, periods, isForClassroom } = this.state;
     return (
       <div>
+        <button className = 'back-to-deck' onClick = {this.handleGoBack}>back to dashboard</button>
         <div className = 'deck-info'>
           <input type='text'
             maxLength='150'
@@ -520,8 +548,11 @@ class Create extends React.Component {
 
         <div className = 'button-wrapper'>
           <div className = 'create-buttons'>
-            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: false}));}}>create a study deck</button>
-            <button className = 'create-type' onClick={() => {this.setState(() => ({isList: true}));}}>create a concept list</button>
+            { !isForClassroom
+              && <div>
+                <button className = 'create-type' onClick={() => {this.setState(() => ({isList: false}));}}>create a study deck</button>
+                <button className = 'create-type' onClick={() => {this.setState(() => ({isList: true}));}}>create a concept list</button>
+              </div> }
             { isList 
               ? <CreateList handleCreateList={this.handleCreateList} />
               : <CreateDeck handleCreateDeck={this.handleCreateDeck} />

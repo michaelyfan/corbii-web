@@ -597,7 +597,7 @@ export function createConceptListCurrentUser(conceptListName, concepts) {
       const batch = db.batch();
       concepts.forEach((concept) => {
         const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
-        batch.set(newCardRef, {question: concept.question});
+        batch.set(newCardRef, { question: concept.question });
       });
       return batch.commit();
     }
@@ -623,10 +623,7 @@ export function createConcept(question, listId) {
   }
   const deckRef = db.collection('lists').doc(listId);
 
-  return deckRef.collection('concepts').add({
-    question: question,
-    answer: ''
-  }).then(() => {
+  return deckRef.collection('concepts').add({ question: question }).then(() => {
     return updateListCountByOne(listId, true);
   });
 }
@@ -728,9 +725,7 @@ export function updateConcept(listId, conceptId, question) {
 
   const cardRef = `lists/${listId}/concepts/${conceptId}`;
 
-  return db.doc(cardRef).update({ 
-    question: question
-  });
+  return db.doc(cardRef).update({ question: question });
 }
 
 export function updateConceptPersonalData(dataId, listId, conceptId, answer) {

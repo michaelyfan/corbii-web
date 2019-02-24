@@ -115,7 +115,7 @@ class CreateClassroomForm extends React.Component {
             handleDelete={this.handleDelete}
             handleAddition={this.handleAddition}
             delimiters={delimiters}
-            placeholder = 'add period (enter)'
+            placeholder = 'add period (press enter)'
             inline = {true}
             classNames={{
               tags: 'tagsClass',

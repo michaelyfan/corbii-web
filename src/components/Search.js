@@ -82,6 +82,10 @@ class SearchResults extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.updateResults();
+  }
+
   componentDidUpdate(prevProps) {
     const { mode, query } = this.props;
     if (mode != prevProps.mode || query != prevProps.query) {
