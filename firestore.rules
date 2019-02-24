@@ -12,7 +12,7 @@ service cloud.firestore {
                     && request.resource.data.name.size() <= 150;
       allow update: if request.auth.uid == resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
-      allow delete: if false;
+      allow delete: if request.auth.uid == resource.data.creatorId;
 
       function deckData() {
         return get(/databases/$(database)/documents/decks/$(deckId)).data;
@@ -35,7 +35,7 @@ service cloud.firestore {
                     && request.resource.data.name.size() <= 150;
       allow update: if request.auth.uid == resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
-      allow delete: if false;
+      allow delete: if request.auth.uid == resource.data.creatorId;
 
       function listData() {
         return get(/databases/$(database)/documents/lists/$(listId)).data;

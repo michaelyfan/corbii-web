@@ -4,14 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack -p",
-    "build-windows": "SET NODE_ENV=production&& webpack -p",
     "client": "webpack-dev-server --devtool inline-source-map --hot",
     "server": "nodemon src/server/server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "prod": "NODE_ENV=production node src/server/server.js",
-    "prod-windows": "SET NODE_ENV=production && node src/server/server.js",
-    "heroku-postbuild": "npm install && npm run build",
+    "build": "NODE_ENV=production webpack -p",
+    "build-windows": "SET NODE_ENV=production&& webpack -p",
     "babel-version": "babel --version",
     "lint": "node node_modules/eslint/bin/eslint.js ./src/components"
   },

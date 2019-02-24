@@ -874,37 +874,13 @@ export function deleteConcept(listId, conceptId) {
 }
 
 export function deleteDeckFromCurrentUser(deckId) {
-  return firebase.auth().currentUser.getIdToken(true).then((token) => {
-    const data = {
-      token: token,
-      uid: firebase.auth().currentUser.uid, 
-      deckId: deckId
-    };
-    return fetch('/api/deletedeck', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    });
-  });
+  const deckRef = db.collection('decks').doc(deckId);
+  return deckRef.delete();
 }
 
 export function deleteListFromCurrentUser(listId) {
-  return firebase.auth().currentUser.getIdToken(true).then((token) => {
-    const data = {
-      token: token,
-      uid: firebase.auth().currentUser.uid, 
-      listId: listId
-    };
-    return fetch('/api/deletelist', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers:{
-        'Content-Type': 'application/json'
-      }
-    });
-  });
+  const listRef = db.collection('lists').doc(listId);
+  return listRef.delete();
 }
 // end delete functions
 

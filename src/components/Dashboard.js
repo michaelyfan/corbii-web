@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import firebase from '../utils/firebase';
 import routes from '../routes/routes';
 
-const sassyMessage = 'You managed to get to this page even though there's no active user session. This could mean that there's a bug on our end, and for that, we're terribly sorry and we'll get to it soon. This could also mean that you tampered with the frontend state to access an unauthorized page. If that's the case, congratulations, but you won't get anywhere from here. But have fun pretending that you know how to hack :)';
+const sassyMessage = 'You managed to get to this page even though there\'s no active user session. This could mean that there\'s a bug on our end, and for that, we\'re terribly sorry and we\'ll get to it soon. This could also mean that you tampered with the frontend state to access an unauthorized page. If that\'s the case, congratulations, but you won\'t get anywhere from here. But have fun pretending that you know how to hack :)';
 
 class Dashboard extends React.Component {
 

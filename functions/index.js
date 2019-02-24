@@ -1,8 +1,7 @@
 const functions = require('firebase-functions');
 const algoliasearch = require('algoliasearch');
-const admin = require('firebase-admin');
-admin.initializeApp();
-const db = admin.firestore();
+const { deleteCollection } = require('./utils');
+const db = require('./init');
 
 const ALGOLIA_ID = functions.config().algolia.app_id;
 const ALGOLIA_ADMIN_KEY = functions.config().algolia.admin_key;
@@ -10,63 +9,7 @@ const ALGOLIAINDEX1 = functions.config().algolia.deck_index;
 const ALGOLIAINDEX2 = functions.config().algolia.user_index;
 const ALGOLIAINDEX3 = functions.config().algolia.list_index;
 
-const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY); 
-
-function deleteDocument(documentPath) {
-  return new Promise((resolve, reject) => {
-    db.doc(documentPath).delete()
-      .then(() => {
-        resolve();
-      })
-      .catch(reject);
-  });
-}
-
-function deleteCollection(collectionPath, batchSize, collectionRef) {
-  let colRef;
-  if (collectionRef) {
-    colRef = collectionRef;
-  } else {
-    colRef = db.collection(collectionPath);
-  }
-  let query = colRef.limit(batchSize);
-
-  return new Promise((resolve, reject) => {
-    deleteQueryBatch(query, batchSize, resolve, reject);
-  });
-}
-
-function deleteQueryBatch(query, batchSize, resolve, reject) {
-  query.get()
-    .then((snapshot) => {
-      // When there are no documents left, we are done
-      if (snapshot.size == 0) {
-        return 0;
-      }
-
-      // Delete documents in a batch
-      var batch = db.batch();
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-
-      return batch.commit().then(() => {
-        return snapshot.size;
-      });
-    }).then((numDeleted) => {
-      if (numDeleted === 0) {
-        resolve();
-        return;
-      }
-
-      // Recurse on the next process tick, to avoid
-      // exploding the stack.
-      process.nextTick(() => {
-        deleteQueryBatch(query, batchSize, resolve, reject);
-      });
-    })
-    .catch(reject);
-}
+const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 exports.onDeckCreate = functions.firestore.document('decks/{deckId}').onCreate((snap, context) => {
   // Get the deck document
@@ -98,8 +41,12 @@ exports.onDeckUpdate = functions.firestore.document('decks/{deckId}').onUpdate((
 
 exports.onDeckDelete = functions.firestore.document('decks/{deckId}').onDelete((snap, context) => {
   const deckId = context.params.deckId;
+  const cardsPath = `decks/${deckId}/cards`;
   const index = algoliaClient.initIndex(ALGOLIAINDEX1);
-  return index.deleteObject(deckId);
+  return Promise.all([
+    index.deleteObject(deckId),
+    deleteCollection(cardsPath, 100)
+  ]);
 });
 
 exports.onUserCreate = functions.firestore.document('users/{userId}').onCreate((snap, context) => {
@@ -145,8 +92,12 @@ exports.onListUpdate = functions.firestore.document('lists/{listId}').onUpdate((
 
 exports.onListDelete = functions.firestore.document('lists/{listId}').onDelete((snap, context) => {
   const listId = context.params.listId;
+  const conceptsPath = `lists/${listId}/concepts`;
   const index = algoliaClient.initIndex(ALGOLIAINDEX3);
-  return index.deleteObject(listId);
+  return Promise.all([
+    deleteCollection(conceptsPath, 100),
+    index.deleteObject(listId)
+  ]);
 });
 
 exports.onCardDelete = functions.firestore.document('decks/{deckId}/cards/{cardId}').onDelete((snap, context) => {
