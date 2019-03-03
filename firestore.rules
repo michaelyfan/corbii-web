@@ -1,17 +1,63 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function userIsTeacher() {
+      return isSignedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isTeacher == true;
+    }
+    
+    function userIsStudentOfClassroom(classroomId) {
+      return isSignedIn()
+        && classroomId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.classrooms;
+    }
+    
+    function userIsTeacherOfClassroom(classroomId) {
+      return isSignedIn()
+        && request.auth.uid == get(/databases/$(database)/documents/classrooms/$(classroomId)).data.teacherId;
+    }
+  
     match /users/{userId} {
       allow read: if true;
-      allow create, update: if request.auth.uid == userId;
+      
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      
       allow delete: if false;
     }
 
     match /decks/{deckId} {
-      allow read: if true;
-      allow create: if request.auth.uid == request.resource.data.creatorId
-                    && request.resource.data.name.size() <= 150;
+      function userIsStudentOfDeck() {
+        return get(/databases/$(database)/documents/decks/$(deckId)).data
+      }
+    
+      // allow a deck read if one of the following is met:
+      // 1) a deck is not classroom-private
+      // 2) the user is the deck's creator (handles teacher accessing teacher decks)
+      // 3) the user is a student in the deck's classroom (applies to classroom-private decks)
+      allow read: if !("isClassroomPrivate" in resource.data)
+        || (isSignedIn() && request.auth.uid == resource.data.creatorId)
+        || userIsStudentOfClassroom(resource.data.classroomId);
+      
+      // allow a deck create if:
+      // 1) it's not a class deck
+      // 2) it is a class deck but the user is a teacher of the deck's classroomId
+      // 
+      // In all cases the deck's creatorId field must correspond to the user, and the deck's name
+      // must be less than 150 characters long.
+      allow read: if !("isClassroomPrivate" in resource.data)
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.creatorId
+        && request.resource.data.name.size() <= 150
+        && (!("isClassroomPrivate" in request.resource.data)
+          || request.resource.data.isClassroomPrivate == false
+          || userIsTeacherOfClassroom(request.resource.data.classroomId));
+                    
       allow update: if request.auth.uid == resource.data.creatorId
                     && request.resource.data.name.size() <= 150;
+                    
       allow delete: if request.auth.uid == resource.data.creatorId;
 
       function deckData() {
@@ -20,6 +66,7 @@ service cloud.firestore {
 
       match /cards/{cardId} {
         allow read: if true;
+        
         allow create, update: if request.auth.uid == deckData().creatorId
                               && request.resource.data.front.size() <= 1000
                               && request.resource.data.back.size() <= 1000;
@@ -64,11 +111,6 @@ service cloud.firestore {
       allow update: if request.auth.uid == resource.data.userId
         && request.resource.data.answer.size() <= 4000;
       allow delete: if false;
-    }
-    
-    function userIsTeacher() {
-      return request.auth.uid != null
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isTeacher == true;
     }
 
     match /classrooms/{classroomId} {
