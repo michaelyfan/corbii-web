@@ -95,6 +95,10 @@ class CreateClassroomForm extends React.Component {
     });
     createClassroom(name, periodsArr).then(() => {
       this.props.doGetClassrooms();
+      this.setState(() => ({
+        name: '',
+        tags: []
+      }));
     }).catch((err) => {
       // catches any error by createClassroom, but not by doGetClassrooms
       alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);

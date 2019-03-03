@@ -418,11 +418,23 @@ class Deck extends React.Component {
 
   handleDeleteDeck() {
     const { id } = this.props.match.params;
+    const { state, pathname } = this.props.location;
+
     this.setState(() => ({
       isLoading: true
     }), () => {
       deleteDeckFromCurrentUser(id).then(() => {
-        this.props.history.push(routes.dashboard.base);
+        // determine if this was a classroom deck
+        if (pathname.includes(routes.teacher.viewDeckEditBase)
+            && state
+            && state.isForClassroom
+            && state.classroomId != null) {
+          // push to view classroom page if this was a classroom deck
+          this.props.history.push(routes.teacher.getViewDecksRoute(state.classroomId));
+        } else {
+          // push to normal non-teacher dashboard if wasn't a classroom deck
+          this.props.history.push(routes.dashboard.base);
+        }
       }).catch((err) => {
         console.log(err);
         alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);

@@ -34,7 +34,7 @@ const config = {
     }),
     new CopyWebpackPlugin([
       {from:'src/resources', to: 'src/resources'},
-      {from: 'corbii_favicon.ico', to: 'corbii_favicon.ico'}
+      {from: 'src/corbii_favicon.ico', to: 'corbii_favicon.ico'}
     ]),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
