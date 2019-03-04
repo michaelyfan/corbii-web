@@ -533,9 +533,8 @@ export async function getStudentStudyRatio(classroomId, userId, period, data) {
       return Promise.reject(e);
     }
   }
-  
+
   const decksRef = db.collection('decks')
-    .where('isClassroomPrivate', '==', true)
     .where('classroomId', '==', classroomId)
     .where(`periods.${period}`, '==', true);
   try {
