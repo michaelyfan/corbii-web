@@ -151,7 +151,6 @@ class StudentTeacherView extends React.Component {
       deckDocs.forEach((snap) => {
         deckObj[snap.id] = snap.data().name;
       });
-
       this.setState(() => ({
         allData: data,
         name: name,
@@ -237,7 +236,7 @@ class StudentTeacherView extends React.Component {
   }
 
   render() {
-    const { name, period, periods, numCardsStudied, averageRating, averageTime, datapoints, consistentLowCards, photoUrl, decks } = this.state;
+    const { name, period, numCardsStudied, averageRating, averageTime, datapoints, consistentLowCards, photoUrl, decks } = this.state;
     const { classroomId } = this.props.match.params;
     return (
       <div className = 'dashboard'>
