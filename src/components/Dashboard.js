@@ -43,7 +43,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    return (
+    return ( 
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
           <h3 className = 'header-title' id = 'dashboard-welcome'>Welcome, 

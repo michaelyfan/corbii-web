@@ -67,7 +67,7 @@ class Profile extends React.Component {
             <div className = 'profile-padding'>{this.props.photoURL && <img className='profile-img' src={this.props.photoURL} />}</div>
             <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
               <span id = 'change-pic'>change profile pic: &nbsp;</span>
-              <input ref={this.inputFile} type='file' accept="image/*" text='Change profile pic' /><br />
+              <input ref={this.inputFile} type='file' accept="image/*" text='Change profile pic' /><br /><br />
               <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
             </form>
             <div className = 'dashboard-link'>

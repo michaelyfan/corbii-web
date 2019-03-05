@@ -122,6 +122,62 @@ button.modify-stuff:hover {
   margin-bottom: 10px;
 }
 
+.student-classroom-button{
+  background-color: #E9F2FF;
+  margin: 0 auto;
+  color: #003466;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.student-classroom-button:hover{
+  background-color: #E9F2FF;
+  color: #C0CEDE;
+  margin: 0 auto;
+  justify-content: center;
+  font-size: 30px;
+}
+
+
+.classroom-headers {
+    font-family: Nunito Bold;
+    color: #003466;
+    text-align: center;
+    font-size: 40px;
+}
+
+#classroom-add {
+  font-size: 40px;
+  color: #003466;
+  border: 3px solid #003466;
+  text-decoration: none;
+  font-family: Print Clearly;
+  padding-left: 15px;
+  padding-right: 150px;
+}
+
+.center-items {
+  margin: 0 auto;
+}
+
+
+#classroom-add::placeholder {
+  color: #003466;
+}
+
+.submit-button {
+  background-color: #003466;
+  color: white;
+  font-family: Print Clearly;
+  text-decoration: none;
+  border: none;
+  font-size: 25px;
+  padding: 10px;
+  margin-left: 10px;
+  padding-top: 10px;
+}
+
+
 @media screen and (max-width: 800px) {
   #dashboard-welcome {
     font-size: 10vw;
@@ -156,5 +212,6 @@ button.modify-stuff:hover {
     font-size: 9vw;
     padding-left: 20px;
   }
+
 
 }

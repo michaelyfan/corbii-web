@@ -42,11 +42,18 @@ class JoinClassroomForm extends React.Component {
   render() {
     return (
       <div>
-        <h2>Join classroom</h2>
+        <p className = 'classroom-headers'>Join Classroom</p>
         <form onSubmit={this.handleSubmitCode}>
-          <input type='text' placeholder='enter join code' value={this.state.code} onChange={this.handleChangeCode} />
-          <input type='submit' text='Join classroom' />
+          <div className = 'inline-display'>
+            <div className = 'center-items'>
+            <input type='text' placeholder='enter join code' id = 'classroom-add'
+            value={this.state.code} onChange={this.handleChangeCode} />
+            <input type='submit' text='join classroom' className = 'submit-button'/>
+            </div>
+          </div>
         </form>
+        <br />
+        <br/>
       </div>
     );
   }
@@ -56,7 +63,11 @@ function ClassroomRow(props) {
   const { classroomId } = props;
   return (
     <div>
-      <Link to={routes.classroom.getRoute(classroomId)}><button>classroom with id: {classroomId}</button></Link>
+      <Link to={routes.classroom.getRoute(classroomId)}>
+      <div className = 'inline-display'>
+        <button className='student-classroom-button'> classroom with id: {classroomId} </button>
+      </div>
+      </Link>
     </div>
   );
 }
@@ -98,9 +109,12 @@ class ClassroomList extends React.Component {
       <div>
         {
           isEmpty
-            ? <p>You are not in any classrooms</p> 
+            ? <p className = 'classroom-headers'>You are not in any classrooms</p> 
             : classrooms.map((classroomId) => {
-              return <ClassroomRow key={shortid.generate()} classroomId={classroomId} />;
+              return <div>
+                <p className = 'classroom-headers'> Your Classrooms </p>
+                <ClassroomRow key={shortid.generate()} classroomId={classroomId} />
+              </div>;
             })
         }
         <JoinClassroomForm getClassrooms={this.getClassrooms} />
