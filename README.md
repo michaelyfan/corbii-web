@@ -80,23 +80,44 @@ These instructions will eventually become better
 
 ## Other dev notes
 
-rpOXCYzREjkYjzoHrMmo -- teacher deck
+### CLASSROOM PERMISSIONS
+Get: classroom teacher and classroom students
+Create: teachers only, and teacherId must match teacher UID
+Update: teacher only (teacherId)
+Delete: None (handled by Functions)
 
-jHPluVblaA9Ey680fa8L -- non-teacher deck
+### CLASSROOM USER PERMISSIONS
+Get: teacher of user's classroom only
+Create: user only. this means user can add themselves to any classroom
+Update: None (at the moment)
+Delete: teacher of user's classroom only
 
-npQsjvUH8R8iE97BEsFL -- non-teacher deck created by student
+### CLASSROOM SETTINGS FUNCTIONS
+* change the name of the classroom
+  # classroom doc update, called from client
+* add periods to the classroom
+  # classroom doc update, called from client
+* the master student list -- where the teacher can kick out students.
+  # teacher chooses to delete a student
+  # call from client. student doc (classrooms/{classroomId}/users/{userId}) is deleted
+  # Functions trigger -- all classSpacedRepData with this classroomId and with this userId is deleted
+  # Functions trigger -- this student's reference to the classroom (student doc data().classrooms) is deleted
+* remove periods of the classroom
+  # client calls Functions
+  # Functions verifies that teacher is teacher of that classroom
+  # Functions checks that no students in this class are assigned to this period
+    # if yes, then delete period. classroom doc update, and send success to client
+    # if no, send reject to client
+* classroom deletion
+  # client calls Functions
+  # Functions verifies that teacher is teacher of that classroom
+  # Functions checks that this class has no students, which also implies the class has no data
+    # if yes, then delete classroom
+      # delete classroom doc
+      # delete classroom decks
+        # delete deck docs
+        # Functions trigger -- deck cards are deleted
+      # no need to delete classroom users or data since those should be preconditions
+    # if no, send reject to client 
 
-1KKjW2csA5cuzy6pnyUYEDiK0pq2 -- student
-
-tVSwbCe263gMxkCrTlRY9nNCUCJ2 -- teacher
-
-EsIDDQkh7xWuE0LddH65BrpM3qe2 -- rando
-
-iA9NHmp@2 -- classroom
-
-* non-classroom decks can be read by anyone, unauthenticated and authenticated - DONE
-* classroom decks can be read only by teacher (creatorId) and students of that classroom (classroomId field) - DONE
-* non-classroom decks can be created by anyone, but isClassroomPrivate field must be set to false - DONE
-* classroom decks can only be created by teacher (isTeacher field), isClassroomPrivate field must be set to true - DONE
-* both non-classroom and classroom decks can be updated only by creator - DONE
-* both non-classroom and classroom decks can be deleted only by the creator - DONE
+delete the classroom (#75)
