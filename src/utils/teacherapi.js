@@ -17,6 +17,144 @@ const db = firebase.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
+export function createClassroom(name, periods) {
+  const uid = firebase.auth().currentUser.uid;
+  const ref = db.collection('classrooms').doc(shortid.generate());
+  return ref.set({
+    name: name,
+    periods: periods,
+    teacherId: uid
+  });
+}
+
+/**
+ * Gets all classrooms of a student. This function gets the teacher's ID from the active user
+ *    session.
+ * 
+ * @return the Promise returned by the DB call for this function.
+ */
+export function getClassrooms() {
+  const uid = firebase.auth().currentUser.uid;
+  return db.collection('classrooms').where('teacherId', '==', uid).get();
+}
+
+/**
+ * Gets all students that are in a classroom, and period if desired.
+ *
+ * @param {String} classroomId - The ID of the classroom
+ * @param {String} period - (Optional) The desired period
+ *
+ * @return {Object} An array of student objects. Each object has attributes 'period' and 'id',
+ *    both of type {String}.
+ */
+export function getStudents(classroomId, period) {
+  let colRef = db.collection('classrooms').doc(classroomId).collection('users');
+  if (period) {
+    colRef = colRef.where('period', '==', period);
+  }
+  
+  return colRef.get().then((result) => {
+    let ids = [];
+    result.forEach((studentDataObject) => {
+      ids.push({
+        period: studentDataObject.data().period,
+        id: studentDataObject.id
+      });
+    });
+
+    return ids;
+  });
+}
+
+/**
+ * Gets profile information of a student, including a student's period.
+ *
+ * @param {String} userId - The ID of the student
+ *
+ * @return An promise resolving to an array of student objects.
+ *    Each object has attributes 'period' and 'id', both of
+ *    type {String}.
+ */
+export function getStudentInfo(classroomId, userId) {
+  const profileRef = db.collection('users').doc(userId);
+  const classProfileRef = db.collection('classrooms').doc(classroomId)
+    .collection('users').doc(userId);
+  return Promise.all([
+    profileRef.get(),
+    classProfileRef.get()
+  ]).then((res) => {
+    const [profile, classProfile] = res;
+    if (!profile.exists) {
+      throw new Error('This user does not exist.');
+    }
+    return {
+      id: userId,
+      name: profile.data().name,
+      email: profile.data().email,
+      period: classProfile.data().period
+    };
+  });
+}
+
+/**
+ * Gets info for multiple students. This does not include the students' periods.
+ *
+ * @param {String} students - an array of userId's, belonging to students
+ *
+ * @return {Object} An object with userId's of type String as the keys, and an object with
+ *    attributes 'name' and 'email' as the values
+ */
+export function getStudentsInfo(students) {
+  // set up for Promise.all call to get student documents
+  const calls = [];
+  students.forEach((student) => {
+    const userRef = db.collection('users').doc(student);
+    calls.push(userRef.get());
+  });
+
+  // get card documents
+  return Promise.all(calls).then((result) => {
+    const toReturn = {};
+    result.forEach((res, i) => {
+      toReturn[students[i]] = {
+        name: res.data().name,
+        email: res.data().email
+      };
+    });
+    return toReturn;
+  });
+}
+
+/*
+ * Updates the periods available to a deck.
+ *
+ * @param {String} deckId -- the deckId of this deck
+ * @param {array} periods -- a periods object to update this deck with. structure
+ *    is:
+ {
+  'period key here': boolean
+ }
+ *
+ * @return a Promise resolving to a successful Firebase update result
+ */
+export function updateDeckPeriods(deckId, periods) {
+  const docRef = db.collection('decks').doc(deckId);
+
+  return docRef.update({
+    periods: periods
+  });
+}
+
+/**
+ * @summary a utility function that creates a classroom join code
+ * @param  {String} id     The ID of this classroom
+ * @param  {String} period The period to which the desired join code will apply
+ * @return {String}        A join code for this classroom for the specified period
+ */
+export function createJoinCode(id, period) {
+  return `${id}-&${period}`;
+}
+
 /**
  * Generic function to get class data points.
  *
@@ -133,104 +271,6 @@ export function filterClassDataRaw(filterOptions, data) {
     return filteredDocs;
   }
   return null;
-}
-
-/**
- * Gets all classrooms of a student. This function gets the teacher's ID from the active user
- *    session.
- * 
- * @return the Promise returned by the DB call for this function.
- */
-export function getClassrooms() {
-  const uid = firebase.auth().currentUser.uid;
-  return db.collection('classrooms').where('teacherId', '==', uid).get();
-}
-
-/**
- * Gets all students that are in a classroom, and period if desired.
- *
- * @param {String} classroomId - The ID of the classroom
- * @param {String} period - (Optional) The desired period
- *
- * @return {Object} An array of student objects. Each object has attributes 'period' and 'id',
- *    both of type {String}.
- */
-export function getStudents(classroomId, period) {
-  let colRef = db.collection('classrooms').doc(classroomId).collection('users');
-  if (period) {
-    colRef = colRef.where('period', '==', period);
-  }
-  
-  return colRef.get().then((result) => {
-    let ids = [];
-    result.forEach((studentDataObject) => {
-      ids.push({
-        period: studentDataObject.data().period,
-        id: studentDataObject.id
-      });
-    });
-
-    return ids;
-  });
-}
-
-/**
- * Gets profile information of a student, including a student's period.
- *
- * @param {String} userId - The ID of the student
- *
- * @return An promise resolving to an array of student objects.
- *    Each object has attributes 'period' and 'id', both of
- *    type {String}.
- */
-export function getStudentInfo(classroomId, userId) {
-  const profileRef = db.collection('users').doc(userId);
-  const classProfileRef = db.collection('classrooms').doc(classroomId)
-    .collection('users').doc(userId);
-  return Promise.all([
-    profileRef.get(),
-    classProfileRef.get()
-  ]).then((res) => {
-    const [profile, classProfile] = res;
-    if (!profile.exists) {
-      throw new Error('This user does not exist.');
-    }
-    return {
-      id: userId,
-      name: profile.data().name,
-      email: profile.data().email,
-      period: classProfile.data().period
-    };
-  });
-}
-
-/**
- * Gets info for multiple students. This does not include the students' periods.
- *
- * @param {String} students - an array of userId's, belonging to students
- *
- * @return {Object} An object with userId's of type String as the keys, and an object with
- *    attributes 'name' and 'email' as the values
- */
-export function getStudentsInfo(students) {
-  // set up for Promise.all call to get student documents
-  const calls = [];
-  students.forEach((student) => {
-    const userRef = db.collection('users').doc(student);
-    calls.push(userRef.get());
-  });
-
-  // get card documents
-  return Promise.all(calls).then((result) => {
-    const toReturn = {};
-    result.forEach((res, i) => {
-      toReturn[students[i]] = {
-        name: res.data().name,
-        email: res.data().email
-      };
-    });
-    return toReturn;
-  });
 }
 
 /**
@@ -605,40 +645,9 @@ function calculateCardAverages(col) {
   return badCards;
 }
 
-export function createClassroom(name, periods) {
-  const uid = firebase.auth().currentUser.uid;
-  const ref = db.collection('classrooms').doc(shortid.generate());
-  return ref.set({
-    name: name,
-    periods: periods,
-    teacherId: uid
-  });
-}
-
-export function createJoinCode(id, period) {
-  return `${id}-&${period}`;
-}
-
-/*
- * Updates the periods available to a deck.
- *
- * @param {String} deckId -- the deckId of this deck
- * @param {array} periods -- a periods object to update this deck with. structure
- *    is:
- {
-  'period key here': boolean
- }
- *
- * @return a Promise resolving to a successful Firebase update result
+/**
+ * A tester function for teacherapi. This function has no production use.
  */
-export function updateDeckPeriods(deckId, periods) {
-  const docRef = db.collection('decks').doc(deckId);
-
-  return docRef.update({
-    periods: periods
-  });
-}
-
 async function main() {
   const classroomId = '1234';
   const deckId = '5678';

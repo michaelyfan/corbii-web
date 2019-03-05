@@ -56,6 +56,8 @@ const routes = {
     dashboard: '/teacher/dashboard',
     create: '/teacher/create',
 
+    classSettingsTemplate: '/teacher/classroom/:id/settings',
+
     viewDeckEditBase: '/teacher/editdeck',
     viewDeckEditTemplate: '/teacher/editdeck/:classroomId/:id',
 
@@ -65,6 +67,7 @@ const routes = {
     viewDecksTemplate: '/teacher/decks/:id',
     viewDeckTemplate: '/teacher/deck/:classroomId/:deckId',
 
+    getClassSettingsRoute: ((classroomId) => `/teacher/classroom/${classroomId}/settings`),
     getViewDeckEditRoute: ((classroomId, deckId) => `/teacher/editdeck/${classroomId}/${deckId}`),
     getViewClassroomRoute: ((id) => `/teacher/classroom/${id}`),
     getViewStudentsRoute: ((id) => `/teacher/students/${id}`),
