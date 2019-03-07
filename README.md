@@ -93,15 +93,15 @@ Update: None (at the moment)
 Delete: teacher of user's classroom only
 
 ### CLASSROOM SETTINGS FUNCTIONS
-* change the name of the classroom
+* change the name of the classroom (updateClassroom in teacherapi)
   # classroom doc update, called from client
-* add periods to the classroom
+* add periods to the classroom (updateClassroom in teacherapi)
   # classroom doc update, called from client
 * the master student list -- where the teacher can kick out students.
   # teacher chooses to delete a student
-  # call from client. student doc (classrooms/{classroomId}/users/{userId}) is deleted
-  # Functions trigger -- all classSpacedRepData with this classroomId and with this userId is deleted
-  # Functions trigger -- this student's reference to the classroom (student doc data().classrooms) is deleted
+  # call from client. student doc (classrooms/{classroomId}/users/{userId}) is deleted (deleteStudent in teacherapi)
+  # Functions trigger -- all classSpacedRepData with this classroomId and with this userId is deleted (done)
+  # Functions trigger -- this student's reference to the classroom (student doc data().classrooms) is deleted (done)
 * remove periods of the classroom
   # client calls Functions
   # Functions verifies that teacher is teacher of that classroom
@@ -119,5 +119,8 @@ Delete: teacher of user's classroom only
         # Functions trigger -- deck cards are deleted
       # no need to delete classroom users or data since those should be preconditions
     # if no, send reject to client 
+* secure Firestore rules so that client updating a classroom can only be done on name or on periods added
 
-delete the classroom (#75)
+classroom ID: bnW6NlYWh
+user ID: testuserid
+teacher ID: tVSwbCe263gMxkCrTlRY9nNCUCJ2

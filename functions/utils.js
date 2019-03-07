@@ -19,10 +19,18 @@ function deleteCollection(collectionPath, batchSize, collectionRef) {
   } else {
     colRef = db.collection(collectionPath);
   }
-  let query = colRef.limit(batchSize);
+
+  let theBatchSize;
+  if (batchSize == null) {
+    theBatchSize = 100;
+  } else {
+    theBatchSize = batchSize;
+  }
+
+  let query = colRef.limit(theBatchSize);
 
   return new Promise((resolve, reject) => {
-    deleteQueryBatch(query, batchSize, resolve, reject);
+    deleteQueryBatch(query, theBatchSize, resolve, reject);
   });
 }
 

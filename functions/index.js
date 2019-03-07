@@ -27,8 +27,8 @@ exports.onDeckCreate = functions.firestore.document('decks/{deckId}').onCreate((
   }
 });
 
-exports.onDeckUpdate = functions.firestore.document('decks/{deckId}').onUpdate((snap, context) => {
-  const deck = snap.data();
+exports.onDeckUpdate = functions.firestore.document('decks/{deckId}').onUpdate((change, context) => {
+  const deck = change.after.data();
   if (deck.isClassroomPrivate) {
     return Promise.resolve();
   } else {
@@ -56,8 +56,8 @@ exports.onUserCreate = functions.firestore.document('users/{userId}').onCreate((
   return index.addObject(user);
 });
 
-exports.onUserUpdate = functions.firestore.document('users/{userId}').onUpdate((snap, context) => {
-  const user = snap.data();
+exports.onUserUpdate = functions.firestore.document('users/{userId}').onUpdate((change, context) => {
+  const user = change.after.data();
   user.objectID = context.params.userId;
   const index = algoliaClient.initIndex(ALGOLIAINDEX2);
   return index.saveObject(user);
@@ -79,8 +79,8 @@ exports.onListCreate = functions.firestore.document('lists/{listId}').onCreate((
   }
 });
 
-exports.onListUpdate = functions.firestore.document('lists/{listId}').onUpdate((snap, context) => {
-  const list = snap.data();
+exports.onListUpdate = functions.firestore.document('lists/{listId}').onUpdate((change, context) => {
+  const list = change.after.data();
   if (list.isClassroomPrivate) {
     return Promise.resolve();
   } else {
@@ -110,4 +110,38 @@ exports.onConceptDelete = functions.firestore.document('lists/{listId}/concepts/
   const conceptId = context.params.conceptId;
   const conceptDataRef = db.collection('selfExData').where('conceptId', '==', conceptId);
   return deleteCollection(conceptDataRef, 100, conceptDataRef);
+});
+
+// triggered by classroom student doc deletion
+exports.onStudentDelete = functions.firestore.document('classrooms/{classroomId}/users/{userId}').onDelete((snap, context) => {
+  // get IDs from context
+  const { classroomId, userId } = context.params;
+
+  // generate reference to all this student's study points in this classroom
+  const dataRef = db.collection('classSpacedRepData')
+    .where('classroomId', '==', classroomId)
+    .where('userId', '==', userId);
+
+  // generate reference to this student's record of the classroom
+  const userRef = db.collection('users').doc(userId);
+
+  // 1) delete user's reference to the classroom
+  // 2) delete all class spaced rep data of this user in the classroom
+  return Promise.all([
+    db.runTransaction((trans) => {
+      return trans.get(userRef).then((userDoc) => {
+        if (!userDoc.exists) {
+          throw 'Encountered nonexistant user doc, aborting...';
+        }
+
+        const existingClassrooms = userDoc.data().classrooms;
+        const offendingIndex = existingClassrooms.indexOf(classroomId);
+        if (offendingIndex >= 0) {
+          existingClassrooms.splice(offendingIndex, 1);
+        }
+        trans.update(userRef, { classrooms: existingClassrooms });
+      });
+    }),
+    deleteCollection(null, null, dataRef)
+  ]);
 });

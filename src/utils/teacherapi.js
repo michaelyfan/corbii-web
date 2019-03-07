@@ -17,16 +17,6 @@ const db = firebase.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-export function createClassroom(name, periods) {
-  const uid = firebase.auth().currentUser.uid;
-  const ref = db.collection('classrooms').doc(shortid.generate());
-  return ref.set({
-    name: name,
-    periods: periods,
-    teacherId: uid
-  });
-}
-
 /**
  * Gets all classrooms of a student. This function gets the teacher's ID from the active user
  *    session.
@@ -125,7 +115,73 @@ export function getStudentsInfo(students) {
   });
 }
 
-/*
+export function createClassroom(name, periods) {
+  const uid = firebase.auth().currentUser.uid;
+  const ref = db.collection('classrooms').doc(shortid.generate());
+  return ref.set({
+    name: name,
+    periods: periods,
+    teacherId: uid
+  });
+}
+
+/**
+ * Updates classroom doc in the DB with the new specified information.
+ * @param  {String} classroomId -- The ID of the classroom to update.
+ * @param  {String} (Optional) name -- The new desired name of the classroom.
+ * @param  {Array} (Optional periods -- Periods to add to this classroom. If this array contains periods that
+ *                            are already in the classroom, they will have no effect.
+ * @return {Promise} -- A Promise resolving to the result of the Firestore call.
+ */
+export function updateClassroom(classroomId, name, periods) {
+  // check for null parameters
+  if (classroomId == null) {
+    return Promise.reject(new Error('updateClassroom was called with null classroomId, aborting...'));
+  }
+
+  // check for name and periods both null -- in this case do nothing
+  if (name == null && periods == null) {
+    return Promise.resolve('No new classroom attributes provided -- nothing updated.');
+  }
+
+  // create Firestore reference
+  const ref = db.collection('classrooms').doc(classroomId);
+
+  if (periods) {
+    // run a Firestore transaction to get periods array
+    return db.runTransaction((trans) => {
+      return trans.get(ref).then((classroomDoc) => {
+        if (!classroomDoc.exists) {
+          throw 'updateClassroom attempted to update nonexistant classroom, aborting...';
+        }
+
+        // construct new periods array
+        const existingPeriods = classroomDoc.data().periods;
+        periods.forEach((period) => {
+          // before comparing periods, parse period to string just in case
+          const periodAsString = period + '';
+          if (!existingPeriods.includes(periodAsString)) {
+            existingPeriods.push(periodAsString);
+          }
+        });
+
+        if (name) { // case where both name and periods are defined
+          trans.update(ref, {
+            name,
+            periods: existingPeriods
+          });
+        } else { // case where just periods is defined
+          trans.update(ref, { periods: existingPeriods });
+        }
+      });
+    });
+  } else { // name is defined and periods is null
+    // just update classroom name
+    return ref.update({ name });
+  }
+}
+
+/**
  * Updates the periods available to a deck.
  *
  * @param {String} deckId -- the deckId of this deck
@@ -143,6 +199,24 @@ export function updateDeckPeriods(deckId, periods) {
   return docRef.update({
     periods: periods
   });
+}
+
+/**
+ * Deletes the specified user from the specified classroom.
+ * @param  {String} classroomId -- The ID of the classroom.
+ * @param  {String} userId -- The ID of the user to delete from the classroom.
+ * @return {Promise}  A Promise resolving to the result of the Firestore delete call.
+ */
+export function deleteStudent(classroomId, userId) {
+  // check for null params
+  if (classroomId == null || userId == null) {
+    return Promise.reject('updateDeckPeriods encountered one or more required params, aborting...');
+  }
+
+  const ref = db.collection('classrooms').doc(classroomId)
+    .collection('users').doc(userId);
+
+  return ref.delete();
 }
 
 /**
@@ -649,23 +723,17 @@ function calculateCardAverages(col) {
  * A tester function for teacherapi. This function has no production use.
  */
 async function main() {
-  const classroomId = '1234';
-  const deckId = '5678';
-  const x = {classroomId, deckId};
-  console.log(x);
-  // getCardAverage({classroomId: 'ABCD1234'}).then((res => {
-  //   console.log(res);
-  // })).catch(err => {
-  //   console.error('Error:', err);
-  // });
+  const classroomId = 'bnW6NlYWh';
+  // const classroomId = null;
+  const userId = 'testuserid';
+  // const userId = null;
 
-  // getClassDataRaw('ABCD1234').then((res) => {
-  //   return getCardAverage(null, res);
-  // }).then((res) => {
-  //   console.log(res);
-  // }).catch((err) => {
-  //   console.log('Error:', err);
-  // });
+  try {
+    const x = await deleteStudent(classroomId, userId);
+    console.log('success:', x);
+  } catch(e) {
+    console.error(e);
+  }
 
 }
 
