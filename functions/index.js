@@ -11,6 +11,72 @@ const ALGOLIAINDEX3 = functions.config().algolia.list_index;
 
 const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
+/**
+ * Function to handle period deletion from a classroom. Before executing a period deletion, this
+ *   checks if:
+ *   1) the client who called this function is the teacher of the period's classroom
+ *   2) the period has no students assigned to it.
+ *
+ * @param  {String} data.classroomId -- the classroomId of the period's classroom
+ * @param  {String} data.period -- the desired period to delete
+ * @param {String} context.auth.uid -- the Firebase UID of the client who called. Note
+ *                                  that context.auth is null if the request was unauthorized.
+ *
+ * @return {Promise} -- A Promise resolving to the result or an error. Read up on Firebase
+ *                      functions to gain a greater understanding of how this result is sent
+ *                      back to a client.
+ */
+exports.deletePeriod = functions.https.onCall((data, context) => {
+  const { classroomId, period } = data;
+  const teacherId = context.auth ? context.auth.uid : null;
+
+  // check for null params
+  if (classroomId == null || period == null || teacherId == null) {
+    throw new functions.https.HttpsError('invalid-argument', 'One of the provided arguments is '
+      + 'null.');
+  }
+
+  // create reference to this classroom and get it
+  const classRef = db.collection('classrooms').doc(classroomId);
+
+  return classRef.get().then((classSnap) => {
+    if (!classSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Requested classroom does not exist.');
+    }
+
+    // throw error if teacher is not this classroom's teacher
+    if (classSnap.data().teacherId !== teacherId) {
+      throw new functions.https.HttpsError('permission-denied', 'The user does not have permission'
+         + ' to perform this operation.');
+    }
+
+    // create reference to this classroom's students and get it
+    const studentsRef = classRef.collection('users').where('period', '==', period);
+    return Promise.all([
+      studentsRef.get(),
+      classSnap
+    ]);
+  }).then(([studentsSnap, classSnap]) => {
+    // reject if there are students left in this period
+    if (studentsSnap.size > 0) {
+      throw new functions.https.HttpsError('permission-denied', 'The classroom period still has'
+         + ' students; operation denied.');
+    }
+
+    // get the periods array and remove the desired period
+    const existingPeriods = classSnap.data().periods;
+    const indexToRemove = existingPeriods.indexOf(period);
+    if (indexToRemove !== -1) {
+      existingPeriods.splice(indexToRemove, 1);
+    }
+
+    // return an update operation
+    return classRef.update({
+      periods: existingPeriods
+    });
+  });
+});
+
 exports.onDeckCreate = functions.firestore.document('decks/{deckId}').onCreate((snap, context) => {
   // Get the deck document
   const deck = snap.data();

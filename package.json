@@ -9,7 +9,8 @@
     "build": "NODE_ENV=production webpack -p",
     "build-windows": "SET NODE_ENV=production&& webpack -p",
     "babel-version": "babel --version",
-    "lint": "node node_modules/eslint/bin/eslint.js ./src/components"
+    "lint": "node node_modules/eslint/bin/eslint.js ./src",
+    "lint-functions": "node node_modules/eslint/bin/eslint.js ./functions/index.js"
   },
   "babel": {
     "presets": [

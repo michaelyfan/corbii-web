@@ -12,6 +12,7 @@ shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX
 
 // tool initializations
 const db = firebase.firestore();
+const functions = firebase.functions();
 
 // For suppressing a console error
 const settings = {timestampsInSnapshots: true};
@@ -217,6 +218,33 @@ export function deleteStudent(classroomId, userId) {
     .collection('users').doc(userId);
 
   return ref.delete();
+}
+
+/**
+ * Deletes the specified period from the specified classroom. In order for a period to be deleted,
+ *   the period must have no students assigned to it; to delete a period, its students must be
+ *   deleted.
+ * This function is unique in that it returns a Promise but also uses an error callback. The
+ *   operation performed by this function has a potentially long compute time, so the function
+ *   does not wait for the operation to finish before returning to the user. The error callback
+ *   is executed only if the operation fails.
+ *
+ * @param  {String} classroomId -- The ID of the desired classroom
+ * @param  {String} period -- The desired period to delete
+ * 
+ * @return {Promise}             [description]
+ */
+export function deletePeriod(classroomId, period, errorCallback) {
+  // get the cloud function from Firebase and call it
+  const deletePeriod = functions.httpsCallable('deletePeriod');
+  deletePeriod({ classroomId, period }).catch((err) => {
+    // call the error callback ONLY IF the cloud function fails
+    errorCallback(err);
+  });
+  // return a Promise.resolve almost immediately to the user; note at this point the
+  //   above asynchronous function may not be done.
+  return Promise.resolve('This operation is being performed. Change might not be'
+    + ' immediately visible.');
 }
 
 /**
@@ -725,13 +753,21 @@ function calculateCardAverages(col) {
 async function main() {
   const classroomId = 'bnW6NlYWh';
   // const classroomId = null;
-  const userId = 'testuserid';
-  // const userId = null;
+  const period = '5';
+  // const period = null;
+
+  // delete period success
+  // delete period with students
+  // delete nonexistant period
+  // delete period in another classroom
 
   try {
-    const x = await deleteStudent(classroomId, userId);
-    console.log('success:', x);
+    const x = await deletePeriod(classroomId, period, (err) => {
+      console.error(err);
+    });
+    console.log('executed successfully, watch for errors...:', x);
   } catch(e) {
+    alert('Something went wrong with period deletion:', e);
     console.error(e);
   }
 

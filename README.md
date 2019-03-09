@@ -102,12 +102,12 @@ Delete: teacher of user's classroom only
   # call from client. student doc (classrooms/{classroomId}/users/{userId}) is deleted (deleteStudent in teacherapi)
   # Functions trigger -- all classSpacedRepData with this classroomId and with this userId is deleted (done)
   # Functions trigger -- this student's reference to the classroom (student doc data().classrooms) is deleted (done)
-* remove periods of the classroom
+* remove periods of the classroom (deletePeriod in Functions)
   # client calls Functions
-  # Functions verifies that teacher is teacher of that classroom
-  # Functions checks that no students in this class are assigned to this period
-    # if yes, then delete period. classroom doc update, and send success to client
-    # if no, send reject to client
+  # Functions verifies that teacher is teacher of that classroom (done)
+  # Functions checks that no students in this class are assigned to this period (done)
+    # if yes, then delete period. classroom doc update, and send success to client (done)
+    # if no, send reject to client (done)
 * classroom deletion
   # client calls Functions
   # Functions verifies that teacher is teacher of that classroom
@@ -120,6 +120,10 @@ Delete: teacher of user's classroom only
       # no need to delete classroom users or data since those should be preconditions
     # if no, send reject to client 
 * secure Firestore rules so that client updating a classroom can only be done on name or on periods added
+* add frontend for change name of classroom
+* add frontend for adding periods to classroom
+* add frontend for the master student list
+
 
 classroom ID: bnW6NlYWh
 user ID: testuserid
