@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import firebase from '../utils/firebase';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { getUserOnLogin, getCurrentUserProfilePic, createNewDbUser } from '../utils/api';
@@ -17,12 +16,13 @@ import Profile from './Profile';
 import StudyConcept from './StudyConcept';
 import StudyDeck from './StudyDeck';
 import Dashboard from './Dashboard';
-import TeacherDashboard from './teacher-student/TeacherDashboard';
 import Create from './Create';
 import DeniedNoAuth from './DeniedNoAuth';
-import ClassroomStudentView from './teacher-student/ClassroomStudentView';
 import { BigLoading } from './reusables/Loading';
 
+import ClassroomStudentView from './teacher-student/ClassroomStudentView';
+import TeacherDashboard from './teacher-student/TeacherDashboard';
+import ClassroomSettings from './teacher-student/ClassroomSettings';
 import ClassroomTeacherView from './teacher-student/ClassroomTeacherView';
 import StudentsTeacherView from './teacher-student/StudentsTeacherView';
 import StudentTeacherView from './teacher-student/StudentTeacherView';
@@ -240,6 +240,12 @@ class App extends React.Component {
                 loading={loading}
                 component={TeacherDashboard} />
               <TeacherPrivateRoute
+                path={routes.teacher.classSettingsTemplate}
+                signedIn={signedIn}
+                isTeacher={isTeacher}
+                loading={loading}
+                component={ClassroomSettings} />
+              <TeacherPrivateRoute
                 exact path={routes.teacher.viewClassroomTemplate}
                 signedIn={signedIn}
                 isTeacher={isTeacher}
@@ -286,7 +292,7 @@ class App extends React.Component {
                 component={DeniedNoAuth} />
               <Route component={NotFound} />
             </Switch>
-           </div>
+          </div>
           <Footer isTeacher={isTeacher} signedIn={signedIn} />
         </div>
       </Router>

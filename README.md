@@ -7,7 +7,8 @@ Check the Zenhub board for TODOs.
 
 During development, this app runs a webpack development server (port 8080) with hot reloading for react. The dev environment can be started with `npm run dev`.
 
-For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files.
+For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files. Also, any Firebase assets should be deployed to the production environment with `firebase use default`, then
+`firebase deploy` (this will also do the Hosting step for you, but either way `npm run build` must be run first).
 
 This app used to use Heroku, but that's behind us now.
 
@@ -80,23 +81,14 @@ These instructions will eventually become better
 
 ## Other dev notes
 
-rpOXCYzREjkYjzoHrMmo -- teacher deck
+### CLASSROOM PERMISSIONS
+Get: classroom teacher and classroom students
+Create: teachers only, and teacherId must match teacher UID
+Update: teacher only (teacherId)
+Delete: None (handled by Functions)
 
-jHPluVblaA9Ey680fa8L -- non-teacher deck
-
-npQsjvUH8R8iE97BEsFL -- non-teacher deck created by student
-
-1KKjW2csA5cuzy6pnyUYEDiK0pq2 -- student
-
-tVSwbCe263gMxkCrTlRY9nNCUCJ2 -- teacher
-
-EsIDDQkh7xWuE0LddH65BrpM3qe2 -- rando
-
-iA9NHmp@2 -- classroom
-
-* non-classroom decks can be read by anyone, unauthenticated and authenticated - DONE
-* classroom decks can be read only by teacher (creatorId) and students of that classroom (classroomId field) - DONE
-* non-classroom decks can be created by anyone, but isClassroomPrivate field must be set to false - DONE
-* classroom decks can only be created by teacher (isTeacher field), isClassroomPrivate field must be set to true - DONE
-* both non-classroom and classroom decks can be updated only by creator - DONE
-* both non-classroom and classroom decks can be deleted only by the creator - DONE
+### CLASSROOM USER PERMISSIONS
+Get: teacher of user's classroom only
+Create: user only. this means user can add themselves to any classroom
+Update: None (at the moment)
+Delete: teacher of user's classroom only

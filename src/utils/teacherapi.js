@@ -12,10 +12,309 @@ shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX
 
 // tool initializations
 const db = firebase.firestore();
+const functions = firebase.functions();
 
 // For suppressing a console error
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
+
+/**
+ * Gets all classrooms of a student. This function gets the teacher's ID from the active user
+ *    session.
+ * 
+ * @return the Promise returned by the DB call for this function.
+ */
+export function getClassrooms() {
+  const uid = firebase.auth().currentUser.uid;
+  return db.collection('classrooms').where('teacherId', '==', uid).get();
+}
+
+/**
+ * Gets all students that are in a classroom, and period if desired. This function
+ *   also gets the students' profile information.
+ *
+ * @param {String} classroomId - The ID of the classroom
+ * @param {String} period - (Optional) The desired period
+ * @param {String} returnAsObject - (Optional) If true, returns result as an object mapping
+ *                                student UIDs to student objects instead of as an array
+ *                                of student objects. 
+ *
+ * @return {Object} An array of student objects. Each object has attributes 'period', 'id',
+ *                     'name', and 'email' all of type String. If returnAsObject is true,
+ *                     an object is returned instead, where student IDs are mapped to the
+ *                     aforementioned student objects.
+ */
+export async function getStudentsFull(classroomId, period, returnAsObject) {
+  try {
+    const students = await getStudents(classroomId, period);
+    const userIds = students.map((student) => {
+      return student.id;
+    });
+    const studentsInfo = await getStudentsInfo(userIds);
+
+    if (returnAsObject === true) {
+      const toReturn = {};
+      students.forEach((student) => {
+        toReturn[student.id] = {
+          id: student.id,
+          period: student.period,
+          name: studentsInfo[student.id].name,
+          email: studentsInfo[student.id].email
+        };
+      });
+      return toReturn;
+    } else {
+      const toReturn = students.map((student) => {
+        return {
+          id: student.id,
+          period: student.period,
+          name: studentsInfo[student.id].name,
+          email: studentsInfo[student.id].email
+        };
+      });
+      return toReturn;
+    }
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
+/**
+ * Gets all students that are in a classroom, and period if desired.
+ *
+ * @param {String} classroomId - The ID of the classroom
+ * @param {String} period - (Optional) The desired period
+ *
+ * @return {Object} An array of student objects. Each object has attributes 'period' and 'id',
+ *    both of type {String}.
+ */
+export function getStudents(classroomId, period) {
+  let colRef = db.collection('classrooms').doc(classroomId).collection('users');
+  if (period) {
+    colRef = colRef.where('period', '==', period);
+  }
+  
+  return colRef.get().then((result) => {
+    let ids = [];
+    result.forEach((studentDataObject) => {
+      ids.push({
+        period: studentDataObject.data().period,
+        id: studentDataObject.id
+      });
+    });
+
+    return ids;
+  });
+}
+
+/**
+ * Gets profile information of a student, including a student's period.
+ *
+ * @param {String} userId - The ID of the student
+ *
+ * @return An promise resolving to an array of student objects.
+ *    Each object has attributes 'period' and 'id', both of
+ *    type {String}.
+ */
+export function getStudentInfo(classroomId, userId) {
+  const profileRef = db.collection('users').doc(userId);
+  const classProfileRef = db.collection('classrooms').doc(classroomId)
+    .collection('users').doc(userId);
+  return Promise.all([
+    profileRef.get(),
+    classProfileRef.get()
+  ]).then((res) => {
+    const [profile, classProfile] = res;
+    if (!profile.exists) {
+      throw new Error('This user does not exist.');
+    }
+    return {
+      id: userId,
+      name: profile.data().name,
+      email: profile.data().email,
+      period: classProfile.data().period
+    };
+  });
+}
+
+/**
+ * Gets info for multiple students. This does not include the students' periods.
+ *
+ * @param {String} students - an array of userId's, belonging to students
+ *
+ * @return {Object} An object with userId's of type String as the keys, and an object with
+ *    attributes 'name' and 'email' as the values
+ */
+export function getStudentsInfo(students) {
+  // set up for Promise.all call to get student documents
+  const calls = [];
+  students.forEach((student) => {
+    const userRef = db.collection('users').doc(student);
+    calls.push(userRef.get());
+  });
+
+  // get student documents
+  return Promise.all(calls).then((result) => {
+    const toReturn = {};
+    result.forEach((res, i) => {
+      toReturn[students[i]] = {
+        name: res.data().name,
+        email: res.data().email
+      };
+    });
+    return toReturn;
+  });
+}
+
+export function createClassroom(name, periods) {
+  const uid = firebase.auth().currentUser.uid;
+  const ref = db.collection('classrooms').doc(shortid.generate());
+  return ref.set({
+    name: name,
+    periods: periods,
+    teacherId: uid
+  });
+}
+
+/**
+ * Updates classroom doc in the DB with the new specified information.
+ * @param  {String} classroomId -- The ID of the classroom to update.
+ * @param  {String} (Optional) name -- The new desired name of the classroom.
+ * @param  {Array} (Optional) periods -- Periods to add to this classroom. If this array contains periods that
+ *                            are already in the classroom, they will have no effect.
+ * @return {Promise} -- A Promise resolving to the result of the Firestore call.
+ */
+export function updateClassroom(classroomId, name, periods) {
+  // check for null parameters
+  if (classroomId == null) {
+    return Promise.reject(new Error('updateClassroom was called with null classroomId, aborting...'));
+  }
+
+  // check for name and periods both null -- in this case do nothing
+  if (name == null && periods == null) {
+    return Promise.resolve('No new classroom attributes provided -- nothing updated.');
+  }
+
+  // create Firestore reference
+  const ref = db.collection('classrooms').doc(classroomId);
+
+  if (periods) {
+    // run a Firestore transaction to get periods array
+    return db.runTransaction((trans) => {
+      return trans.get(ref).then((classroomDoc) => {
+        if (!classroomDoc.exists) {
+          throw 'updateClassroom attempted to update nonexistant classroom, aborting...';
+        }
+
+        // construct new periods array
+        const existingPeriods = classroomDoc.data().periods;
+        periods.forEach((period) => {
+          // before comparing periods, parse period to string just in case
+          const periodAsString = period + '';
+          if (!existingPeriods.includes(periodAsString)) {
+            existingPeriods.push(periodAsString);
+          }
+        });
+
+        if (name) { // case where both name and periods are defined
+          trans.update(ref, {
+            name,
+            periods: existingPeriods
+          });
+        } else { // case where just periods is defined
+          trans.update(ref, { periods: existingPeriods });
+        }
+      });
+    });
+  } else { // name is defined and periods is null
+    // just update classroom name
+    return ref.update({ name });
+  }
+}
+
+/**
+ * Updates the periods available to a deck.
+ *
+ * @param {String} deckId -- the deckId of this deck
+ * @param {array} periods -- a periods object to update this deck with. structure
+ *    is:
+ {
+  'period key here': boolean
+ }
+ *
+ * @return a Promise resolving to a successful Firebase update result
+ */
+export function updateDeckPeriods(deckId, periods) {
+  const docRef = db.collection('decks').doc(deckId);
+
+  return docRef.update({
+    periods: periods
+  });
+}
+
+/**
+ * Deletes the specified user from the specified classroom.
+ * @param  {String} classroomId -- The ID of the classroom.
+ * @param  {String} userId -- The ID of the user to delete from the classroom.
+ * @return {Promise}  A Promise resolving to the result of the Firestore delete call.
+ */
+export function deleteStudent(classroomId, userId) {
+  // check for null params
+  if (classroomId == null || userId == null) {
+    return Promise.reject('deleteStudent missing one or more required params, aborting...');
+  }
+
+  const ref = db.collection('classrooms').doc(classroomId)
+    .collection('users').doc(userId);
+
+  return ref.delete();
+}
+
+/**
+ * Deletes the specified classroom. In order for a classroom to be deleted, the classroom must
+ * have no students assigned to it; to delete a classroom, students must be deleted first.
+ *
+ * Due to serverless cold starts, this function may have a long compute time before promise
+ * resolution/rejection.
+ *
+ * @param  {String} classroomId -- The ID of the desired classroom
+ * 
+ * @return {Promise} -- a Promise resolving to the result of the call, or rejecting.
+ */
+export function deleteClassroom(classroomId) {
+  // get the cloud function from Firebase and call it
+  const deleteClassroom = functions.httpsCallable('deleteClassroom');
+  return deleteClassroom({ classroomId });
+}
+
+/**
+ * Deletes the specified period from the specified classroom. In order for a period to be deleted,
+ * the period must have no students assigned to it; to delete a period, its students must be
+ * deleted.
+ *   
+ * Due to serverless cold starts, this function may have a long compute time before promise
+ * resolution/rejection.
+ *
+ * @param  {String} classroomId -- The ID of the desired classroom
+ * @param  {String} period -- The desired period to delete
+ * 
+ * @return {Promise} -- a Promise resolving to the result of the call, or rejecting.
+ */
+export function deletePeriod(classroomId, period) {
+  // get the cloud function from Firebase and call it
+  const deletePeriod = functions.httpsCallable('deletePeriod');
+  return deletePeriod({ classroomId, period });
+}
+
+/**
+ * @summary a utility function that creates a classroom join code
+ * @param  {String} id     The ID of this classroom
+ * @param  {String} period The period to which the desired join code will apply
+ * @return {String}        A join code for this classroom for the specified period
+ */
+export function createJoinCode(id, period) {
+  return `${id}-&${period}`;
+}
 
 /**
  * Generic function to get class data points.
@@ -133,104 +432,6 @@ export function filterClassDataRaw(filterOptions, data) {
     return filteredDocs;
   }
   return null;
-}
-
-/**
- * Gets all classrooms of a student. This function gets the teacher's ID from the active user
- *    session.
- * 
- * @return the Promise returned by the DB call for this function.
- */
-export function getClassrooms() {
-  const uid = firebase.auth().currentUser.uid;
-  return db.collection('classrooms').where('teacherId', '==', uid).get();
-}
-
-/**
- * Gets all students that are in a classroom, and period if desired.
- *
- * @param {String} classroomId - The ID of the classroom
- * @param {String} period - (Optional) The desired period
- *
- * @return {Object} An array of student objects. Each object has attributes 'period' and 'id',
- *    both of type {String}.
- */
-export function getStudents(classroomId, period) {
-  let colRef = db.collection('classrooms').doc(classroomId).collection('users');
-  if (period) {
-    colRef = colRef.where('period', '==', period);
-  }
-  
-  return colRef.get().then((result) => {
-    let ids = [];
-    result.forEach((studentDataObject) => {
-      ids.push({
-        period: studentDataObject.data().period,
-        id: studentDataObject.id
-      });
-    });
-
-    return ids;
-  });
-}
-
-/**
- * Gets profile information of a student, including a student's period.
- *
- * @param {String} userId - The ID of the student
- *
- * @return An promise resolving to an array of student objects.
- *    Each object has attributes 'period' and 'id', both of
- *    type {String}.
- */
-export function getStudentInfo(classroomId, userId) {
-  const profileRef = db.collection('users').doc(userId);
-  const classProfileRef = db.collection('classrooms').doc(classroomId)
-    .collection('users').doc(userId);
-  return Promise.all([
-    profileRef.get(),
-    classProfileRef.get()
-  ]).then((res) => {
-    const [profile, classProfile] = res;
-    if (!profile.exists) {
-      throw new Error('This user does not exist.');
-    }
-    return {
-      id: userId,
-      name: profile.data().name,
-      email: profile.data().email,
-      period: classProfile.data().period
-    };
-  });
-}
-
-/**
- * Gets info for multiple students. This does not include the students' periods.
- *
- * @param {String} students - an array of userId's, belonging to students
- *
- * @return {Object} An object with userId's of type String as the keys, and an object with
- *    attributes 'name' and 'email' as the values
- */
-export function getStudentsInfo(students) {
-  // set up for Promise.all call to get student documents
-  const calls = [];
-  students.forEach((student) => {
-    const userRef = db.collection('users').doc(student);
-    calls.push(userRef.get());
-  });
-
-  // get card documents
-  return Promise.all(calls).then((result) => {
-    const toReturn = {};
-    result.forEach((res, i) => {
-      toReturn[students[i]] = {
-        name: res.data().name,
-        email: res.data().email
-      };
-    });
-    return toReturn;
-  });
 }
 
 /**
@@ -604,60 +805,3 @@ function calculateCardAverages(col) {
   });
   return badCards;
 }
-
-export function createClassroom(name, periods) {
-  const uid = firebase.auth().currentUser.uid;
-  const ref = db.collection('classrooms').doc(shortid.generate());
-  return ref.set({
-    name: name,
-    periods: periods,
-    teacherId: uid
-  });
-}
-
-export function createJoinCode(id, period) {
-  return `${id}-&${period}`;
-}
-
-/*
- * Updates the periods available to a deck.
- *
- * @param {String} deckId -- the deckId of this deck
- * @param {array} periods -- a periods object to update this deck with. structure
- *    is:
- {
-  'period key here': boolean
- }
- *
- * @return a Promise resolving to a successful Firebase update result
- */
-export function updateDeckPeriods(deckId, periods) {
-  const docRef = db.collection('decks').doc(deckId);
-
-  return docRef.update({
-    periods: periods
-  });
-}
-
-async function main() {
-  const classroomId = '1234';
-  const deckId = '5678';
-  const x = {classroomId, deckId};
-  console.log(x);
-  // getCardAverage({classroomId: 'ABCD1234'}).then((res => {
-  //   console.log(res);
-  // })).catch(err => {
-  //   console.error('Error:', err);
-  // });
-
-  // getClassDataRaw('ABCD1234').then((res) => {
-  //   return getCardAverage(null, res);
-  // }).then((res) => {
-  //   console.log(res);
-  // }).catch((err) => {
-  //   console.log('Error:', err);
-  // });
-
-}
-
-// main();
