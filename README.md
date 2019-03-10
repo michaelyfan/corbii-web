@@ -7,7 +7,8 @@ Check the Zenhub board for TODOs.
 
 During development, this app runs a webpack development server (port 8080) with hot reloading for react. The dev environment can be started with `npm run dev`.
 
-For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files.
+For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files. Also, any Firebase assets should be deployed to the production environment with `firebase use default`, then
+`firebase deploy` (this will also do the Hosting step for you, but either way `npm run build` must be run first).
 
 This app used to use Heroku, but that's behind us now.
 
