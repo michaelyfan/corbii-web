@@ -120,7 +120,6 @@ Delete: teacher of user's classroom only
         # Functions trigger -- deck cards' data is deleted, but this does nothing since all data should be gone anyway (done)
       # no need to delete classroom users or data since those should be preconditions (done)
     # if no, send reject to client (done)
-* refactor Functions
 * secure Firestore rules so that client updating a classroom can only be done on name or on periods added
 * add frontend for change name of classroom
 * add frontend for adding periods to classroom

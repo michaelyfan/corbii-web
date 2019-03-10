@@ -1,15 +1,9 @@
-const functions = require('firebase-functions');
-const algoliasearch = require('algoliasearch');
+const { functions, db, algoliaClient } = require('./init');
 const { deleteCollection } = require('./utils');
-const db = require('./init');
 
-const ALGOLIA_ID = functions.config().algolia.app_id;
-const ALGOLIA_ADMIN_KEY = functions.config().algolia.admin_key;
 const ALGOLIAINDEX1 = functions.config().algolia.deck_index;
 const ALGOLIAINDEX2 = functions.config().algolia.user_index;
 const ALGOLIAINDEX3 = functions.config().algolia.list_index;
-
-const algoliaClient = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 /**
  * Function to handle period deletion from a classroom. Before executing a period deletion, this
@@ -156,7 +150,6 @@ exports.onDeckUpdate = functions.firestore.document('decks/{deckId}').onUpdate((
     const index = algoliaClient.initIndex(ALGOLIAINDEX1);
     return index.saveObject(deck);  
   }
-  
 });
 
 exports.onDeckDelete = functions.firestore.document('decks/{deckId}').onDelete((snap, context) => {
