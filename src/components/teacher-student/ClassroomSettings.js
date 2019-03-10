@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+
 import routes from '../../routes/routes';
 import BackButton from '../reusables/BackButton';
-
 import { getStudentsFull, updateClassroom, deleteStudent, deletePeriod, deleteClassroom } from '../../utils/teacherapi';
 import { getClassroomInfo } from '../../utils/api';
 
@@ -59,25 +61,44 @@ class Period extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      message: ''
+    };
+
     this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleDelete() {
-    const { classroomId, period } = this.props;
+    const { classroomId, period, getClassInfo } = this.props;
 
-    alert('Period is being deleted. Please give us a couple of seconds, then refresh the page.');
-    deletePeriod(classroomId, period, (err) => {
-      alert(`Something went wrong with period deletion:\n${err}`);
+    // display a 'thanks-for-your-patience' type error message
+    this.setState(() => ({
+      message: 'Loading...\nThanks for your patience. Period deletions have a possibility of taking a while.'
+    }), () => {
+      deletePeriod(classroomId, period).then(() => {
+        getClassInfo();
+        this.setState(() => ({
+          message: ''
+        }));
+      }).catch((err) => {
+        this.setState(() => ({
+          message: ''
+        }));
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+        console.error(err);
+      });
     });
   }
 
   render() {
     const { period } = this.props;
+    const { message } = this.state;
 
     return (
       <div>
         <h1 style={{display: 'inline'}}>Period {period}</h1>
         <button onClick={this.handleDelete}>Delete period</button>
+        <p>{message}</p>
       </div>
     );
   }
@@ -120,7 +141,7 @@ class PeriodList extends React.Component {
   }
 
   render() {
-    const { periods, classroomId } = this.props;
+    const { periods, classroomId, getClassInfo } = this.props;
     const { newPeriodInput } = this.state;
 
     return (
@@ -128,7 +149,7 @@ class PeriodList extends React.Component {
         <h1>Period list</h1>
         <div>
           { periods.map((period) =>
-            <Period key={period} period={period} classroomId={classroomId} />
+            <Period key={period} period={period} classroomId={classroomId} getClassInfo={getClassInfo} />
           )}
         </div>
         <div>
@@ -218,7 +239,8 @@ class ClassroomSettings extends React.Component {
     this.state = {
       students: [],
       periods: [],
-      name: 'Loading...'
+      name: 'Loading...',
+      deleteLoading: false
     };
 
     this.getClassStudents = this.getClassStudents.bind(this);
@@ -260,29 +282,68 @@ class ClassroomSettings extends React.Component {
     });
   }
 
-  handleDeleteClassroom() {
-    alert('Classroom will be deleted. Please give us a couple of seconds, then refresh the page.');
+  doDeleteClassroom() {
     const { id } = this.props.match.params;
-    deleteClassroom(id, (err) => {
-      alert(`Something went wrong with classroom deletion:\n${err}`);
+
+    // display a 'thanks-for-your-patience' type error message
+    this.setState(() => ({
+      deleteLoading: true
+    }), () => {
+      deleteClassroom(id).then(() => {
+        this.setState(() => ({
+          deleteLoading: false
+        }));
+        this.props.history.push(routes.teacher.dashboard);
+      }).catch((err) => {
+        this.setState(() => ({
+          deleteLoading: false
+        }));
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+        console.error(err);
+      });
     });
-    this.props.history.push(routes.teacher.dashboard);
+  }
+
+  handleDeleteClassroom() {
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui'>
+            <h1 className = 'delete-deck-confirm'>are you sure you want to delete this classroom?</h1>
+            <h1 className = 'delete-deck-confirm' id = 'small-confirm'>this action cannot be undone, and can take a while.</h1>
+            <div className = 'inline-display center-subtitle'>
+              <button className = 'no-button'onClick={onClose}>no</button>
+              <button className = 'yes-button' onClick={() => {
+                this.doDeleteClassroom();
+                onClose();
+              }}>yes</button>
+            </div>
+          </div>
+        );
+      }
+    });
   }
 
   render() {
     const { id } = this.props.match.params;
-    const { name, periods, students } = this.state;
+    const { name, periods, students, deleteLoading } = this.state;
 
     return (
       <div>
-        <BackButton redirectTo={routes.teacher.getViewClassroomRoute(id)} destination='classroom' />
-        <h1>CLASSROOM SETTINGS PAGE for {name}</h1>
-        <ChangeNameForm classroomId={id} getClassInfo={this.getClassInfo} />
-        <PeriodList classroomId={id} periods={periods} getClassInfo={this.getClassInfo} />
-        <StudentList classroomId={id} students={students} getClassStudents={this.getClassStudents} />
-        <div>
-          <button onClick={this.handleDeleteClassroom}>Delete this classroom</button>
-        </div>
+        {deleteLoading
+          ? <div>
+            <h1>Loading...</h1>
+          </div>
+          : <div>
+            <BackButton redirectTo={routes.teacher.getViewClassroomRoute(id)} destination='classroom' />
+            <h1>CLASSROOM SETTINGS PAGE for {name}</h1>
+            <ChangeNameForm classroomId={id} getClassInfo={this.getClassInfo} />
+            <PeriodList classroomId={id} periods={periods} getClassInfo={this.getClassInfo} />
+            <StudentList classroomId={id} students={students} getClassStudents={this.getClassStudents} />
+            <div>
+              <button onClick={this.handleDeleteClassroom}>Delete this classroom</button>
+            </div>
+          </div>}
       </div>
     );
   }
@@ -319,7 +380,8 @@ PeriodList.propTypes = {
 };
 Period.propTypes = {
   period: PropTypes.string.isRequired,
-  classroomId: PropTypes.string.isRequired
+  classroomId: PropTypes.string.isRequired,
+  getClassInfo: PropTypes.func.isRequired
 };
 ChangeNameForm.propTypes = {
   classroomId: PropTypes.string.isRequired,

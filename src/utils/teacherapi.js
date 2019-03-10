@@ -273,56 +273,37 @@ export function deleteStudent(classroomId, userId) {
 /**
  * Deletes the specified classroom. In order for a classroom to be deleted, the classroom must
  * have no students assigned to it; to delete a classroom, students must be deleted first.
- * 
- * This function is unique in that it returns a Promise but also uses an error callback. The
- *   operation performed by this function has a potentially long compute time, so the function
- *   does not wait for the operation to finish before returning to the user. The error callback
- *   is executed only if the operation fails.
+ *
+ * Due to serverless cold starts, this function may have a long compute time before promise
+ * resolution/rejection.
  *
  * @param  {String} classroomId -- The ID of the desired classroom
  * 
- * @return {Promise} -- a Promise returning an error, if any. See description for more
- *                      intricate information.
+ * @return {Promise} -- a Promise resolving to the result of the call, or rejecting.
  */
-export function deleteClassroom(classroomId, errorCallback) {
+export function deleteClassroom(classroomId) {
   // get the cloud function from Firebase and call it
   const deleteClassroom = functions.httpsCallable('deleteClassroom');
-  deleteClassroom({ classroomId }).catch((err) => {
-    // call the error callback ONLY IF the cloud function fails
-    errorCallback(err);
-  });
-  // return a Promise.resolve almost immediately to the user; note at this point the
-  //   above asynchronous function may not be done.
-  return Promise.resolve('This operation is being performed. Change might not be'
-    + ' immediately visible.');
+  return deleteClassroom({ classroomId });
 }
 
 /**
  * Deletes the specified period from the specified classroom. In order for a period to be deleted,
- *   the period must have no students assigned to it; to delete a period, its students must be
- *   deleted.
- * This function is unique in that it returns a Promise but also uses an error callback. The
- *   operation performed by this function has a potentially long compute time, so the function
- *   does not wait for the operation to finish before returning to the user. The error callback
- *   is executed only if the operation fails.
+ * the period must have no students assigned to it; to delete a period, its students must be
+ * deleted.
+ *   
+ * Due to serverless cold starts, this function may have a long compute time before promise
+ * resolution/rejection.
  *
  * @param  {String} classroomId -- The ID of the desired classroom
  * @param  {String} period -- The desired period to delete
  * 
- * @return {Promise} -- a Promise returning an error, if any. See description for more
- *                      intricate information.
+ * @return {Promise} -- a Promise resolving to the result of the call, or rejecting.
  */
-export function deletePeriod(classroomId, period, errorCallback) {
+export function deletePeriod(classroomId, period) {
   // get the cloud function from Firebase and call it
   const deletePeriod = functions.httpsCallable('deletePeriod');
-  deletePeriod({ classroomId, period }).catch((err) => {
-    // call the error callback ONLY IF the cloud function fails
-    errorCallback(err);
-  });
-  // return a Promise.resolve almost immediately to the user; note at this point the
-  //   above asynchronous function may not be done.
-  return Promise.resolve('This operation is being performed. Change might not be'
-    + ' immediately visible.');
+  return deletePeriod({ classroomId, period });
 }
 
 /**
