@@ -30,6 +30,56 @@ export function getClassrooms() {
 }
 
 /**
+ * Gets all students that are in a classroom, and period if desired. This function
+ *   also gets the students' profile information.
+ *
+ * @param {String} classroomId - The ID of the classroom
+ * @param {String} period - (Optional) The desired period
+ * @param {String} returnAsObject - (Optional) If true, returns result as an object mapping
+ *                                student UIDs to student objects instead of as an array
+ *                                of student objects. 
+ *
+ * @return {Object} An array of student objects. Each object has attributes 'period', 'id',
+ *                     'name', and 'email' all of type String. If returnAsObject is true,
+ *                     an object is returned instead, where student IDs are mapped to the
+ *                     aforementioned student objects.
+ */
+export async function getStudentsFull(classroomId, period, returnAsObject) {
+  try {
+    const students = await getStudents(classroomId, period);
+    const userIds = students.map((student) => {
+      return student.id;
+    });
+    const studentsInfo = await getStudentsInfo(userIds);
+
+    if (returnAsObject === true) {
+      const toReturn = {};
+      students.forEach((student) => {
+        toReturn[student.id] = {
+          id: student.id,
+          period: student.period,
+          name: studentsInfo[student.id].name,
+          email: studentsInfo[student.id].email
+        };
+      });
+      return toReturn;
+    } else {
+      const toReturn = students.map((student) => {
+        return {
+          id: student.id,
+          period: student.period,
+          name: studentsInfo[student.id].name,
+          email: studentsInfo[student.id].email
+        };
+      });
+      return toReturn;
+    }
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
+/**
  * Gets all students that are in a classroom, and period if desired.
  *
  * @param {String} classroomId - The ID of the classroom
@@ -103,7 +153,7 @@ export function getStudentsInfo(students) {
     calls.push(userRef.get());
   });
 
-  // get card documents
+  // get student documents
   return Promise.all(calls).then((result) => {
     const toReturn = {};
     result.forEach((res, i) => {
@@ -130,7 +180,7 @@ export function createClassroom(name, periods) {
  * Updates classroom doc in the DB with the new specified information.
  * @param  {String} classroomId -- The ID of the classroom to update.
  * @param  {String} (Optional) name -- The new desired name of the classroom.
- * @param  {Array} (Optional periods -- Periods to add to this classroom. If this array contains periods that
+ * @param  {Array} (Optional) periods -- Periods to add to this classroom. If this array contains periods that
  *                            are already in the classroom, they will have no effect.
  * @return {Promise} -- A Promise resolving to the result of the Firestore call.
  */
@@ -211,7 +261,7 @@ export function updateDeckPeriods(deckId, periods) {
 export function deleteStudent(classroomId, userId) {
   // check for null params
   if (classroomId == null || userId == null) {
-    return Promise.reject('updateDeckPeriods encountered one or more required params, aborting...');
+    return Promise.reject('deleteStudent missing one or more required params, aborting...');
   }
 
   const ref = db.collection('classrooms').doc(classroomId)
@@ -774,62 +824,3 @@ function calculateCardAverages(col) {
   });
   return badCards;
 }
-
-/**
- * A tester function for teacherapi. This function has no production use.
- */
-async function main() {
-  // teacherId: tVSwbCe263gMxkCrTlRY9nNCUCJ2
-  
-  const trialA = null;
-  const trialB = 'asdf';
-  const trialC = 'ZIAuKQ9j3et5yteNr41Y';
-  const trialD = 'bnW6NlYWh';
-  const trialE = '6OaXFcktTfItzxsorxM6';
-  const trialF = 'KWaSLMrwp6XYnrKWrayS';
-
-  // delete classroom with null classroomId
-  // delete nonexistant classroom
-  // delete classroom under a different teacher
-  // delete classroom with users
-  // delete classroom successfully
-  // delete classroom successfully that has decks
-
-  try {
-    await deleteClassroom(trialA, (err) => {
-      console.log('Trial A encountered error:');
-      console.error(err);
-    });
-    await deleteClassroom(trialB, (err) => {
-      console.log('Trial B encountered error:');
-      console.error(err);
-    });
-    await deleteClassroom(trialC, (err) => {
-      console.log('Trial C encountered error:');
-      console.error(err);
-    });
-    await deleteClassroom(trialD, (err) => {
-      console.log('Trial D encountered error:');
-      console.error(err);
-    });
-    await deleteClassroom(trialE, (err) => {
-      console.log('Trial E encountered error:');
-      console.error(err);
-    });
-    await deleteClassroom(trialE, (err) => {
-      console.log('Trial E encountered error:');
-      console.error(err);
-    });
-    await deleteClassroom(trialF, (err) => {
-      console.log('Trial F encountered error:');
-      console.error(err);
-    });
-
-  } catch(e) {
-    // Due to the nature of deleteClassroom and deletePeriod, this catch block should never be reached
-    console.log('Unreachable catch block triggered -- troubleshoot');
-  }
-
-}
-
-main();

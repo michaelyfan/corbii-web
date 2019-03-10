@@ -91,36 +91,3 @@ Get: teacher of user's classroom only
 Create: user only. this means user can add themselves to any classroom
 Update: None (at the moment)
 Delete: teacher of user's classroom only
-
-### CLASSROOM SETTINGS FUNCTIONS
-* change the name of the classroom (updateClassroom in teacherapi)
-  # classroom doc update, called from client
-* add periods to the classroom (updateClassroom in teacherapi)
-  # classroom doc update, called from client
-* the master student list -- where the teacher can kick out students.
-  # teacher chooses to delete a student
-  # call from client. student doc (classrooms/{classroomId}/users/{userId}) is deleted (deleteStudent in teacherapi)
-  # Functions trigger -- all classSpacedRepData with this classroomId and with this userId is deleted (done)
-  # Functions trigger -- this student's reference to the classroom (student doc data().classrooms) is deleted (done)
-* remove periods of the classroom (deletePeriod in Functions)
-  # client calls Functions
-  # Functions verifies that teacher is teacher of that classroom (done)
-  # Functions checks that no students in this class are assigned to this period (done)
-    # if yes, then delete period. classroom doc update, and send success to client (done)
-    # if no, send reject to client (done)
-* classroom deletion (deleteClassroom in Functions)
-  # client calls Functions
-  # Functions verifies that teacher is teacher of that classroom (done)
-  # Functions checks that this class has no students, which also implies the class has no data (done)
-    # if yes, then delete classroom (done)
-      # delete classroom doc (done)
-      # delete classroom decks
-        # delete deck docs (done)
-        # Functions trigger -- deck cards are deleted (done)
-        # Functions trigger -- deck cards' data is deleted, but this does nothing since all data should be gone anyway (done)
-      # no need to delete classroom users or data since those should be preconditions (done)
-    # if no, send reject to client (done)
-* secure Firestore rules so that client updating a classroom can only be done on name or on periods added
-* add frontend for change name of classroom
-* add frontend for adding periods to classroom
-* add frontend for the master student list

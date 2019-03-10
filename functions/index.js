@@ -236,11 +236,12 @@ exports.onStudentDelete = functions.firestore.document('classrooms/{classroomId}
     .where('userId', '==', userId);
 
   // generate reference to this student's record of the classroom
-  const userRef = db.collection('users').doc(userId);
+  const userRef = db.collection('users').doc(userId);  
 
   // 1) delete user's reference to the classroom
   // 2) delete all class spaced rep data of this user in the classroom
   return Promise.all([
+    deleteCollection(dataRef, 100, dataRef),
     db.runTransaction((trans) => {
       return trans.get(userRef).then((userDoc) => {
         if (!userDoc.exists) {
@@ -254,7 +255,6 @@ exports.onStudentDelete = functions.firestore.document('classrooms/{classroomId}
         }
         trans.update(userRef, { classrooms: existingClassrooms });
       });
-    }),
-    deleteCollection(null, null, dataRef)
+    })
   ]);
 });

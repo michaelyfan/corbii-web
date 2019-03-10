@@ -1,6 +1,6 @@
 /*eslint-env node*/
 
-const db = require('./init');
+const { db } = require('./init');
 
 function deleteDocument(documentPath) {
   return new Promise((resolve, reject) => {
