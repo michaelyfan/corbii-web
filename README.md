@@ -108,23 +108,20 @@ Delete: teacher of user's classroom only
   # Functions checks that no students in this class are assigned to this period (done)
     # if yes, then delete period. classroom doc update, and send success to client (done)
     # if no, send reject to client (done)
-* classroom deletion
+* classroom deletion (deleteClassroom in Functions)
   # client calls Functions
-  # Functions verifies that teacher is teacher of that classroom
-  # Functions checks that this class has no students, which also implies the class has no data
-    # if yes, then delete classroom
-      # delete classroom doc
+  # Functions verifies that teacher is teacher of that classroom (done)
+  # Functions checks that this class has no students, which also implies the class has no data (done)
+    # if yes, then delete classroom (done)
+      # delete classroom doc (done)
       # delete classroom decks
-        # delete deck docs
-        # Functions trigger -- deck cards are deleted
-      # no need to delete classroom users or data since those should be preconditions
-    # if no, send reject to client 
+        # delete deck docs (done)
+        # Functions trigger -- deck cards are deleted (done)
+        # Functions trigger -- deck cards' data is deleted, but this does nothing since all data should be gone anyway (done)
+      # no need to delete classroom users or data since those should be preconditions (done)
+    # if no, send reject to client (done)
+* refactor Functions
 * secure Firestore rules so that client updating a classroom can only be done on name or on periods added
 * add frontend for change name of classroom
 * add frontend for adding periods to classroom
 * add frontend for the master student list
-
-
-classroom ID: bnW6NlYWh
-user ID: testuserid
-teacher ID: tVSwbCe263gMxkCrTlRY9nNCUCJ2

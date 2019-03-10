@@ -221,6 +221,33 @@ export function deleteStudent(classroomId, userId) {
 }
 
 /**
+ * Deletes the specified classroom. In order for a classroom to be deleted, the classroom must
+ * have no students assigned to it; to delete a classroom, students must be deleted first.
+ * 
+ * This function is unique in that it returns a Promise but also uses an error callback. The
+ *   operation performed by this function has a potentially long compute time, so the function
+ *   does not wait for the operation to finish before returning to the user. The error callback
+ *   is executed only if the operation fails.
+ *
+ * @param  {String} classroomId -- The ID of the desired classroom
+ * 
+ * @return {Promise} -- a Promise returning an error, if any. See description for more
+ *                      intricate information.
+ */
+export function deleteClassroom(classroomId, errorCallback) {
+  // get the cloud function from Firebase and call it
+  const deleteClassroom = functions.httpsCallable('deleteClassroom');
+  deleteClassroom({ classroomId }).catch((err) => {
+    // call the error callback ONLY IF the cloud function fails
+    errorCallback(err);
+  });
+  // return a Promise.resolve almost immediately to the user; note at this point the
+  //   above asynchronous function may not be done.
+  return Promise.resolve('This operation is being performed. Change might not be'
+    + ' immediately visible.');
+}
+
+/**
  * Deletes the specified period from the specified classroom. In order for a period to be deleted,
  *   the period must have no students assigned to it; to delete a period, its students must be
  *   deleted.
@@ -232,7 +259,8 @@ export function deleteStudent(classroomId, userId) {
  * @param  {String} classroomId -- The ID of the desired classroom
  * @param  {String} period -- The desired period to delete
  * 
- * @return {Promise}             [description]
+ * @return {Promise} -- a Promise returning an error, if any. See description for more
+ *                      intricate information.
  */
 export function deletePeriod(classroomId, period, errorCallback) {
   // get the cloud function from Firebase and call it
@@ -751,26 +779,57 @@ function calculateCardAverages(col) {
  * A tester function for teacherapi. This function has no production use.
  */
 async function main() {
-  const classroomId = 'bnW6NlYWh';
-  // const classroomId = null;
-  const period = '5';
-  // const period = null;
+  // teacherId: tVSwbCe263gMxkCrTlRY9nNCUCJ2
+  
+  const trialA = null;
+  const trialB = 'asdf';
+  const trialC = 'ZIAuKQ9j3et5yteNr41Y';
+  const trialD = 'bnW6NlYWh';
+  const trialE = '6OaXFcktTfItzxsorxM6';
+  const trialF = 'KWaSLMrwp6XYnrKWrayS';
 
-  // delete period success
-  // delete period with students
-  // delete nonexistant period
-  // delete period in another classroom
+  // delete classroom with null classroomId
+  // delete nonexistant classroom
+  // delete classroom under a different teacher
+  // delete classroom with users
+  // delete classroom successfully
+  // delete classroom successfully that has decks
 
   try {
-    const x = await deletePeriod(classroomId, period, (err) => {
+    await deleteClassroom(trialA, (err) => {
+      console.log('Trial A encountered error:');
       console.error(err);
     });
-    console.log('executed successfully, watch for errors...:', x);
+    await deleteClassroom(trialB, (err) => {
+      console.log('Trial B encountered error:');
+      console.error(err);
+    });
+    await deleteClassroom(trialC, (err) => {
+      console.log('Trial C encountered error:');
+      console.error(err);
+    });
+    await deleteClassroom(trialD, (err) => {
+      console.log('Trial D encountered error:');
+      console.error(err);
+    });
+    await deleteClassroom(trialE, (err) => {
+      console.log('Trial E encountered error:');
+      console.error(err);
+    });
+    await deleteClassroom(trialE, (err) => {
+      console.log('Trial E encountered error:');
+      console.error(err);
+    });
+    await deleteClassroom(trialF, (err) => {
+      console.log('Trial F encountered error:');
+      console.error(err);
+    });
+
   } catch(e) {
-    alert('Something went wrong with period deletion:', e);
-    console.error(e);
+    // Due to the nature of deleteClassroom and deletePeriod, this catch block should never be reached
+    console.log('Unreachable catch block triggered -- troubleshoot');
   }
 
 }
 
-// main();
+main();
