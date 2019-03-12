@@ -8,10 +8,9 @@ import routes from '../routes/routes';
 function DeckMiniView(props) {
   const { id, name } = props;
   return (
-    <div className='deck-mini-view'>
-      <h3>{name}</h3>
+    <div className='deck-mini-view'> 
       <Link to={routes.viewDeck.getRoute(id)}>
-        <button>View</button>
+        <h3 className = 'profile-decklist'>{name}</h3>
       </Link>  
     </div>
   );
@@ -55,7 +54,7 @@ class User extends React.Component {
       <div>
         <BackButton redirectTo={routes.search.base} destination='search' />
         {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} /> }
-        <h2>{this.state.name}</h2>
+        <h2 className = 'username'>{this.state.name}</h2>
         {this.state.decks.map((deck) => 
           <DeckMiniView 
             key={deck.id}

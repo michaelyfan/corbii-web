@@ -26,6 +26,7 @@
 	width: 200px;
 	height: 200px;
 	object-fit: cover;
+	border: 1px solid black;
 }
 
 .profile-pic {
@@ -67,4 +68,15 @@
 
 .profile-padding {
 	padding-top: 20px;
+}
+
+.profile-decklist {
+	text-align: center;
+	font-family: Print Clearly;
+	font-size: 35px;
+	color: #A8B4C2;
+}
+
+.profile-decklist:hover {
+	color: #003466;
 }

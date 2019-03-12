@@ -42,11 +42,8 @@ class UserSearchResult extends React.Component {
     return (
       <div className='user-search-result'>
         <img src={this.state.profilePic} />
-        <h3>{name}</h3>
         <Link to={routes.viewUser.getRoute(id)}>
-          <button>
-            View
-          </button>
+          <h3 className = 'search-username' >{name}</h3>
         </Link>
       </div>
     );
@@ -125,7 +122,7 @@ class SearchResults extends React.Component {
       return (
         <div>
           {results.length === 0
-            ? <p>We didn&apos;t find anything  :(  try another search.</p>
+            ? <p className = 'no-results'>We didn&apos;t find anything  :(  try another search.</p>
             : results.map((result) => {
               if (displayedMode === 'users') {
                 return <UserSearchResult
@@ -154,7 +151,7 @@ class SearchResults extends React.Component {
     } else {
       return (
         <div>
-          <p style={{ margin: '0', padding: '16px' }}>Enter a search term.</p>
+          <p className = 'no-results' style={{ margin: '0', padding: '16px' }}>Enter a search term.</p>
         </div>
       );
     }
@@ -231,7 +228,7 @@ class Search extends React.Component {
       <div>
         <div className = 'main-searchbar'>
           <form onSubmit={this.enterActivator}>
-            <div>
+            <div className = 'disp-inline'>
               <input 
                 id = "big-search"
                 maxLength='1000'
@@ -246,6 +243,7 @@ class Search extends React.Component {
                 <button type='submit' className='no-display'></button>
               </Link>
 
+              <div className = 'push-over'>
               <Link
                 to={{
                   pathname: routes.search.base,
@@ -267,6 +265,7 @@ class Search extends React.Component {
                 }}>
                 <button className = 'filter-button' id = 'show-decks'> show lists </button>
               </Link>
+              </div>
             </div>
           </form>
         </div>

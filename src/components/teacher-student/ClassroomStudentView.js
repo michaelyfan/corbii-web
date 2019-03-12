@@ -53,10 +53,12 @@ class ClassroomStudentView extends React.Component {
     const { classroomId, decks, teacherName, period } = this.state;
     return (
       <div>
-        <h1>Viewing classroom</h1>
-        <p>Teacher: {teacherName}</p>
-        <p>Period: {period}</p>
-        <p>Id: {classroomId} </p>
+        <div className = 'dashboard-header'>
+          <h1>Viewing classroom</h1>
+          <p>Teacher: {teacherName}</p>
+          <p>Period: {period}</p>
+          <p>Id: {classroomId} </p>
+        </div>
         <div>
           {decks.map((deck) => <DeckRow name={deck.data().name} 
             classroomId={classroomId}

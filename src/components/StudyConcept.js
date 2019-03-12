@@ -177,7 +177,7 @@ class StudyConcept extends React.Component {
               answer={thisUserAnswer}
               handleChangeAnswer={this.handleChangeAnswer} />
             : <h2>This list doesn&apos;t have any concepts in it!</h2>}
-          
+        
           { index < concepts.length - 1 && 
             <img src = '/src/resources/next-arrow.png' 
               className = 'arrows'

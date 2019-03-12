@@ -15,12 +15,26 @@
 }
 
 .filter-button {
+  margin-top: 30px;
   background-color: #E0E9F5;
   color: #003466;
   border-radius: 0;
   font-size: 24px;
   padding-right: 8px;
   padding-left: 8px;  
+}
+
+.filter-button:hover {
+  background-color: #C0CEDE;
+}
+
+.push-over {
+  padding-left: 300px;
+}
+
+.no-results{
+  padding-left: 30px;
+  font-size: 30px;
 }
 
 .result-box {
@@ -42,10 +56,25 @@
 }
 
 .user-search-result {
-  margin: 50px;
+  margin: 50px;  
+}
+
+.flex {
+  display: flex;
 }
 
 .user-search-result img {
   height: 100px;
   border-radius: 50%;
+  border: 1px solid black;
 }
+
+.search-username {
+  font-size: 21px;
+  color: #003466;
+  padding-left: 10px;
+  padding-top: -10px;
+}
+
+
+
