@@ -308,3 +308,46 @@
   cursor: pointer;
   background-color: #A8B4C2;
 }
+
+.teacher-view-deck-title {
+  font-family: Nunito Bold;
+  color: #003466;
+  text-align: center;
+  font-size: 30px;
+  margin-top: 25px;
+  margin-bottom: 5px;
+}
+
+.teacher-view-deck-title:hover {
+  color: #A8B4C2;
+}
+
+.teacher-view-deck-detail {
+  text-align: center;
+  font-family: Print Clearly;
+  font-size: 25px;
+  color: #003466;
+  margin:0;
+}
+
+.edit-deck-button {
+  border: none;
+  text-decoration: none;
+  margin-top: 23px;
+  background-color: #003466;
+  font-family: Print Clearly;
+  color: #FFFFFF;
+  font-size: 20px;
+  border-radius: 4px;
+  margin-top: 5px;
+  padding: 3px;
+  margin: 0 auto;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+
+.deck-info-view {
+  padding-left: 20px;
+  padding-bottom: 20px;
+  padding-right: 20px;
+}

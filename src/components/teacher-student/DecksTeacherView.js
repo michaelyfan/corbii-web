@@ -12,12 +12,12 @@ import { getDecksInClassroom, getClassroomInfo  } from '../../utils/api.js';
 function DeckRow(props) {
   const { name, count, periods, deckId, classroomId } = props;
   return (
-    <div>
+    <div  className ='deck-info-view'>
       <Link to={routes.teacher.getViewDeckRoute(classroomId, deckId)}>
         <div style={{margin: '10px'}}>
-          <p>name: {name}</p>
-          <p>count: {count}</p>
-          <p>periods: {periods.toString()}</p>
+          <p className = 'teacher-view-deck-title'>{name}</p>
+          <p className = 'teacher-view-deck-detail'>{count} cards</p>
+          <p className = 'teacher-view-deck-detail'>periods: {periods.toString()}</p>
         </div>
       </Link>
       <Link to={{
@@ -27,7 +27,9 @@ function DeckRow(props) {
           classroomId
         }
       }}>
-        <button>Edit this deck</button>
+        <div className = 'flex'>
+          <button className = 'edit-deck-button'>edit this deck</button>
+        </div>
       </Link>
     </div>
   );
