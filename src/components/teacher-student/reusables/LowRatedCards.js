@@ -46,11 +46,11 @@ class LowRatedCards extends React.Component {
       <div className = 'low-card'>
         <h2 className = 'low-card-header'>{description}</h2>
         <div>
-          <span>Number of cards to show:</span>
-          <button onClick={() => {this.setState(() => ({ quantityFilter: null }));}}>all</button>
-          <button onClick={() => {this.setState(() => ({ quantityFilter: 5 }));}}>5</button>
-          <button onClick={() => {this.setState(() => ({ quantityFilter: 10 }));}}>10</button>
-          <button onClick={() => {this.setState(() => ({ quantityFilter: 20 }));}}>20</button>
+          <span className =  'filter-prompt'>number of cards to show:</span>
+          <button className = 'view-filter-button' onClick={() => {this.setState(() => ({ quantityFilter: null }));}}>all</button>
+          <button className = 'view-filter-button' onClick={() => {this.setState(() => ({ quantityFilter: 5 }));}}>5</button>
+          <button className = 'view-filter-button' onClick={() => {this.setState(() => ({ quantityFilter: 10 }));}}>10</button>
+          <button className = 'view-filter-button' onClick={() => {this.setState(() => ({ quantityFilter: 20 }));}}>20</button>
         </div>
         {arrayToRender.length === 0
           ? <p>You don&apos;t have any data yet! Try making a deck, and encourage your students to study.</p>
