@@ -16,7 +16,10 @@ function DeckRow(props) {
         classroomId: classroomId
       }
     }}>
-      <button>Study {name} (id: {id})</button>
+      <div className = 'flex'>
+        <button className = 'study-classroom-deck'>study {name}</button>
+        <br/>
+      </div>
     </Link>
   );
 }
@@ -56,13 +59,14 @@ class ClassroomStudentView extends React.Component {
     return (
       <div>
         <div className = 'dashboard-header'>
-          <h1>Viewing classroom</h1>
-          <h1>Classroom name: {classroomName}</h1>
-          <p>Teacher: {teacherName}</p>
-          <p>Period: {period}</p>
-          <p>Id: {classroomId} </p>
+          <h1 className = 'classroom-title'>{classroomName}</h1>
+          <p className = 'classroom-subtitle'>Teacher: {teacherName}</p>
+          <p className = 'classroom-subtitle'>Period: {period}</p>
+          <br/>
         </div>
-        <div>
+        <div className = 'classroom-body'>
+          <br/>
+          <br/>
           {decks.map((deck) => <DeckRow name={deck.data().name} 
             classroomId={classroomId}
             period={period}

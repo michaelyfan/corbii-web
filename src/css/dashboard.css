@@ -181,6 +181,39 @@ button.modify-stuff:hover {
   background-color: #E9F2FF;
 }
 
+.classroom-title {
+  text-align: center;
+  font-family: Nunito Bold;
+  color: #003466;
+  font-size: 70px;
+  margin-bottom: 0;
+}
+
+.classroom-subtitle {
+  text-align: center;
+  font-family: Nunito;
+  color: #003466;
+  font-size: 25px;
+  margin:0;
+}
+
+.classroom-body {
+  border-top: 5px double #003466;
+  background-color: #E9F2FF; 
+}
+
+.study-classroom-deck {
+  background-color: #E9F2FF; 
+  margin: 0 auto;
+  font-family: Print Clearly Bold;
+  color: #003466;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.study-classroom-deck:hover {
+  color: #A8B4C2;
+}
 
 @media screen and (max-width: 800px) {
   #dashboard-welcome {
