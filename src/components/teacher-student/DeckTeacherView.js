@@ -167,11 +167,11 @@ class DeckTeacherView extends React.Component {
           </div>
 
           <div className = 'active-view top-border'>
-            <div>
-              <h5>Filter:</h5>
-              <button onClick={() => {this.setState(() => ({ periodFilter: undefined }));}}>None</button>
+            <div className = 'flex'>
+              <p className = 'filter-prompt'>filter:</p>
+              <button className = 'view-filter-button small-height' onClick={() => {this.setState(() => ({ periodFilter: undefined }));}}>none</button>
               {periods.map((period) => 
-                <button onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
+                <button className = 'view-filter-button small-height' onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
               )}
             </div>
             <FilterTime handleTimes={this.changeTimeFilter} />
@@ -180,6 +180,7 @@ class DeckTeacherView extends React.Component {
                 <h3 className = 'stat'>this deck has: {count} cards</h3>
                 <h3 className = 'stat'>this deck supports periods: {deckPeriods.toString()}</h3>
                 <h3 className = 'stat'>avg. card rating: {averageRating}</h3>
+                <br/>
               </div>
             </div>
 
