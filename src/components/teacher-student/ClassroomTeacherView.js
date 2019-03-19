@@ -1,60 +1,16 @@
+/* Required dependency modules */
 import React from 'react';
 import PropTypes from 'prop-types';
+
+/* Required modules */
 import BackButton from '../reusables/BackButton';
+import FilterTime from '../reusables/FilterTime';
 import routes from '../../routes/routes';
 import TeacherSidebar from './reusables/TeacherSidebar';
 import LowRatedCards from './reusables/LowRatedCards';
 import { getClassroomInfo, getDeckInfo, getCardsInfo } from '../../utils/api';
 import { getClassDataRaw, filterClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi';
-import { getNow, getHoursBeforeNow, arraysAreSame } from '../../utils/tools';
-
-
-class FilterTime extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      startTime: '',
-      endTime: ''
-    };
-    this.handleInput = this.handleInput.bind(this);
-  }
-
-  handleInput(e) {
-    e.persist();
-    this.setState(() => ({
-      [e.target.name]: e.target.value
-    }));
-  }
-
-  render() {
-    const { changeTimeFilter } = this.props;
-    const { startTime, endTime } = this.state;
-    return (
-      <div>
-        <span className =  'filter-prompt'>show time:</span>
-        <button className = 'view-filter-button' onClick={() => {changeTimeFilter(null, null);}}>all</button>
-        <button className = 'view-filter-button' onClick={() => {changeTimeFilter(getHoursBeforeNow(24), getNow());}}>last day</button>
-        <button className = 'view-filter-button' onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7), getNow());}}>last week</button>
-        <button className = 'view-filter-button' onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7 * 30), getNow());}}>last 30 days</button>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            changeTimeFilter(startTime, endTime);
-          }}>
-            <div className = 'flex'>
-              <p className =  'filter-prompt'>custom time range...</p>
-              <input className = 'time-entry' type='text' name='startTime' value={startTime} onChange={this.handleInput}
-              placeholder="mm-dd-yyyy" />
-              <p className =  'filter-prompt'>to</p>
-              <input className = 'time-entry' type='text' name='endTime' value={endTime} onChange={this.handleInput}
-              placeholder="mm-dd-yyyy" />
-              <input className = 'primary-button' type='submit' value='submit' className = 'submit-time' />
-            </div>
-          </form>
-      </div>
-    );
-  }
-}
+import { arraysAreSame } from '../../utils/tools';
 
 class ClassroomTeacherView extends React.Component {
 
@@ -212,7 +168,7 @@ class ClassroomTeacherView extends React.Component {
                 <button className = 'view-filter-button' onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>period {period}</button>
               )}
             </div>
-            <FilterTime changeTimeFilter={this.changeTimeFilter} />
+            <FilterTime handleTimes={this.changeTimeFilter} />
 
             <div className= 'needs-border'>
               <div className = 'inline-display center-button'>
@@ -240,7 +196,4 @@ ClassroomTeacherView.propTypes = {
       id: PropTypes.string.isRequired
     })
   })
-};
-FilterTime.propTypes = {
-  changeTimeFilter: PropTypes.func.isRequired
 };

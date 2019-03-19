@@ -424,7 +424,7 @@ export function getClassroomCurrentUser(classroomId) {
 
 /*
  * Gets classroom information for the current user, which includes classroom's user doc,
- *    classroom doc, and all decks assigned to the current user's period.
+ *    classroom doc, teacher info, and all decks assigned to the current user's period.
  *
  * @param {String} classroomId - the ID of the desired classroom
  *
@@ -439,20 +439,24 @@ export function getClassroomForUser(classroomId) {
     getClassroomInfo(classroomId)
   ]).then((result) => {
     const period = result[0].data().period;
+    const teacherId = result[1].teacherId;
     return Promise.all([
       getDecksInClassroom(classroomId, period),
-      Promise.resolve(result[0]),
-      Promise.resolve(result[1])
+      db.collection('users').doc(teacherId).get(),
+      result[0],
+      result[1]
     ]);
   }).then((result) => {
-    const [ decksRes, classUserRes, classRes ] = result;
+    const [ decksRes, teacherRes, classUserRes, classRes ] = result;
     let decks = [];
     decksRes.forEach((deck) => {
       decks.push(deck);
     });
     return {
-      data: classRes,
-      id: classRes.id, // TODO: is this even necessary?
+      teacherId: classRes.teacherId,
+      name: classRes.name,
+      id: classRes.id,
+      teacherName: teacherRes.data().name,
       period: classUserRes.data().period,
       decks: decks
     };
