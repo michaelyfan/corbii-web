@@ -368,3 +368,36 @@
 .period-num {
   margin-bottom: 25px;
 }
+
+.period-filter-bar {
+  display: flex;
+}
+
+.small-height {
+  margin-top: 20px;
+  height: 35px;
+}
+
+.student-name {
+  font-family: Nunito Bold;
+  font-size: 25px;
+  color: #003466;
+  text-align: center;
+}
+
+.student-name:hover {
+  color: #A8B4C2;
+}
+
+.student-period {
+  font-family: Print Clearly;
+  font-size: 22px;
+  color: #A8B4C2;
+  text-align: center;
+  padding-left: 5px;
+  margin-top: 8px;
+}
+
+.no-hover:hover {
+  background-color: #E9F2FF;
+}
