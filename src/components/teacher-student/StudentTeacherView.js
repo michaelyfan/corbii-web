@@ -216,11 +216,11 @@ class StudentTeacherView extends React.Component {
           </div>
 
           <div className = 'active-view top-border'>
-            <div>
-              <h5>Filter:</h5>
-              <button onClick={() => {this.setState(() => ({ deckFilter: undefined }));}}>None</button>
+            <div className = 'flex'>
+              <p className = 'filter-prompt'>filter:</p>
+              <button className = 'view-filter-button small-height' onClick={() => {this.setState(() => ({ deckFilter: undefined }));}}>none</button>
               {Object.entries(decks).map((pair) =>
-                <button onClick={() => {this.setState(() => ({ deckFilter: pair[0] }));}} key={pair[0]}>{pair[1]}</button>
+                <button className = 'view-filter-button small-height' onClick={() => {this.setState(() => ({ deckFilter: pair[0] }));}} key={pair[0]}>{pair[1]}</button>
               )}
             </div>
             <FilterTime handleTimes={this.changeTimeFilter} />
@@ -229,6 +229,7 @@ class StudentTeacherView extends React.Component {
                 <h3 className = 'stat'>cards studied: {numCardsStudied}</h3>
                 <h3 className = 'stat'>avg. card rating: {averageRating.toFixed(2)}</h3>
                 <h3 className = 'stat'>avg. card time: {Math.trunc(averageTime)} seconds</h3>
+                <br/>
               </div>
               <div>
                 <h2>GRAPH GOES HERE</h2>
