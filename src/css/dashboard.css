@@ -177,6 +177,10 @@ button.modify-stuff:hover {
   padding-top: 10px;
 }
 
+.add-to-period {
+  background-color: #E9F2FF;
+}
+
 
 @media screen and (max-width: 800px) {
   #dashboard-welcome {

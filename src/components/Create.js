@@ -9,12 +9,13 @@ import TextareaAutosize from 'react-autosize-textarea';
 function SelectPeriods(props) {
   const { periods, handlePeriodChange } = props;
   return (
-    <div>
-      <p>Select the periods you&apos;d like to assign this deck to.</p>
+    <div className = 'add-to-period'>
+      <p className =  'filter-prompt check-period'>Select the periods you&apos;d like to assign this deck to.</p>
       <form>
         {Object.keys(periods).map((period) =>
-          <label key={period}> Period {period}:
+          <label className =  'filter-prompt check-period period-num' key={period}> Period {period}:
             <input
+             className =  'filter-prompt check-period period-num'
               name={period}
               type='checkbox'
               checked={periods[period]}

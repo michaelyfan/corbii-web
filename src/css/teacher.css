@@ -346,8 +346,25 @@
   padding-left: 3px;
 }
 
+.edit-deck-button:hover {
+  background-color: #A8B4C2;
+}
+
 .deck-info-view {
   padding-left: 20px;
   padding-bottom: 20px;
   padding-right: 20px;
+}
+
+.check-period {
+  font-size: 27px;
+  color: #003466;
+  font-family: Nunito Bold;
+  margin-top: 0;
+  padding-left: 45px;
+  margin-bottom: 5px;
+}
+
+.period-num {
+  margin-bottom: 25px;
 }
