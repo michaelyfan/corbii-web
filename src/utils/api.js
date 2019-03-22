@@ -359,17 +359,15 @@ export function getUserAll(uid) {
       Promise.resolve(res),
       getUserDecks(uid),
       getUserConceptLists(uid),
-      getProfilePic(uid)
     ]);
   }).then((results) => {
-    const [ user, decks, conceptLists, url ] = results;
+    const [ user, decks, conceptLists ] = results;
     return {
       name: user.data().name,
       email: user.data().email,
       id: user.id,
       decks: decks,
       conceptLists: conceptLists,
-      photoURL: url
     };
   });
 }

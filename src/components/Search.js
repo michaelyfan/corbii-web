@@ -29,11 +29,11 @@ class UserSearchResult extends React.Component {
   }
 
   componentDidMount() {
-    getProfilePic(this.props.id).then((result) => {
+    const { id } = this.props;
+    getProfilePic(id).then((result) => {
       this.setState(() => ({profilePic: result}));
     }).catch((err) => {
-      console.error(err);
-      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+      console.error(`User search result ${id} encountered error:`, err);
     });
   }
 
@@ -244,27 +244,27 @@ class Search extends React.Component {
               </Link>
 
               <div className = 'push-over'>
-              <Link
-                to={{
-                  pathname: routes.search.base,
-                  search: routes.search.getQueryString('decks', q)
-                }}>
-                <button className = 'filter-button' id = 'show-decks'> show decks </button>
-              </Link>
-              <Link
-                to={{
-                  pathname: routes.search.base,
-                  search: routes.search.getQueryString('users', q)
-                }}>
-                <button className = 'filter-button' id = 'show-users'> show users </button>
-              </Link>
-              <Link
-                to={{
-                  pathname: routes.search.base,
-                  search: routes.search.getQueryString('lists', q)
-                }}>
-                <button className = 'filter-button' id = 'show-decks'> show lists </button>
-              </Link>
+                <Link
+                  to={{
+                    pathname: routes.search.base,
+                    search: routes.search.getQueryString('decks', q)
+                  }}>
+                  <button className = 'filter-button' id = 'show-decks'> show decks </button>
+                </Link>
+                <Link
+                  to={{
+                    pathname: routes.search.base,
+                    search: routes.search.getQueryString('users', q)
+                  }}>
+                  <button className = 'filter-button' id = 'show-users'> show users </button>
+                </Link>
+                <Link
+                  to={{
+                    pathname: routes.search.base,
+                    search: routes.search.getQueryString('lists', q)
+                  }}>
+                  <button className = 'filter-button' id = 'show-decks'> show lists </button>
+                </Link>
               </div>
             </div>
           </form>
