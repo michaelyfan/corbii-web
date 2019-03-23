@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import BackButton from './reusables/BackButton';
-import { getUserAll } from '../utils/api';
+import { getUserAll, getProfilePic } from '../utils/api';
 import routes from '../routes/routes';
 
 function DeckMiniView(props) {
@@ -23,38 +23,53 @@ class User extends React.Component {
     this.state = {
       name: '',
       decks: [],
-      profilePic: null
+      profilePic: null,
+      isTeacher: false
     };
   }
 
   componentDidMount() {
-    this.updateDeck();
+    this.updateUser();
   }
 
-  async updateDeck() {
+  async updateUser() {
     const { id } = this.props.match.params;
-    let user;
+    let newState;
     try {
-      user = await getUserAll(id);
-      this.setState(() => ({
+      const user = await getUserAll(id);
+      newState = {
         name: user.name,
         decks: user.decks,
         id: user.id,
-        profilePic: user.photoURL
-      }));
-
+        isTeacher: user.isTeacher
+      };
     } catch(err) {
-      console.error(err);
       alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+      return console.error(err);
     }
+
+    try {
+      newState.profilePic = await getProfilePic(id);
+    } catch (err) {
+      console.error('Error encountered when retrieving profile pic: ', err);
+    }
+
+    this.setState(() => newState);
   }
 
   render() {
+    const { isTeacher } = this.state;
     return (
       <div>
         <BackButton redirectTo={routes.search.base} destination='search' />
         {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} /> }
         <h2 className = 'username'>{this.state.name}</h2>
+        { isTeacher 
+          && <div style={{textAlign: 'center'}}>
+            <h2>TEACHER</h2>
+            <p>Decks created by teachers are hidden from the public.</p>
+          </div>}
+        <h3></h3>
         {this.state.decks.map((deck) => 
           <DeckMiniView 
             key={deck.id}

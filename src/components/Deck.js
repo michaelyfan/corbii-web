@@ -390,8 +390,12 @@ class Deck extends React.Component {
         periods: periodsState
       }));
     } catch(err) {
-      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
-      console.error(err);
+      if (err.code === 'permission-denied') {
+        this.props.history.push(routes.denied.base);
+      } else {
+        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+        console.error(err);
+      }
     }
   }
 
@@ -521,11 +525,13 @@ class Deck extends React.Component {
             {isForClassroom
               && <SelectPeriods deckId={id} periods={periods} handlePeriodChange={this.handlePeriodChange} /> }
 
-            <div className = 'inline-display center-subtitle'>
+            { userIsOwner
+            && <div className = 'inline-display center-subtitle'>
               <button className = 'red delete-deck' onClick = {this.submitDelete}> 
                 delete this deck
               </button>
             </div>
+            }
           </div>
         </div>
       );
