@@ -47,7 +47,6 @@ service cloud.firestore {
       // 
       // In all cases the deck's creatorId field must correspond to the user, and the deck's name
       // must be less than 150 characters long.
-      allow read: if !("isClassroomPrivate" in resource.data)
       allow create: if isSignedIn()
         && request.auth.uid == request.resource.data.creatorId
         && request.resource.data.name.size() <= 150
