@@ -34,10 +34,10 @@ service cloud.firestore {
       }
     
       // allow a deck read if one of the following is met:
-      // 1) a deck is not classroom-private
-      // 2) the user is the deck's creator (handles teacher accessing teacher decks)
+      // 1) the user is the deck's creator (handles teacher accessing teacher decks)
+      // 2) a deck is not classroom-private
       // 3) the user is a student in the deck's classroom (applies to classroom-private decks)
-      allow read: if !("isClassroomPrivate" in resource.data)
+      allow read: if !(resource.data.isClassroomPrivate == true)
         || (isSignedIn() && request.auth.uid == resource.data.creatorId)
         || userIsStudentOfClassroom(resource.data.classroomId);
       

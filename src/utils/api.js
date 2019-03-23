@@ -325,8 +325,10 @@ export function getProfilePic(uid) {
 }
 
 export function getUserDecks(uid) {
-  return db.collection('decks').where('creatorId', '==', uid).get()
-    .then((querySnapshot) => {
+  return db.collection('decks')
+    .where('creatorId', '==', uid)
+    .where('isClassroomPrivate', '==', false)
+    .get().then((querySnapshot) => {
       let decksArr = [];
       querySnapshot.forEach((deck) => {
         decksArr.push({
@@ -356,7 +358,7 @@ export function getUserAll(uid) {
   // get user profile info first to allow error to catch if this user doesn't exist
   return getUserProfileInfo(uid).then((res) => {
     return Promise.all([
-      Promise.resolve(res),
+      res,
       getUserDecks(uid),
       getUserConceptLists(uid),
     ]);
@@ -365,6 +367,7 @@ export function getUserAll(uid) {
     return {
       name: user.data().name,
       email: user.data().email,
+      isTeacher: user.data().isTeacher || false,
       id: user.id,
       decks: decks,
       conceptLists: conceptLists,
@@ -544,7 +547,8 @@ export function createDeckCurrentUser(params) {
     name: deckName,
     creatorId: uid,
     creatorName: displayName,
-    count: (cards && cards.length) || 0
+    count: (cards && cards.length) || 0,
+    isClassroomPrivate: false
   };
   if (isForClassroom) {
     let periodObject = {};
@@ -762,8 +766,8 @@ function updateDeckCountByOne(deckId, isIncrement) {
         count: newCount
       });
 
-    })
-  })
+    });
+  });
 }
 
 function updateListCountByOne(listId, isIncrement) {
@@ -781,8 +785,8 @@ function updateListCountByOne(listId, isIncrement) {
         count: newCount
       });
 
-    })
-  })
+    });
+  });
 }
 
 export function updateCurrentUserDeck(deckId, deckName, cards) {
@@ -949,26 +953,21 @@ export function searchLists(query) {
 // end search functions
 
 async function main() {
-  try {
-    const args = [
-      {
-        cardId: 'MVJo0hPXhc34pl5a8cDi',
-        deckId: '39Afm0PZBMrTvIKEMfCS'
-      },
-      {
-        cardId: 'PFpNVI9fYB6RX6zGmyQN',
-        deckId: '39Afm0PZBMrTvIKEMfCS'
-      },
-      {
-        cardId: '0gcyzyO1Q1QN8P1dvshA',
-        deckId: 'Cm4nLlNNOZZClH61G2CM'
-      },
-    ];
-    const res = await getCardsInfo(args);
-    console.log(res);
-  } catch (e) {
-    console.log(e);
-  }
+  // db.collection('decks').doc('rpOXCYzREjkYjzoHrMmo').get().catch((err) => {
+  //   console.log('from main', err);
+  // });
+
+  db.collection('decks').doc('rpOXCYzREjkYjzoHrMmo').get().then((res) => {
+    console.log('1 E S', res);
+  }).catch((err) => {
+    console.log('1 E', err);
+  });
+
+  db.collection('decks').get().then((res) => {
+    console.log('2 E S', res);
+  }).catch((err) => {
+    console.log('2 E', err);
+  });
 }
 
 // main();

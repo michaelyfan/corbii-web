@@ -23,7 +23,8 @@ class User extends React.Component {
     this.state = {
       name: '',
       decks: [],
-      profilePic: null
+      profilePic: null,
+      isTeacher: false
     };
   }
 
@@ -40,6 +41,7 @@ class User extends React.Component {
         name: user.name,
         decks: user.decks,
         id: user.id,
+        isTeacher: user.isTeacher
       };
     } catch(err) {
       alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
@@ -56,11 +58,18 @@ class User extends React.Component {
   }
 
   render() {
+    const { isTeacher } = this.state;
     return (
       <div>
         <BackButton redirectTo={routes.search.base} destination='search' />
         {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} /> }
         <h2 className = 'username'>{this.state.name}</h2>
+        { isTeacher 
+          && <div style={{textAlign: 'center'}}>
+            <h2>TEACHER</h2>
+            <p>Decks created by teachers are hidden from the public.</p>
+          </div>}
+        <h3></h3>
         {this.state.decks.map((deck) => 
           <DeckMiniView 
             key={deck.id}
