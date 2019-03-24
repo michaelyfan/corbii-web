@@ -60,7 +60,7 @@ class DecksTeacherView extends React.Component {
       const classroomInfo = await getClassroomInfo(id);
 
       // get classrooms' decks and info
-      const decks = await getDecksInClassroom(id);
+      const decks = await getDecksInClassroom(id, null, true);
       
       // construct decks attribute of state
       const decksState = [];

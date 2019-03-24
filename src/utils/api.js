@@ -400,12 +400,35 @@ export function getCurrentUserProfileInfo() {
   return getUserProfileInfo(uid);
 }
 
-export function getDecksInClassroom(classroomId, period) {
+/**
+ * Gets all decks that are in a classroom. Should only be used by teachers; a student attempting to
+ *   use this function will most likely result in a permission-denied Firebase error.
+ * @param  {String} classroomId The ID of the classroom from which to get decks
+ * @param  {String} period      (Optional) The period form which to get decks
+ * @param  {Boolean} isTeacher  (Optional) Will be used if this function is being used by a teacher.
+ * @return {Promise}            A Promise resolving to the result of the Firebase call or an error.
+ */      
+export function getDecksInClassroom(classroomId, period, isTeacher) {
+  const uid = firebase.auth().currentUser.uid;
+
   let colRef;
-  if (period) {
-    colRef = db.collection('decks').where('classroomId', '==', classroomId).where(`periods.${period}`, '==', true);
-  } else {
-    colRef = db.collection('decks').where('classroomId', '==', classroomId);
+  // varies the colRef depending on which Optional params are passed in
+  if (isTeacher && period) { // period and teacher both passed in
+    colRef = db.collection('decks')
+      .where('creatorId', '==', uid) // creatorId necessary for Firebase query security
+      .where('classroomId', '==', classroomId)
+      .where(`periods.${period}`, '==', true);
+  } else if (isTeacher) { // just isTeacher passed in
+    colRef = db.collection('decks')
+      .where('creatorId', '==', uid)
+      .where('classroomId', '==', classroomId);
+  } else if (period) { // just period passed in
+    colRef = db.collection('decks')
+      .where('classroomId', '==', classroomId)
+      .where(`periods.${period}`, '==', true);
+  } else { // classroomId was the only arg passed in
+    colRef = db.collection('decks')
+      .where('classroomId', '==', classroomId);
   }
   return colRef.get();
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { getClassroomForUser, getClassroomCurrentUser } from '../../utils/api';
+import { getClassroomForUser } from '../../utils/api';
 import routes from '../../routes/routes';
 
 function DeckRow(props) {

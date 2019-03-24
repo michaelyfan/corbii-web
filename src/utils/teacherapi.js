@@ -708,20 +708,44 @@ export async function getConsistentLowCards(queryOptions, data) {
  *    of all cards available to the student (the number of all cards in all decks assigned to
  *    the student's period). 
  *
- * @param {String} classroomId - the ID of the student's classroom
- * @param {String} userId - the ID of the student
- * @param {String} period - the period of this student
+ * @param {String} queryOptions.classroomId - the ID of the student's classroom
+ * @param {String} queryOptions.userId - the ID of the student
+ * @param {String} queryOptions.period - the period of this student
+ * @param {String} (Optional) queryOptions.deckId - the deck by which to filter these results
  * @param {Object} data - (Optional) A Firebase collection result object containing the data
- *    points that will be used in this function. Unlike other functions, other params will still
- *    be used for the decksRef
+ *    points that will be used in this function. If both this and retrievedDecks are supplied,
+ *    then queryOptions is not necessary.
+ * @param {Object} retrievedDecks - (Optional) A Firebase QuerySnapshot or an array containing
+ *                                the decks that will be used in this function. If both this and
+ *                                data are supplied, then queryOptions is not necessary.
  *
  * @return A Promise resolving to an array where the first element is the number of cards the
  *    student has studied, and the second element is the number of all cards available to the
  *    student (the number of all cards in all decks assigned to the student's period).
  */
-export async function getStudentStudyRatio(classroomId, userId, period, data) {
+export async function getStudentStudyRatio(queryOptions, data, retrievedDecks) {
+  const uid = firebase.auth().currentUser.uid;
+
+  // check for null query options; only matters if either data or retrievedDecks were not supplied
+  let classroomId, period, deckId, userId;
+  if (!data || !retrievedDecks) {
+    if (queryOptions == null) {
+      return Promise.reject('queryOptions cannot be null if data or deck data aren\'t provided, aborting...');
+    }
+    ({ classroomId, period, deckId, userId } = queryOptions);
+    if (classroomId == null) {
+      return Promise.reject('classroomId cannot be null if data or deck data aren\'t provided, aborting...');
+    }
+    if (userId == null) {
+      return Promise.reject('userId cannot be null if data or deck data aren\'t provided, aborting...');
+    }
+    if (period == null) {
+      return Promise.reject('period cannot be null if data or deck data aren\'t provided, aborting...');
+    }
+  }
+
+  // get all datapoints applicable to this user in this classroom
   let dataRes;
-  let decksRes;
   if (data) {
     dataRes = data;
   } else {
@@ -735,14 +759,30 @@ export async function getStudentStudyRatio(classroomId, userId, period, data) {
     }
   }
 
-  const decksRef = db.collection('decks')
-    .where('classroomId', '==', classroomId)
-    .where(`periods.${period}`, '==', true);
-  try {
-    decksRes = await decksRef.get();
-  } catch (e) {
-    return Promise.reject(e);
+  // get all decks available to this user in this classroom
+  let decksRes;
+  if (retrievedDecks) {
+    decksRes = retrievedDecks;
+  } else {
+    let decksRef;
+    if (deckId) {
+      decksRef = db.collection('decks').doc(deckId);
+    } else {
+      decksRef = db.collection('decks')
+        .where('creatorId', '==', uid) // creatorId necessary for Firebase query security
+        .where('classroomId', '==', classroomId)
+        .where(`periods.${period}`, '==', true);
+    }
+    try {
+      decksRes = await decksRef.get();
+      if (deckId) { // place deckRes into an array to mimic Firestore collection retrieval
+        decksRes = [ decksRes ];
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
+  
   // count the number of cards among retrieved datapoints
   const cardRecord = {};
   dataRes.forEach((datapt) => {
@@ -750,11 +790,13 @@ export async function getStudentStudyRatio(classroomId, userId, period, data) {
       cardRecord[datapt.data().cardId] = true;
     }
   });
+
   // sum up the number of cards in retrieved decks
   let numCards = 0;
   decksRes.forEach((deck) => {
     numCards += deck.data().count;
   });
+
   return Promise.resolve([Object.keys(cardRecord).length, numCards]);
 }
 

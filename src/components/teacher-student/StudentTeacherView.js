@@ -90,12 +90,11 @@ class StudentTeacherView extends React.Component {
       'deckIdHere': deckName
      }
      *
+     * data is an array of datapoint objects
      */
     this.state = {
-      allData: null,
       name: 'Loading...',
       period: '0',
-      periods: [],
       photoUrl: '',
       numCardsStudied: 0,
       averageRating: 0,
@@ -106,6 +105,10 @@ class StudentTeacherView extends React.Component {
       timeFilter: null,
       decks: {}
     };
+    this.periods = [];
+    this.studentDecks = [];
+    this.allData = null;
+
     this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
@@ -141,21 +144,22 @@ class StudentTeacherView extends React.Component {
       ]);
 
       const { name, period } = studentInfo;
-      const [ studyRatio, deckDocs ] = await Promise.all([
-        getStudentStudyRatio(classroomId, userId, period),
-        getDecksInClassroom(classroomId, period)
-      ]);
+      const deckDocs = await getDecksInClassroom(classroomId, period, true);
+      const studyRatio = await getStudentStudyRatio({classroomId, userId, period}, null, deckDocs);
 
       let deckObj = {};
       // transform deckDocs into decks state attribute
       deckDocs.forEach((snap) => {
         deckObj[snap.id] = snap.data().name;
       });
+
+      // set state and instance variables
+      this.allData = data;
+      this.periods = classroomInfo.periods;
+      this.studentDecks = deckDocs;
       this.setState(() => ({
-        allData: data,
         name: name,
         period: period,
-        periods: classroomInfo.periods,
         numCardsStudied: studyRatio[0],
         photoUrl: photoUrl,
         decks: deckObj
@@ -170,15 +174,17 @@ class StudentTeacherView extends React.Component {
   }
 
   async filterData() {
-    const { allData, deckFilter, timeFilter } = this.state;
+    const { deckFilter, timeFilter } = this.state;
+    const { allData, studentDecks } = this;
     // filter allData based on state filter
     const filteredData = filterClassDataRaw({ deckId: deckFilter, times: timeFilter }, allData);
 
     try {
-      const [ consistentLowCards, averageRating, averageTime ] = await Promise.all([
+      const [ consistentLowCards, averageRating, averageTime, studyRatio ] = await Promise.all([
         getConsistentLowCards(null, filteredData),
         getCardAverage(null, filteredData),
-        getCardTimeAverage(null, filteredData)
+        getCardTimeAverage(null, filteredData),
+        getStudentStudyRatio(null, filteredData, studentDecks)
       ]);
       // get missed cards' information (front, back, etc)
       const cardsInfo = await getCardsInfo(consistentLowCards);
@@ -212,6 +218,7 @@ class StudentTeacherView extends React.Component {
         averageRating: averageRating,
         averageTime: averageTime,
         consistentLowCards: consistentLowCardsState,
+        numCardsStudied: studyRatio[0],
         datapoints: datapts
       }));
 
