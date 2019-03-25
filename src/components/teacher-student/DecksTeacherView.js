@@ -87,7 +87,7 @@ class DecksTeacherView extends React.Component {
   }
 
   render() {
-    const { decks, name, periods } = this.state;
+    const { decks, name } = this.state;
     const { id } = this.props.match.params;
     return (
       <div className = 'dashboard'>

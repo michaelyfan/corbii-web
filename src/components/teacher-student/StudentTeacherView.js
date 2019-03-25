@@ -67,6 +67,7 @@ class StudentTeacherView extends React.Component {
     this.periods = [];
     this.studentDecks = [];
     this.allData = null;
+    this.allConsistentLowCards = null;
 
     this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
@@ -135,6 +136,7 @@ class StudentTeacherView extends React.Component {
   async filterData() {
     const { deckFilter, timeFilter } = this.state;
     const { allData, studentDecks } = this;
+
     // filter allData based on state filter
     const filteredData = filterClassDataRaw({ deckId: deckFilter, times: timeFilter }, allData);
 
@@ -145,25 +147,52 @@ class StudentTeacherView extends React.Component {
         getCardTimeAverage(null, filteredData),
         getStudentStudyRatio(null, filteredData, studentDecks)
       ]);
-      // get missed cards' information (front, back, etc)
-      const cardsInfo = await getCardsInfo(consistentLowCards);
-      // get missed cards' decks' names
-      const deckNameCalls = [];
-      consistentLowCards.forEach((cardObj) => {
-        deckNameCalls.push(getDeckInfo(cardObj.deckId));
-      });
-      const deckInfos = await Promise.all(deckNameCalls);
 
-      // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
-      //    names and cardsInfo for card front
-      let consistentLowCardsState = [];
-      consistentLowCards.forEach((cardObj, i) => {
-        consistentLowCardsState.push({
-          deckName: deckInfos[i].name,
-          front: cardsInfo[cardObj.cardId].front,
-          rating: cardObj.quality
+      let consistentLowCardsState;
+      if (!this.allConsistentLowCards) {
+        // get missed cards' information (front, back, etc)
+        const cardsInfo = await getCardsInfo(consistentLowCards);
+
+        // get missed cards' decks' names
+        const deckNameCalls = [];
+        consistentLowCards.forEach((cardObj) => {
+          deckNameCalls.push(getDeckInfo(cardObj.deckId));
         });
-      });
+        const deckInfos = await Promise.all(deckNameCalls);
+
+        // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
+        //    names and cardsInfo for card front
+        consistentLowCardsState = [];
+        consistentLowCards.forEach((cardObj, i) => {
+          consistentLowCardsState.push({
+            deckName: deckInfos[i].name,
+            front: cardsInfo[cardObj.cardId].front,
+            id: cardObj.cardId,
+            rating: cardObj.quality
+          });
+        });
+
+        // save this consistentLowCards state object for future filterings
+        this.allConsistentLowCards = consistentLowCardsState;
+      } else {
+        // retrieve existing card content info and filter with respect to cards in consistentLowCards
+        consistentLowCardsState = [];
+        consistentLowCards.forEach((cardObj) => {
+          const existingCardEntry = this.allConsistentLowCards.find((existing) => {
+            return existing.id === cardObj.cardId;
+          });
+          if (existingCardEntry == null) {
+            console.warn(`no existing card found for card with id ${cardObj.cardId}`);
+            return;
+          }
+          consistentLowCardsState.push({
+            deckName: existingCardEntry.deckName,
+            front: existingCardEntry.front,
+            id: cardObj.cardId,
+            rating: cardObj.averageQuality
+          });
+        });
+      }
 
       // transform data
       const datapts = [];
@@ -180,7 +209,6 @@ class StudentTeacherView extends React.Component {
         numCardsStudied: studyRatio[0],
         datapoints: datapts
       }));
-
     } catch (e) {
       alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${e}`);
       console.error(e);
