@@ -37,20 +37,20 @@ class FilterTime extends React.Component {
         <button className = 'view-filter-button' onClick={() => {changeTimeFilter(getHoursBeforeNow(24), getNow());}}>last day</button>
         <button className = 'view-filter-button' onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7), getNow());}}>last week</button>
         <button className = 'view-filter-button' onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7 * 30), getNow());}}>last 30 days</button>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            changeTimeFilter(startTime, endTime);
-          }}>
-            <div className = 'flex'>
-              <p className =  'filter-prompt'>custom time range...</p>
-              <input className = 'time-entry' type='text' name='startTime' value={startTime} onChange={this.handleInput}
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          changeTimeFilter(startTime, endTime);
+        }}>
+          <div className = 'flex'>
+            <p className =  'filter-prompt'>custom time range...</p>
+            <input className = 'time-entry' type='text' name='startTime' value={startTime} onChange={this.handleInput}
               placeholder="mm-dd-yyyy" />
-              <p className =  'filter-prompt'>to</p>
-              <input className = 'time-entry' type='text' name='endTime' value={endTime} onChange={this.handleInput}
+            <p className =  'filter-prompt'>to</p>
+            <input className = 'time-entry' type='text' name='endTime' value={endTime} onChange={this.handleInput}
               placeholder="mm-dd-yyyy" />
-              <input className = 'primary-button' type='submit' value='submit' className = 'submit-time' />
-            </div>
-          </form>
+            <input className = 'primary-button' type='submit' value='submit' className = 'submit-time' />
+          </div>
+        </form>
       </div>
     );
   }
@@ -70,7 +70,6 @@ class ClassroomTeacherView extends React.Component {
      * }
      */
     this.state = {
-      allData: null,
       periodFilter: undefined,
       timeFilter: null,
       name: 'Loading...',
@@ -79,6 +78,7 @@ class ClassroomTeacherView extends React.Component {
       averageRatingPerCard: 0
     };
 
+    this.allData = null;
     this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
@@ -115,8 +115,8 @@ class ClassroomTeacherView extends React.Component {
 
       const data = await getClassDataRaw(id, null, null, null);
 
+      this.allData = data;
       this.setState(() => ({
-        allData: data,
         name: classroomInfo.name,
         periods: classroomInfo.periods,
       }), () => {
@@ -133,7 +133,8 @@ class ClassroomTeacherView extends React.Component {
    * Filters allData state attribute and sets data-related state based on filtered data.
    */
   async filterData() {
-    const { allData, periodFilter, timeFilter } = this.state;
+    const { periodFilter, timeFilter } = this.state;
+    const { allData } = this;
 
     // filter allData based on state filter
     const filteredData = filterClassDataRaw({ period: periodFilter, times: timeFilter }, allData);
@@ -144,30 +145,56 @@ class ClassroomTeacherView extends React.Component {
         getCardAverage(null, filteredData)
       ]);
 
-      // get card content information (front, back) for the missed cards
-      const cardsInfo = await getCardsInfo(cardsMissedMost);
-      // get missed cards' decks' names
-      const deckNameCalls = [];
-      cardsMissedMost.forEach((cardObj) => {
-        deckNameCalls.push(getDeckInfo(cardObj.deckId));
-      });
-      const decksInfo = await Promise.all(deckNameCalls);
-      // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
-      //    names and cardsInfo for card front
-      let cardsMissedMostState = [];
-      cardsMissedMost.forEach((cardObj, i) => {
-        cardsMissedMostState.push({
-          deckName: decksInfo[i].name,
-          front: cardsInfo[cardObj.cardId].front,
-          rating: cardObj.averageQuality
+      let cardsMissedMostState;
+      if (!this.allCardsMissedMost) {
+        // get card content information (front, back, etc) for the missed cards
+        const cardsInfo = await getCardsInfo(cardsMissedMost);
+
+        // get missed cards' decks' names
+        const deckNameCalls = [];
+        cardsMissedMost.forEach((cardObj) => {
+          deckNameCalls.push(getDeckInfo(cardObj.deckId));
         });
-      });
+        const decksInfo = await Promise.all(deckNameCalls);
+
+        // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
+        //    names and cardsInfo for card front
+        cardsMissedMostState = [];
+        cardsMissedMost.forEach((cardObj, i) => {
+          cardsMissedMostState.push({
+            deckName: decksInfo[i].name,
+            front: cardsInfo[cardObj.cardId].front,
+            rating: cardObj.averageQuality,
+            id: cardObj.cardId
+          });
+        });
+
+        // save this cardsMissedMost state object for future filterings
+        this.allCardsMissedMost = cardsMissedMostState;
+      } else {
+        // retrieve existing card content info and filter with respect to cards in cardsMissedMost
+        cardsMissedMostState = [];
+        cardsMissedMost.forEach((cardObj) => {
+          const existingCardEntry = this.allCardsMissedMost.find((existing) => {
+            return existing.id === cardObj.cardId;
+          });
+          if (existingCardEntry == null) {
+            console.warn(`no existing card found for card with id ${cardObj.cardId}`);
+            return;
+          }
+          cardsMissedMostState.push({
+            deckName: existingCardEntry.deckName,
+            front: existingCardEntry.front,
+            id: cardObj.cardId,
+            rating: cardObj.averageQuality
+          });
+        });
+      }
 
       this.setState(() => ({
         averageRatingPerCard: averageRating,
         cardsMissedMost: cardsMissedMostState,
       }));
-
     } catch (e) {
       alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);

@@ -53,7 +53,7 @@ class LowRatedCards extends React.Component {
           <button className = 'view-filter-button' onClick={() => {this.setState(() => ({ quantityFilter: 20 }));}}>20</button>
         </div>
         {arrayToRender.length === 0
-          ? <p>You don&apos;t have any data yet! Try making a deck, and encourage your students to study.</p>
+          ? <p>No data to see here -- maybe you should make more decks?</p>
           : arrayToRender.slice().map((card) => {
             return <LowRatedCard deckName={card.deckName} front={card.front} rating={card.rating} key={shortid.generate()} />;
           })}

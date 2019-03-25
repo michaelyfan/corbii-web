@@ -68,7 +68,6 @@ class DeckTeacherView extends React.Component {
      *
      */
     this.state = {
-      allData: null,
       periodFilter: undefined,
       timeFilter: null,
       classroomName: 'Loading...',
@@ -79,6 +78,9 @@ class DeckTeacherView extends React.Component {
       averageRating: 0,
       cardsMissedMost: []
     };
+
+    this.allData = null;
+    this.allCardsMissedMost = null;
     this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
@@ -115,8 +117,8 @@ class DeckTeacherView extends React.Component {
 
       const data = await getClassDataRaw(classroomId, null, deckId, null);
 
+      this.allData = data;
       this.setState(() => ({
-        allData: data,
         classroomName: classroomInfo.name,
         periods: classroomInfo.periods,
         deckName: deckInfo.name,
@@ -136,7 +138,8 @@ class DeckTeacherView extends React.Component {
    * Filters allData state attribute and sets data-related state based on filtered data.
    */
   async filterData() {
-    const { allData, periodFilter, timeFilter } = this.state;
+    const { periodFilter, timeFilter } = this.state;
+    const { allData } = this;
 
     // filter allData based on state filter
     const filteredData = filterClassDataRaw({ period: periodFilter, times: timeFilter }, allData);
@@ -147,31 +150,56 @@ class DeckTeacherView extends React.Component {
         getCardAverage(null, filteredData)
       ]);
 
-      // get card content information (front, back) for the missed cards
-      const cardsInfo = await getCardsInfo(cardsMissedMost);
-      // get missed cards' decks' names
-      const deckNameCalls = [];
-      cardsMissedMost.forEach((cardObj) => {
-        deckNameCalls.push(getDeckInfo(cardObj.deckId));
-      });
-      const decksInfo = await Promise.all(deckNameCalls);
+      let cardsMissedMostState;
+      if (!this.allCardsMissedMost) {
+        // get card content information (front, back) for the missed cards
+        const cardsInfo = await getCardsInfo(cardsMissedMost);
 
-      // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
-      //    names and cardsInfo for card front
-      let cardsMissedMostState = [];
-      cardsMissedMost.forEach((cardObj, i) => {
-        cardsMissedMostState.push({
-          deckName: decksInfo[i].name,
-          front: cardsInfo[cardObj.cardId].front,
-          rating: cardObj.averageQuality
+        // get missed cards' decks' names
+        const deckNameCalls = [];
+        cardsMissedMost.forEach((cardObj) => {
+          deckNameCalls.push(getDeckInfo(cardObj.deckId));
         });
-      });
+        const decksInfo = await Promise.all(deckNameCalls);
+
+        // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
+        //    names and cardsInfo for card front
+        cardsMissedMostState = [];
+        cardsMissedMost.forEach((cardObj, i) => {
+          cardsMissedMostState.push({
+            deckName: decksInfo[i].name,
+            front: cardsInfo[cardObj.cardId].front,
+            id: cardObj.cardId,
+            rating: cardObj.averageQuality
+          });
+        });
+
+        // save this cardsMissedMost state object for future filterings
+        this.allCardsMissedMost = cardsMissedMostState;
+      } else {
+        // retrieve existing card content info and filter with respect to cards in cardsMissedMost
+        cardsMissedMostState = [];
+        cardsMissedMost.forEach((cardObj) => {
+          const existingCardEntry = this.allCardsMissedMost.find((existing) => {
+            return existing.id === cardObj.cardId;
+          });
+          if (existingCardEntry == null) {
+            console.warn(`no existing card found for card with id ${cardObj.cardId}`);
+            return;
+          }
+          cardsMissedMostState.push({
+            deckName: existingCardEntry.deckName,
+            front: existingCardEntry.front,
+            id: cardObj.cardId,
+            rating: cardObj.averageQuality
+          });
+        });
+      }
 
       this.setState(() => ({
         averageRating: averageRating,
         cardsMissedMost: cardsMissedMostState,
       }));
-
     } catch (e) {
       alert(`Apologies -- there was an error:\n${e}\nTry renavigating to this page instead of using direct links.`);
       console.error(e);
