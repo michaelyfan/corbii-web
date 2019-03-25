@@ -4,54 +4,13 @@ import PropTypes from 'prop-types';
 
 /* Required modules */
 import BackButton from '../reusables/BackButton';
+import FilterTime from '../reusables/FilterTime';
 import TeacherSidebar from './reusables/TeacherSidebar';
 import LowRatedCards from './reusables/LowRatedCards';
 import routes from '../../routes/routes';
 import { getClassDataRaw, filterClassDataRaw, getCardsMissedMost, getCardAverage } from '../../utils/teacherapi.js';
 import { getClassroomInfo, getCardsInfo, getDeckInfo } from '../../utils/api.js';
-import { getNow, getHoursBeforeNow, arraysAreSame } from '../../utils/tools';
-
-class FilterTime extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      startTime: '',
-      endTime: ''
-    };
-    this.handleInput = this.handleInput.bind(this);
-  }
-
-  handleInput(e) {
-    e.persist();
-    this.setState(() => ({
-      [e.target.name]: e.target.value
-    }));
-  }
-
-  render() {
-    const { changeTimeFilter } = this.props;
-    const { startTime, endTime } = this.state;
-    return (
-      <div>
-        <span>Filter time by:</span>
-        <button onClick={() => {changeTimeFilter(null, null);}}>None</button>
-        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24), getNow());}}>Last day</button>
-        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7), getNow());}}>Last week</button>
-        <button onClick={() => {changeTimeFilter(getHoursBeforeNow(24 * 7 * 30), getNow());}}>Last 30 days</button>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          changeTimeFilter(startTime, endTime);
-        }}>
-          <p>Custom time range...</p>
-          <input type='text' name='startTime' value={startTime} onChange={this.handleInput} />
-          <input type='text' name='endTime' value={endTime} onChange={this.handleInput} />
-          <input type='submit' value='submit' />
-        </form>
-      </div>
-    );
-  }
-}
+import { arraysAreSame } from '../../utils/tools';
 
 class DeckTeacherView extends React.Component {
 
@@ -208,19 +167,20 @@ class DeckTeacherView extends React.Component {
           </div>
 
           <div className = 'active-view top-border'>
-            <div>
-              <h5>Filter:</h5>
-              <button onClick={() => {this.setState(() => ({ periodFilter: undefined }));}}>None</button>
+            <div className = 'flex'>
+              <p className = 'filter-prompt'>filter:</p>
+              <button className = 'view-filter-button small-height' onClick={() => {this.setState(() => ({ periodFilter: undefined }));}}>none</button>
               {periods.map((period) => 
-                <button onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
+                <button className = 'view-filter-button small-height' onClick={() => {this.setState(() => ({ periodFilter: period }));}} key={period}>{period}</button>
               )}
             </div>
-            <FilterTime changeTimeFilter={this.changeTimeFilter} />
+            <FilterTime handleTimes={this.changeTimeFilter} />
             <div id='student-stats-wrapper'>
               <div className = 'student-stats student-stats-individual navigation'>
                 <h3 className = 'stat'>this deck has: {count} cards</h3>
                 <h3 className = 'stat'>this deck supports periods: {deckPeriods.toString()}</h3>
                 <h3 className = 'stat'>avg. card rating: {averageRating}</h3>
+                <br/>
               </div>
             </div>
 
@@ -258,7 +218,4 @@ DeckTeacherView.propTypes = {
       deckId: PropTypes.string.isRequired
     })
   })
-};
-FilterTime.propTypes = {
-  changeTimeFilter: PropTypes.func.isRequired
 };

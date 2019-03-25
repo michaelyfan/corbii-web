@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { getClassroomForUser, getClassroomCurrentUser } from '../../utils/api';
+import { getClassroomForUser } from '../../utils/api';
 import routes from '../../routes/routes';
 
 function DeckRow(props) {
@@ -16,7 +16,10 @@ function DeckRow(props) {
         classroomId: classroomId
       }
     }}>
-      <button>Study {name} (id: {id})</button>
+      <div className = 'flex'>
+        <button className = 'study-classroom-deck'>study {name}</button>
+        <br/>
+      </div>
     </Link>
   );
 }
@@ -27,6 +30,7 @@ class ClassroomStudentView extends React.Component {
     super(props);
     this.state = {
       classroomId: '',
+      classroomName: '',
       decks: [],
       teacherName: '',
       period: ''
@@ -39,7 +43,8 @@ class ClassroomStudentView extends React.Component {
     getClassroomForUser(id).then((result) => {
       this.setState(() => ({
         classroomId: result.id,
-        teacherName: `ID ${result.data.teacherId}`,
+        classroomName: result.name,
+        teacherName: result.teacherId,
         decks: result.decks,
         period: result.period
       }));
@@ -50,16 +55,18 @@ class ClassroomStudentView extends React.Component {
   }
 
   render() {
-    const { classroomId, decks, teacherName, period } = this.state;
+    const { classroomId, classroomName, decks, teacherName, period } = this.state;
     return (
       <div>
         <div className = 'dashboard-header'>
-          <h1>Viewing classroom</h1>
-          <p>Teacher: {teacherName}</p>
-          <p>Period: {period}</p>
-          <p>Id: {classroomId} </p>
+          <h1 className = 'classroom-title'>{classroomName}</h1>
+          <p className = 'classroom-subtitle'>Teacher: {teacherName}</p>
+          <p className = 'classroom-subtitle'>Period: {period}</p>
+          <br/>
         </div>
-        <div>
+        <div className = 'classroom-body'>
+          <br/>
+          <br/>
           {decks.map((deck) => <DeckRow name={deck.data().name} 
             classroomId={classroomId}
             period={period}

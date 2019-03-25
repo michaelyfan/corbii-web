@@ -15,16 +15,11 @@ function StudentRow(props) {
   const { name, period, classroomId, studentId } = props;
   return (
     <div className = 'block-display'>
-      <div className = 'inline-display center-items'>
+      <div className = 'inline-display center-items no-hover'>
         <Link to={routes.teacher.getViewStudentRoute(classroomId, studentId)} className = 'inline-display'>
-          <div className = 'profile-display'>
-            {/*
-            <img className = 'profile-img' id = 'profile-thumbnail' src = '/src/resources/genericprofile.jpg' />
-            */}
+          <div className = 'profile-display flex'>
             <h4 className = 'student-name'>{name}</h4>
-          </div>
-          <div className = 'student-stats navigation'>
-            <h3 className = 'stat'>period:  {period}</h3>
+            <h3 className = 'student-period'>period {period}</h3>
           </div>
         </Link>
       </div>
@@ -114,12 +109,12 @@ class StudentsTeacherView extends React.Component {
             <TeacherSidebar id={id} />
           </div>
 
-          <div className = 'active-view top-border flex-display'>
-            <div>
-              <p>Filter by period:</p>
-              <button onClick={() => { this.filterPeriod(null); }}>None</button>
+          <div className = 'active-view top-border'>
+            <div className = 'flex'>
+              <p className = 'filter-prompt'>show period:</p>
+              <button className = 'view-filter-button small-height' onClick={() => { this.filterPeriod(null); }}>all</button>
               {periods.map((period) => 
-                <button onClick={() => { this.filterPeriod(period); }} key={period}>{period}</button>
+                <button className = 'view-filter-button small-height' onClick={() => { this.filterPeriod(period); }} key={period}>{period}</button>
               )}
             </div>
             {students.map((student) =>{

@@ -220,6 +220,7 @@
   width: auto;
   border-radius: 50%;
   margin-right: 50px;
+  border: 2px solid black;
 }
 
 .student-header-individual {
@@ -307,4 +308,99 @@
 .submit-time:hover {
   cursor: pointer;
   background-color: #A8B4C2;
+}
+
+.teacher-view-deck-title {
+  font-family: Nunito Bold;
+  color: #003466;
+  text-align: center;
+  font-size: 30px;
+  margin-top: 25px;
+  margin-bottom: 5px;
+}
+
+.teacher-view-deck-title:hover {
+  color: #A8B4C2;
+}
+
+.teacher-view-deck-detail {
+  text-align: center;
+  font-family: Print Clearly;
+  font-size: 25px;
+  color: #003466;
+  margin:0;
+}
+
+.edit-deck-button {
+  border: none;
+  text-decoration: none;
+  margin-top: 23px;
+  background-color: #003466;
+  font-family: Print Clearly;
+  color: #FFFFFF;
+  font-size: 20px;
+  border-radius: 4px;
+  margin-top: 5px;
+  padding: 3px;
+  margin: 0 auto;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+
+.edit-deck-button:hover {
+  background-color: #A8B4C2;
+}
+
+.deck-info-view {
+  padding-left: 20px;
+  padding-bottom: 20px;
+  padding-right: 20px;
+}
+
+.check-period {
+  font-size: 27px;
+  color: #003466;
+  font-family: Nunito Bold;
+  margin-top: 0;
+  padding-left: 45px;
+  margin-bottom: 5px;
+}
+
+.period-num {
+  margin-bottom: 25px;
+}
+
+.period-filter-bar {
+  display: flex;
+}
+
+.small-height {
+  margin-top: 20px;
+  height: 35px;
+}
+
+.student-name {
+  font-family: Nunito Bold;
+  font-size: 25px;
+  color: #003466;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.student-name:hover {
+  color: #A8B4C2;
+}
+
+.student-period {
+  font-family: Print Clearly;
+  font-size: 22px;
+  color: #A8B4C2;
+  text-align: center;
+  padding-left: 5px;
+  margin-top: 8px;
+  margin-bottom: 5px;
+}
+
+.no-hover:hover {
+  background-color: #E9F2FF;
 }
