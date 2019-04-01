@@ -49,12 +49,11 @@ class StudentTeacherView extends React.Component {
       'deckIdHere': deckName
      }
      *
+     * data is an array of datapoint objects
      */
     this.state = {
-      allData: null,
       name: 'Loading...',
       period: '0',
-      periods: [],
       photoUrl: '',
       numCardsStudied: 0,
       averageRating: 0,
@@ -65,6 +64,11 @@ class StudentTeacherView extends React.Component {
       timeFilter: null,
       decks: {}
     };
+    this.periods = [];
+    this.studentDecks = [];
+    this.allData = null;
+    this.allConsistentLowCards = null;
+
     this.changeTimeFilter = this.changeTimeFilter.bind(this);
   }
 
@@ -100,21 +104,22 @@ class StudentTeacherView extends React.Component {
       ]);
 
       const { name, period } = studentInfo;
-      const [ studyRatio, deckDocs ] = await Promise.all([
-        getStudentStudyRatio(classroomId, userId, period),
-        getDecksInClassroom(classroomId, period)
-      ]);
+      const deckDocs = await getDecksInClassroom(classroomId, period, true);
+      const studyRatio = await getStudentStudyRatio({classroomId, userId, period}, null, deckDocs);
 
       let deckObj = {};
       // transform deckDocs into decks state attribute
       deckDocs.forEach((snap) => {
         deckObj[snap.id] = snap.data().name;
       });
+
+      // set state and instance variables
+      this.allData = data;
+      this.periods = classroomInfo.periods;
+      this.studentDecks = deckDocs;
       this.setState(() => ({
-        allData: data,
         name: name,
         period: period,
-        periods: classroomInfo.periods,
         numCardsStudied: studyRatio[0],
         photoUrl: photoUrl,
         decks: deckObj
@@ -129,35 +134,65 @@ class StudentTeacherView extends React.Component {
   }
 
   async filterData() {
-    const { allData, deckFilter, timeFilter } = this.state;
+    const { deckFilter, timeFilter } = this.state;
+    const { allData, studentDecks } = this;
+
     // filter allData based on state filter
     const filteredData = filterClassDataRaw({ deckId: deckFilter, times: timeFilter }, allData);
 
     try {
-      const [ consistentLowCards, averageRating, averageTime ] = await Promise.all([
+      const [ consistentLowCards, averageRating, averageTime, studyRatio ] = await Promise.all([
         getConsistentLowCards(null, filteredData),
         getCardAverage(null, filteredData),
-        getCardTimeAverage(null, filteredData)
+        getCardTimeAverage(null, filteredData),
+        getStudentStudyRatio(null, filteredData, studentDecks)
       ]);
-      // get missed cards' information (front, back, etc)
-      const cardsInfo = await getCardsInfo(consistentLowCards);
-      // get missed cards' decks' names
-      const deckNameCalls = [];
-      consistentLowCards.forEach((cardObj) => {
-        deckNameCalls.push(getDeckInfo(cardObj.deckId));
-      });
-      const deckInfos = await Promise.all(deckNameCalls);
 
-      // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
-      //    names and cardsInfo for card front
-      let consistentLowCardsState = [];
-      consistentLowCards.forEach((cardObj, i) => {
-        consistentLowCardsState.push({
-          deckName: deckInfos[i].name,
-          front: cardsInfo[cardObj.cardId].front,
-          rating: cardObj.quality
+      let consistentLowCardsState;
+      if (!this.allConsistentLowCards) {
+        // get missed cards' information (front, back, etc)
+        const cardsInfo = await getCardsInfo(consistentLowCards);
+
+        // get missed cards' decks' names
+        const deckNameCalls = [];
+        consistentLowCards.forEach((cardObj) => {
+          deckNameCalls.push(getDeckInfo(cardObj.deckId));
         });
-      });
+        const deckInfos = await Promise.all(deckNameCalls);
+
+        // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
+        //    names and cardsInfo for card front
+        consistentLowCardsState = [];
+        consistentLowCards.forEach((cardObj, i) => {
+          consistentLowCardsState.push({
+            deckName: deckInfos[i].name,
+            front: cardsInfo[cardObj.cardId].front,
+            id: cardObj.cardId,
+            rating: cardObj.quality
+          });
+        });
+
+        // save this consistentLowCards state object for future filterings
+        this.allConsistentLowCards = consistentLowCardsState;
+      } else {
+        // retrieve existing card content info and filter with respect to cards in consistentLowCards
+        consistentLowCardsState = [];
+        consistentLowCards.forEach((cardObj) => {
+          const existingCardEntry = this.allConsistentLowCards.find((existing) => {
+            return existing.id === cardObj.cardId;
+          });
+          if (existingCardEntry == null) {
+            console.warn(`no existing card found for card with id ${cardObj.cardId}`);
+            return;
+          }
+          consistentLowCardsState.push({
+            deckName: existingCardEntry.deckName,
+            front: existingCardEntry.front,
+            id: cardObj.cardId,
+            rating: cardObj.averageQuality
+          });
+        });
+      }
 
       // transform data
       const datapts = [];
@@ -171,9 +206,9 @@ class StudentTeacherView extends React.Component {
         averageRating: averageRating,
         averageTime: averageTime,
         consistentLowCards: consistentLowCardsState,
+        numCardsStudied: studyRatio[0],
         datapoints: datapts
       }));
-
     } catch (e) {
       alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${e}`);
       console.error(e);

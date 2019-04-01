@@ -62,7 +62,7 @@ class DecksTeacherView extends React.Component {
       const classroomInfo = await getClassroomInfo(id);
 
       // get classrooms' decks and info
-      const decks = await getDecksInClassroom(id);
+      const decks = await getDecksInClassroom(id, null, true);
       
       // construct decks attribute of state
       const decksState = [];
@@ -87,7 +87,7 @@ class DecksTeacherView extends React.Component {
   }
 
   render() {
-    const { decks, name, periods } = this.state;
+    const { decks, name } = this.state;
     const { id } = this.props.match.params;
     return (
       <div className = 'dashboard'>

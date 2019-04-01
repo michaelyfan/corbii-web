@@ -117,17 +117,20 @@ class StudentsTeacherView extends React.Component {
                 <button className = 'view-filter-button small-height' onClick={() => { this.filterPeriod(period); }} key={period}>{period}</button>
               )}
             </div>
-            {students.map((student) =>{
-              // only render this student if period to filter by is null, or if student period
-              //    matches period to filter by
+            {students.filter((student) => {
+              // only render this student if period to filter by is null (no period filter), or
+              //   if student period matches period to filter by
               if (periodFilter == null || periodFilter === student.period) {
-                return <StudentRow name={student.name}
-                  period={student.period}
-                  studentId={student.id}
-                  classroomId={id}
-                  key={shortid.generate()} />;
+                return true;
               }
-            })}
+              return false;
+            }).map((student) => 
+              <StudentRow name={student.name}
+                period={student.period}
+                studentId={student.id}
+                classroomId={id}
+                key={shortid.generate()} />
+            )}
           </div>
         </div>
       </div>
