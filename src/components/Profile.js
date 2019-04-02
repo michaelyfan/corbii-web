@@ -80,7 +80,10 @@ class Profile extends React.Component {
             that spans the whole width of the page */}
           <div style={{display: 'flex', justifyContent: 'center'}}>
             { passwordEmailSent
-              ? <h3 className = 'email'>Password reset information has been sent to your email.</h3>
+              ? <div>
+                <h3 className = 'email'>Password reset information has been sent to your email.</h3>
+                <p>If you logged in with Google or Facebook, the user/pass login method will be available once you set a password.</p>
+              </div>
               : <h3 className = 'email hover-text-button' onClick={this.handleChangePassword}>Change password?</h3>
             }
           </div>

@@ -989,7 +989,6 @@ export function searchLists(query) {
 export function sendPasswordResetEmail() {
   const auth = firebase.auth();
   const { currentUser } = auth;
-  console.log(currentUser);
   if (currentUser == null) {
     return Promise.reject(new Error('No user currently logged in -- aborting!'));
   }
