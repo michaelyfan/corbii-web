@@ -1,3 +1,8 @@
+.hover-text-button:hover {
+	color: #C6CED7;
+	cursor: pointer;
+}
+
 .profile {
 	height: 100%;
 }
