@@ -7,13 +7,20 @@ import { searchUsers, searchDecks, searchLists, getProfilePic } from '../utils/a
 
 
 function DeckSearchResult(props) {
+  const { searchTerm, name, creator, count } = props;
   return (
     <div className='result-box'>
-      <Link to={routes.viewDeck.getRoute(props.id)}>
-        <p className = 'deck-text' id = 'deck-name'>{props.name}</p>
+      <Link to={{
+        pathname: routes.viewDeck.getRoute(props.id),
+        state: {
+          searchTerm,
+          fromSearch: true
+        }
+      }}>
+        <p className = 'deck-text' id = 'deck-name'>{name}</p>
       </Link>
-      <p className = 'deck-text' id = 'deck-owner'>{props.creator}</p>
-      <p className = 'deck-text' id = 'num-of-terms'>{props.count} {props.count === 1 ? 'card' : 'cards'}</p>
+      <p className = 'deck-text' id = 'deck-owner'>{creator}</p>
+      <p className = 'deck-text' id = 'num-of-terms'>{count} {count === 1 ? 'card' : 'cards'}</p>
       
     </div>
   );
@@ -38,11 +45,17 @@ class UserSearchResult extends React.Component {
   }
 
   render() {
-    const { name, id } = this.props;
+    const { name, id, searchTerm } = this.props;
     return (
       <div className='user-search-result'>
         <img src={this.state.profilePic} />
-        <Link to={routes.viewUser.getRoute(id)}>
+        <Link to={{
+          pathname: routes.viewUser.getRoute(id),
+          state: {
+            searchTerm,
+            fromSearch: true
+          }
+        }}>
           <h3 className = 'search-username' >{name}</h3>
         </Link>
       </div>
@@ -52,10 +65,16 @@ class UserSearchResult extends React.Component {
 }
 
 function ListSearchResult(props) {
-  const { id, name, creator, count } = props;
+  const { id, name, creator, count, searchTerm } = props;
   return (
     <div className='result-box'>
-      <Link to={routes.viewConceptList.getRoute(id)}>
+      <Link to={{
+        pathname: routes.viewConceptList.getRoute(id),
+        state: {
+          searchTerm,
+          fromSearch: true
+        }
+      }}>
         <p className = 'deck-text' id = 'deck-name'>{name}</p>
       </Link>
       <p className = 'deck-text' id = 'deck-owner'>{creator}</p>
@@ -128,6 +147,7 @@ class SearchResults extends React.Component {
                 return <UserSearchResult
                   name={result.name}
                   id={result.objectID}
+                  searchTerm={query}
                   key={result.objectID} />;
               } else if (displayedMode === 'lists') {
                 return <ListSearchResult
@@ -135,6 +155,7 @@ class SearchResults extends React.Component {
                   creator={result.creatorName}
                   count={result.count}
                   id={result.objectID}
+                  searchTerm={query}
                   key={result.objectID} />;
               } else { // render a deck
                 return <DeckSearchResult
@@ -142,6 +163,7 @@ class SearchResults extends React.Component {
                   creator={result.creatorName}
                   count={result.count}
                   id={result.objectID}
+                  searchTerm={query}
                   key={result.objectID} />;
               }
             })
@@ -293,17 +315,20 @@ ListSearchResult.propTypes = {
   name: PropTypes.string.isRequired,
   creator: PropTypes.string.isRequired,
   count: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
+  searchTerm: PropTypes.string.isRequired
 };
 UserSearchResult.propTypes = {
   name: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
+  searchTerm: PropTypes.string.isRequired
 };
 DeckSearchResult.propTypes = {
   name: PropTypes.string.isRequired,
   creator: PropTypes.string.isRequired,
   count: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
+  searchTerm: PropTypes.string.isRequired
 };
 
 export default Search;
