@@ -575,7 +575,8 @@ export function createDeckCurrentUser(params) {
     creatorId: uid,
     creatorName: displayName,
     count: (cards && cards.length) || 0,
-    isClassroomPrivate: false
+    isClassroomPrivate: false,
+    classroomId: null
   };
   if (isForClassroom) {
     let periodObject = {};
