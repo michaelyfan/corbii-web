@@ -550,9 +550,7 @@ export async function getCardTimeAverage(queryOptions, data) {
 }
 
 /**
- * Gets the lowest rated cards of a classroom. Here, a 
- * "missed" card is defined as a card with a quality 
- * of 2 or under. 
+ * Gets the lowest rated cards of a classroom.
  *
  * @param {Object} queryOptions -- an object containing querying options for the datapoints acted
  *    on by this function. This parameter will be ignored if data is passed in.
