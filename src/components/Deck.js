@@ -482,19 +482,33 @@ class Deck extends React.Component {
     const { id } = this.props.match.params;
     let isForClassroom;
     let classroomId;
+    let fromSearch;
+    let searchTerm;
     if (this.props.location.state) {
-      ({ isForClassroom, classroomId } = this.props.location.state);
+      ({ isForClassroom, classroomId, fromSearch, searchTerm } = this.props.location.state);
     }
     const numberOfCards = cards.length;
+
+    // determine back button to render
+    let backButton;
+    if (isForClassroom) {
+      backButton = <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />;
+    } else if (fromSearch) {
+      backButton = <BackButton
+        redirectTo={routes.search.base}
+        destination='search'
+        search={routes.search.getQueryString('decks', searchTerm) }
+      />;
+    } else {
+      backButton = <BackButton redirectTo={routes.dashboard.base} destination='dashboard' />;
+    }
 
     return isLoading
       ? <BigLoading />
       : (
         <div>
           <div className = 'deck-info'>
-            { isForClassroom
-              ? <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />
-              : <BackButton redirectTo={routes.dashboard.base} destination='dashboard' /> }
+            {backButton}
             <DeckTitle
               userIsOwner={userIsOwner}
               creatorName={creatorName}
@@ -549,7 +563,9 @@ Deck.propTypes = {
   location: PropTypes.shape({
     state: PropTypes.shape({
       classroomId: PropTypes.string,
-      isForClassroom: PropTypes.bool
+      isForClassroom: PropTypes.bool,
+      searchTerm: PropTypes.string,
+      fromSearch: PropTypes.bool
     }),
     pathname: PropTypes.string.isRequired
   }),

@@ -30,6 +30,7 @@ class User extends React.Component {
 
   componentDidMount() {
     this.updateUser();
+    console.log(this.props.location);
   }
 
   async updateUser() {
@@ -59,9 +60,17 @@ class User extends React.Component {
 
   render() {
     const { isTeacher } = this.state;
+    const { location } = this.props;
+
     return (
       <div>
-        <BackButton redirectTo={routes.search.base} destination='search' />
+        <BackButton
+          redirectTo={routes.search.base}
+          destination='search'
+          search={location.state && location.state.fromSearch
+            ? routes.search.getQueryString('users', location.state.searchTerm)
+            : routes.search.getQueryString('users', '') }
+        />
         {this.state.profilePic && <img className='profile-img' src={this.state.profilePic} /> }
         <h2 className = 'username'>{this.state.name}</h2>
         { isTeacher 
@@ -87,6 +96,12 @@ User.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string.isRequired
+    })
+  }),
+  location: PropTypes.shape({
+    state: PropTypes.shape({
+      searchTerm: PropTypes.string,
+      fromSearch: PropTypes.bool
     })
   })
 };

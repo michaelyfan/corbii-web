@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { getCurrentUserProfileInfo, updateCurrentUserProfilePic } from '../utils/api';
+import { getCurrentUserProfileInfo, updateCurrentUserProfilePic, sendPasswordResetEmail } from '../utils/api';
 import routes from '../routes/routes';
 
 class Profile extends React.Component {
@@ -11,11 +11,13 @@ class Profile extends React.Component {
 
     this.state = {
       name: '',
-      email: ''
+      email: '',
+      passwordEmailSent: false
     };
 
     this.inputFile = React.createRef();
     this.handleChangeProfilePic = this.handleChangeProfilePic.bind(this);
+    this.handleChangePassword = this.handleChangePassword.bind(this);
   }
 
   componentDidMount() {
@@ -55,13 +57,36 @@ class Profile extends React.Component {
     } 
   }
 
+  handleChangePassword() {
+    sendPasswordResetEmail().then(() => {
+      this.setState(() => ({
+        passwordEmailSent: true
+      }));
+    }).catch((err) => {
+      console.error(err);
+      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+    });
+  }
+
   render() {
     const { isTeacher } = this.props;
+    const { name, email, passwordEmailSent } = this.state;
     return (
       <div className='profile'>
         <div>
-          <h1 className = 'username'>{this.state.name}</h1>
-          <h3 className = 'email'>{this.state.email}</h3>
+          <h1 className = 'username'>{name}</h1>
+          <h3 className = 'email'>{email}</h3>
+          {/* Below style is done so that the 'Change password' button doesn't have a clickbox
+            that spans the whole width of the page */}
+          <div style={{display: 'flex', justifyContent: 'center'}}>
+            { passwordEmailSent
+              ? <div>
+                <h3 className = 'email'>Password reset information has been sent to your email.</h3>
+                <p>If you logged in with Google or Facebook, the user/pass login method will be available once you set a password.</p>
+              </div>
+              : <h3 className = 'email hover-text-button' onClick={this.handleChangePassword}>Change password?</h3>
+            }
+          </div>
           <div className = 'hr'><hr /></div>
           <div className = 'profile-pic'>
             <div className = 'profile-padding'>{this.props.photoURL && <img className='profile-img' src={this.props.photoURL} />}</div>

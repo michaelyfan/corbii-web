@@ -53,9 +53,17 @@ service cloud.firestore {
         && (!("isClassroomPrivate" in request.resource.data)
           || request.resource.data.isClassroomPrivate == false
           || userIsTeacherOfClassroom(request.resource.data.classroomId));
-                    
+
+      // allow a deck update if:
+      // updater is deck's creator
+      // name no more than 150 characters if it's being updated
+      // isClassroomPrivate, creatorId, classroomId, creatorName are not being changed
       allow update: if request.auth.uid == resource.data.creatorId
-                    && request.resource.data.name.size() <= 150;
+        && request.resource.data.name.size() <= 150
+        && request.resource.data.isClassroomPrivate == resource.data.isClassroomPrivate
+        && request.resource.data.classroomId == resource.data.classroomId
+        && request.resource.data.creatorId == resource.data.creatorId
+        && request.resource.data.creatorName == resource.data.creatorName;
                     
       allow delete: if request.auth.uid == resource.data.creatorId;
 

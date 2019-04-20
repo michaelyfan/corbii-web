@@ -5,6 +5,7 @@ import firebase from '../utils/firebase';
 import { getConceptList, createConcept, deleteConcept, updateConcept, getUserProfileInfo, deleteListFromCurrentUser, updateCurrentUserList } from '../utils/api';
 import routes from '../routes/routes';
 import { BigLoading } from './reusables/Loading';
+import BackButton from './reusables/BackButton';
 import BackToDashboardButton from './reusables/BackToDashboardButton';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -310,13 +311,28 @@ class ConceptList extends React.Component {
 
   render() {
     const { listName, id, creatorName, userIsOwner, concepts } = this.state;
+    const { location } = this.props;
+
+    let searchTerm;
+    let fromSearch;
+    if (location.state) {
+      ({ searchTerm, fromSearch } = location.state);
+    }
+
     return this.state.isLoading
       ? <BigLoading />
       : (
 
         <div>
           <div className = 'deck-info'>
-            <BackToDashboardButton />
+            { fromSearch
+              ? <BackButton
+                redirectTo={routes.search.base}
+                destination='search'
+                search={routes.search.getQueryString('lists', searchTerm) }
+              />
+              : <BackToDashboardButton />
+            }
             <Title 
               userIsOwner={userIsOwner}
               creatorName={creatorName}
@@ -358,10 +374,16 @@ ConceptList.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string.isRequired
-    })
+    }),
   }),
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
+  }),
+  location: PropTypes.shape({
+    state: PropTypes.shape({
+      searchTerm: PropTypes.string,
+      fromSearch: PropTypes.bool
+    })
   })
 };
 AddConceptForm.propTypes = {

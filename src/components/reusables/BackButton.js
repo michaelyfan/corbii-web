@@ -4,9 +4,12 @@ import routes from '../../routes/routes';
 import PropTypes from 'prop-types';
 
 export default function BackButton(props) {
-  const { redirectTo, destination } = props;
+  const { redirectTo, destination, search } = props;
   return (
-    <Link to={redirectTo}>
+    <Link to={{
+      pathname: redirectTo,
+      search
+    }}>
       <button className = 'back-to-deck'>back to {destination}</button>
     </Link>
   );
@@ -14,6 +17,7 @@ export default function BackButton(props) {
 
 BackButton.propTypes = {
   redirectTo: PropTypes.string,
+  search: PropTypes.string,
   destination: PropTypes.string
 };
 

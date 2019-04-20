@@ -575,7 +575,8 @@ export function createDeckCurrentUser(params) {
     creatorId: uid,
     creatorName: displayName,
     count: (cards && cards.length) || 0,
-    isClassroomPrivate: false
+    isClassroomPrivate: false,
+    classroomId: null
   };
   if (isForClassroom) {
     let periodObject = {};
@@ -979,22 +980,29 @@ export function searchLists(query) {
 }
 // end search functions
 
+// begin auth functions
+
+/**
+ * Sends the currently logged-in user's email a link to reset their password. 
+ * @return {Promise} A Promise returning the result of the Firebase call or error. Will error if
+ *                     there is no currently logged-in user.
+ */
+export function sendPasswordResetEmail() {
+  const auth = firebase.auth();
+  const { currentUser } = auth;
+  if (currentUser == null) {
+    return Promise.reject(new Error('No user currently logged in -- aborting!'));
+  }
+
+  const email = currentUser.email;
+  return auth.sendPasswordResetEmail(email);
+}
+
+// end auth functions
+
 async function main() {
-  // db.collection('decks').doc('rpOXCYzREjkYjzoHrMmo').get().catch((err) => {
-  //   console.log('from main', err);
-  // });
 
-  db.collection('decks').doc('rpOXCYzREjkYjzoHrMmo').get().then((res) => {
-    console.log('1 E S', res);
-  }).catch((err) => {
-    console.log('1 E', err);
-  });
-
-  db.collection('decks').get().then((res) => {
-    console.log('2 E S', res);
-  }).catch((err) => {
-    console.log('2 E', err);
-  });
+  // sendPasswordResetEmail();
 }
 
 // main();
