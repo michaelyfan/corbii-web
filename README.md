@@ -11,6 +11,7 @@ To start a development environment:
 1. Install dependencies (`npm i`)
 1. Start the webpack development server with `npm run dev`
 1. Code away
+   * If you need to deploy something to the Firebase dev project (Firestore rules, new Functions, etc), make sure you are deploying to the `corbii-web-dev` Firebase project and run `firebase deploy`
 
 The webpack development server comes with hot reloading.
 
