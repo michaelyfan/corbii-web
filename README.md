@@ -3,9 +3,16 @@ Corbii's web platform.
 
 Check the Zenhub board for TODOs.
 
-## Deployment Specifications and Instructions
+## Development Instructions
 
-During development, this app runs a webpack development server (port 8080) with hot reloading for react. The dev environment can be started with `npm run dev`.
+To start a development environment:
+
+1. Clone this repo
+1. Install dependencies (`npm i`)
+1. Start the webpack development server with `npm run dev`
+1. Code away
+
+The webpack development server comes with hot reloading.
 
 For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files. Also, any Firebase assets should be deployed to the production environment with `firebase use default`, then
 `firebase deploy` (this will also do the Hosting step for you, but either way `npm run build` must be run first).
@@ -13,21 +20,16 @@ For production, the app is built with `npm run build` and then hosted on Firebas
 This app used to use Heroku, but that's behind us now.
 
 
-## Production Specifications
+## Deployment/Production Specifications
 
 The `master` branch of `corbii-web` is the **production branch**. Do not push anything to master that is not ready for production; always use feature branches.
 
-The `corbii-web` Firebase project is used for the `master` branch, while any development branch uses `corbii-web-dev` Firebase project. The Firebase CLI allows for the `corbii-web` repo to freely switch between both Firebase projects, a feature known as 'aliases'. 
+The `corbii-web` Firebase project is used for the `master` branch, while any development branch uses the `corbii-web-dev` Firebase project. The Firebase CLI allows for the `corbii-web` repo to freely switch between both Firebase projects, a feature known as 'aliases'. 
 
-## Development Instructions
-
-* Clone this repo
-* run `npm install`
-* acquire .env file from a head developer
-* run `npm run dev`
-* code away
-
-These instructions will eventually become better
+1. Ensure you are on master
+1. Build the app with `npm run build`
+1. Switch to the correct Firebase alias (either `firebase use dev` or `firebase use default`) to determine whether to push to the development environment or the dev environment
+1. Deploy the app on Firebase Hosting with `firebase deploy`
 
 ## HIGH-LEVEL COMPONENT RETRIEVAL RECORDS
 
