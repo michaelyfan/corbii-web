@@ -97,7 +97,7 @@ class ClassroomTeacherView extends React.Component {
   }
 
   /*
-   * Filters allData state attribute and sets data-related state based on filtered data.
+   * Filters allData and sets data-related state based on filtered data.
    */
   async filterData() {
     const { periodFilter, timeFilter } = this.state;

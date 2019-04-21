@@ -75,7 +75,6 @@ class DeckTeacherView extends React.Component {
       ]);
 
       const data = await getClassDataRaw(classroomId, null, deckId, null);
-
       this.allData = data;
       this.setState(() => ({
         classroomName: classroomInfo.name,
@@ -114,32 +113,10 @@ class DeckTeacherView extends React.Component {
         // get card content information (front, back) for the missed cards
         const cardsInfo = await getCardsInfo(cardsMissedMost);
 
-        // get missed cards' decks' names
-        // first determine which decks to get (to avoid getting duplicates)
-        const deckIds = new Set();
-        cardsMissedMost.forEach((cardObj) => {
-          deckIds.add(cardObj.deckId);
-        });
-        // then get the names of the decks
-        const deckNameCalls = [];
-        deckIds.forEach((deckId) => {
-          deckNameCalls.push(getDeckInfo(deckId));
-        });
-        const decksInfo = await Promise.all(deckNameCalls);
-
-        // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
-        //    names and cardsInfo for card front
+        // create cardsMissedMost state object from cardsMissedMost, using cardsInfo for card front
         cardsMissedMostState = [];
         cardsMissedMost.forEach((cardObj) => {
-          let matchingDeck = decksInfo.find(deck => deck.id === cardObj.deckId);
-          // if we didn't find a deck for this card, this is an error and warn
-          if (!matchingDeck) {
-            console.warn(`no deck found for card ${cardObj.cardId}`);
-            return;
-          }
-          let deckName = matchingDeck.name;
           cardsMissedMostState.push({
-            deckName,
             front: cardsInfo[cardObj.cardId].front,
             id: cardObj.cardId,
             rating: cardObj.averageQuality
@@ -160,7 +137,6 @@ class DeckTeacherView extends React.Component {
             return;
           }
           cardsMissedMostState.push({
-            deckName: existingCardEntry.deckName,
             front: existingCardEntry.front,
             id: cardObj.cardId,
             rating: cardObj.averageQuality
@@ -195,6 +171,13 @@ class DeckTeacherView extends React.Component {
   render() {
     const { classroomName, periods, deckName, deckPeriods, count, averageRating, cardsMissedMost } = this.state;
     const { classroomId } = this.props.match.params;
+
+    // append deckName to each object in cardsMissedMost for LowRatedCards's props
+    const cardsMissedMostRender = cardsMissedMost.map((cardObj) => {
+      cardObj.deckName = deckName;
+      return cardObj;
+    });
+
     return (
       <div className = 'dashboard'>
         <div className = 'dashboard-header'>
@@ -226,22 +209,7 @@ class DeckTeacherView extends React.Component {
             </div>
 
             <div>
-              <LowRatedCards cards={cardsMissedMost} />
-
-              {/* HIGHEST RATED CARDS SECTION
-              <div className = 'low-card'>
-                <h2 className = 'low-card-header'>highest rated cards</h2>
-                <div className = 'card-info inline-display'>
-                  <h1 className = 'score'> 5.8 </h1>
-                  <div className= 'nav'>
-                    <h3 className = 'question'> Is the Calvin cycle for plants or animals? </h3>
-                    <h4 className = 'deck-from'> in
-                      <span className = 'italics'> Molecular Biology </span>
-                    </h4>
-                  </div>
-                </div>
-              </div>
-              */}
+              <LowRatedCards cards={cardsMissedMostRender} />
             </div>
           </div>
         </div>
