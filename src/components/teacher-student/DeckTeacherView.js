@@ -115,18 +115,31 @@ class DeckTeacherView extends React.Component {
         const cardsInfo = await getCardsInfo(cardsMissedMost);
 
         // get missed cards' decks' names
-        const deckNameCalls = [];
+        // first determine which decks to get (to avoid getting duplicates)
+        const deckIds = new Set();
         cardsMissedMost.forEach((cardObj) => {
-          deckNameCalls.push(getDeckInfo(cardObj.deckId));
+          deckIds.add(cardObj.deckId);
+        });
+        // then get the names of the decks
+        const deckNameCalls = [];
+        deckIds.forEach((deckId) => {
+          deckNameCalls.push(getDeckInfo(deckId));
         });
         const decksInfo = await Promise.all(deckNameCalls);
 
         // create cardsMissedMost state object from cardsMissedMost, using decksInfo for deck
         //    names and cardsInfo for card front
         cardsMissedMostState = [];
-        cardsMissedMost.forEach((cardObj, i) => {
+        cardsMissedMost.forEach((cardObj) => {
+          let matchingDeck = decksInfo.find(deck => deck.id === cardObj.deckId);
+          // if we didn't find a deck for this card, this is an error and warn
+          if (!matchingDeck) {
+            console.warn(`no deck found for card ${cardObj.cardId}`);
+            return;
+          }
+          let deckName = matchingDeck.name;
           cardsMissedMostState.push({
-            deckName: decksInfo[i].name,
+            deckName,
             front: cardsInfo[cardObj.cardId].front,
             id: cardObj.cardId,
             rating: cardObj.averageQuality

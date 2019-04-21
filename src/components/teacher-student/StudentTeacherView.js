@@ -154,18 +154,31 @@ class StudentTeacherView extends React.Component {
         const cardsInfo = await getCardsInfo(consistentLowCards);
 
         // get missed cards' decks' names
-        const deckNameCalls = [];
+        // first determine which decks to get (to avoid getting duplicates)
+        const deckIds = new Set();        
         consistentLowCards.forEach((cardObj) => {
-          deckNameCalls.push(getDeckInfo(cardObj.deckId));
+          deckIds.add(cardObj.deckId);
         });
-        const deckInfos = await Promise.all(deckNameCalls);
+        // then get the names of the decks
+        const deckNameCalls = [];
+        deckIds.forEach((deckId) => {
+          deckNameCalls.push(getDeckInfo(deckId));
+        });
+        const decksInfo = await Promise.all(deckNameCalls);
 
-        // create consistentLowCards state object from consistentLowCards, using deckInfos for deck
+        // create consistentLowCards state object from consistentLowCards, using decksInfo for deck
         //    names and cardsInfo for card front
         consistentLowCardsState = [];
-        consistentLowCards.forEach((cardObj, i) => {
+        consistentLowCards.forEach((cardObj) => {
+          let matchingDeck = decksInfo.find(deck => deck.id === cardObj.deckId);
+          // if we didn't find a deck for this card, this is an error and warn
+          if (!matchingDeck) {
+            console.warn(`no deck found for card ${cardObj.cardId}`);
+            return;
+          }
+          let deckName = matchingDeck.name;
           consistentLowCardsState.push({
-            deckName: deckInfos[i].name,
+            deckName,
             front: cardsInfo[cardObj.cardId].front,
             id: cardObj.cardId,
             rating: cardObj.quality

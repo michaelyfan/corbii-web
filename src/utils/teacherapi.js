@@ -565,7 +565,8 @@ export async function getCardTimeAverage(queryOptions, data) {
  *
  * @return A Promise resolving with an array of card objects. Each object has attributes
  *    'classroomId', 'deckId', 'cardId', 'userId', and 'period' of type String, and
- *    'averageQuality', of type number.
+ *    'averageQuality', of type number. The array contains only unique cards; in other words,
+ *    no two elements will have the same attribute value for 'cardId'.
  */
 export async function getCardsMissedMost(queryOptions, data) {
   let result;
