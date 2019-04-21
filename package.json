@@ -12,13 +12,6 @@
     "lint": "node node_modules/eslint/bin/eslint.js ./src",
     "lint-functions": "node node_modules/eslint/bin/eslint.js ./functions/index.js"
   },
-  "babel": {
-    "presets": [
-      "env",
-      "react",
-      "stage-3"
-    ]
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
