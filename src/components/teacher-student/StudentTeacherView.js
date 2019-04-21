@@ -250,7 +250,7 @@ class StudentTeacherView extends React.Component {
         <div className = 'dashboard-header'>
           <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />
           <div className='flex-center student-header-individual'>
-            <img className='student-pic-individual' src={photoUrl} />
+            { photoUrl && <img className='student-pic-individual' src={photoUrl} /> }
             <div>
               <h1 className = 'emphasized-words emphasized-words-individual'>{name}</h1>
               <p className='period-subtitle'>Period {period}</p>
@@ -290,21 +290,6 @@ class StudentTeacherView extends React.Component {
 
             <div>
               <LowRatedCards cards={consistentLowCards} description='consistently low cards' />
-
-              {/* HIGHEST RATED CARDS SECTION
-              <div className = 'low-card'>
-                <h2 className = 'low-card-header'>highest rated cards</h2>
-                <div className = 'card-info inline-display'>
-                  <h1 className = 'score'> 5.8 </h1>
-                  <div className= 'nav'>
-                    <h3 className = 'question'> Is the Calvin cycle for plants or animals? </h3>
-                    <h4 className = 'deck-from'> in
-                      <span className = 'italics'> Molecular Biology </span>
-                    </h4>
-                  </div>
-                </div>
-              </div>
-              */}
             </div>
           </div>
         </div>

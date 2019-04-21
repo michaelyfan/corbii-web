@@ -216,8 +216,9 @@
 }
 
 .student-pic-individual {
+  width: 200px;
   height: 200px;
-  width: auto;
+  object-fit: cover;
   border-radius: 50%;
   margin-right: 50px;
   border: 2px solid black;
