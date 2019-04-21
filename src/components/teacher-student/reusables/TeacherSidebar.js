@@ -18,19 +18,15 @@ export default function TeacherSideBar(props) {
             create a new deck
         </button>
       </Link>
-      <br />
       <Link to={routes.teacher.getViewStudentsRoute(id)}>
         <button className = 'dash-nav'>view student analytics</button>
       </Link>
-      <br />
       <Link to={routes.teacher.getViewDecksRoute(id)}>
         <button className = 'dash-nav'>view deck analytics</button>
       </Link>
-      <br />
       <Link to={routes.teacher.getClassSettingsRoute(id)}>
         <button className = 'dash-nav'>classroom settings</button>
       </Link>
-      <br />
     </div>
   );
 }

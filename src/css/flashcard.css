@@ -37,10 +37,14 @@
   margin: 0px 10px 0px 10px;
 }
 
+#create-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
 .button-wrapper {
-  display: flex;
-  justify-content: center;
+  flex: 1;
   text-align: center;
   background-color: #E9F2FF;
 }
@@ -76,6 +80,22 @@
   border-color: #003466;
   border-style: none none double none;
   border-width: 5px;
+}
+
+#deck-content-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#list-content-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-wrapper {
+  flex: 1;
 }
 
 .flashcard {

@@ -323,7 +323,7 @@ class ConceptList extends React.Component {
       ? <BigLoading />
       : (
 
-        <div>
+        <div id='list-content-wrapper'>
           <div className = 'deck-info'>
             { fromSearch
               ? <BackButton
@@ -340,7 +340,7 @@ class ConceptList extends React.Component {
               listId={id} />
           </div>
 
-          <div className='soft-blue-background'>
+          <div className='soft-blue-background cards-wrapper'>
 
             <Link id = 'study-list' to={routes.study.getConceptListRoute(id)}>
               <button className = 'primary-button'>study this list</button>

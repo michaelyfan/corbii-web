@@ -5,6 +5,23 @@
 
 .profile {
 	height: 100%;
+	/*padding-top: 10px;*/
+}
+
+.profile h1.username {
+	margin:0;
+}
+
+#profile-inner-wrapper {
+	height: 100%;
+
+	display: flex;
+	flex-direction: column;
+}
+
+#profile-name-stuff {
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .username {
@@ -36,6 +53,7 @@
 
 .profile-pic {
 	background: #E9F2FF;
+	flex: 1;
 }
 
 #change-pic {

@@ -524,9 +524,9 @@ class Create extends React.Component {
   render() {
     const { title, isList, periods, isForClassroom } = this.state;
     return (
-      <div>
-        <button className = 'back-to-deck' onClick = {this.handleGoBack}>back to dashboard</button>
+      <div id='create-wrapper'>
         <div className = 'deck-info'>
+          <button className = 'back-to-deck' onClick = {this.handleGoBack}>back to dashboard</button>
           <input type='text'
             maxLength='150'
             className = 'deck-title'
@@ -559,10 +559,10 @@ class Create extends React.Component {
               : <CreateDeck handleCreateDeck={this.handleCreateDeck} />
             }
           </div>
+          {isForClassroom
+            && <SelectPeriods periods={periods} handlePeriodChange={this.handlePeriodChange} /> }
         </div>
 
-        {isForClassroom
-          && <SelectPeriods periods={periods} handlePeriodChange={this.handlePeriodChange} /> }
       </div>
     );
   }

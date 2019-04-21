@@ -73,19 +73,21 @@ class Profile extends React.Component {
     const { name, email, passwordEmailSent } = this.state;
     return (
       <div className='profile'>
-        <div>
-          <h1 className = 'username'>{name}</h1>
-          <h3 className = 'email'>{email}</h3>
-          {/* Below style is done so that the 'Change password' button doesn't have a clickbox
-            that spans the whole width of the page */}
-          <div style={{display: 'flex', justifyContent: 'center'}}>
-            { passwordEmailSent
-              ? <div>
-                <h3 className = 'email'>Password reset information has been sent to your email.</h3>
-                <p>If you logged in with Google or Facebook, the user/pass login method will be available once you set a password.</p>
-              </div>
-              : <h3 className = 'email hover-text-button' onClick={this.handleChangePassword}>Change password?</h3>
-            }
+        <div id='profile-inner-wrapper'>
+          <div id='profile-name-stuff'>
+            <h1 className = 'username'>{name}</h1>
+            <h3 className = 'email'>{email}</h3>
+            {/* Below style is done so that the 'Change password' button doesn't have a clickbox
+              that spans the whole width of the page */}
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              { passwordEmailSent
+                ? <div>
+                  <h3 className = 'email'>Password reset information has been sent to your email.</h3>
+                  <p>If you logged in with Google or Facebook, the user/pass login method will be available once you set a password.</p>
+                </div>
+                : <h3 className = 'email hover-text-button' onClick={this.handleChangePassword}>Change password?</h3>
+              }
+            </div>
           </div>
           <div className = 'hr'><hr /></div>
           <div className = 'profile-pic'>

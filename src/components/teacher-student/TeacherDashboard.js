@@ -178,7 +178,7 @@ class TeacherDashboard extends React.Component {
           <h3 className = 'emphasized-words' id='dashboard-welcome'>Welcome to your classroom hub!</h3>
         </div>
         <h3 className = 'your-stuff center-button'>your classrooms</h3>
-        <div className = 'blue-background'>
+        <div id = 'classroom-stuff-wrapper' className = 'blue-background'>
           <CreateClassroomForm doGetClassrooms={this.doGetClassrooms} />
           {classrooms.map((classroom) => {
             const { periods, name } = classroom.data();

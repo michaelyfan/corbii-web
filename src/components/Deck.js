@@ -506,7 +506,7 @@ class Deck extends React.Component {
     return isLoading
       ? <BigLoading />
       : (
-        <div>
+        <div id='deck-content-wrapper'>
           <div className = 'deck-info'>
             {backButton}
             <DeckTitle
@@ -517,7 +517,7 @@ class Deck extends React.Component {
               deckId={id} />
           </div>
 
-          <div className='soft-blue-background'>
+          <div className='soft-blue-background cards-wrapper'>
             { isForClassroom
               ? null
               : <Link id = 'study-deck' to={routes.study.getDeckRoute(id)}>

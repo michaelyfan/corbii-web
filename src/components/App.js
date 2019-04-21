@@ -153,7 +153,7 @@ class App extends React.Component {
 
     return (
       <Router>
-        <div>
+        <div id='app-wrapper'>
           <Nav photoURL={photoURL} 
             signedIn={signedIn} 
             isTeacher={isTeacher} 

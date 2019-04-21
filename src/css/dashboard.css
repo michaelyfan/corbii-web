@@ -1,3 +1,9 @@
+.dashboard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .dashboard-header {
   background-image: url('/src/resources/triangle.png');
   background-position: center;
@@ -80,6 +86,7 @@ button.modify-stuff:hover {
 }
 
 .inline-display {
+  flex: 1;
   display: flex;
 }
 
@@ -114,12 +121,15 @@ button.modify-stuff:hover {
 }
 
 .navigation {
-  display: block;
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
 }
 
-#profile-settings {
-  margin-top: 60px;
-  margin-bottom: 10px;
+#profile-settings-link {
+  margin-top: auto;
+  margin-bottom: 15px;
 }
 
 .student-classroom-button{

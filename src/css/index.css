@@ -28,11 +28,23 @@ body {
   font-family: Print Clearly;
 }
 
-/* This code will make the footer stick to the bottom of the screen, but comes with other UI
-  problems -- child elements fail to fill up the empty space. Not sure how to fix this. */
-/*.app-content {
-  min-height: calc(100vh - 114px - 149px);
-}*/
+#app-wrapper {
+  /* 
+    workaround for #app-wrapper not having defined height -- allows child/grandchild/beyond
+    elements to use height percentages
+  */
+  height: 0px;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  /* sets flex-grow to 1 */
+  /* flex is just a shorthand for various flex properties */
+  flex: 1;
+}
 
 button {
   font-family: Print Clearly;
