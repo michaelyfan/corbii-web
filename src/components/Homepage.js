@@ -5,6 +5,10 @@ import { Carousel } from 'react-responsive-carousel';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
 
+// image assets
+import spacedRepImg from '../resources/slideshow-img/spaced-rep.jpg';
+import selfExpImg from '../resources/slideshow-img/self-exp.jpg';
+
 class Slideshow extends React.Component {
   render() {
     return (
@@ -16,8 +20,8 @@ class Slideshow extends React.Component {
         infiniteLoop = {true}
         interval = {7000}
       >
-        <div><img src = "/src/resources/slideshow-img/spaced-rep.jpg" /></div>
-        <div><img src = "/src/resources/slideshow-img/self-exp.jpg" /></div>
+        <div><img src = {spacedRepImg} /></div>
+        <div><img src = {selfExpImg} /></div>
       </Carousel>
     );
   }

@@ -14,10 +14,6 @@ shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX
 const db = firebase.firestore();
 const functions = firebase.functions();
 
-// For suppressing a console error
-const settings = {timestampsInSnapshots: true};
-db.settings(settings);
-
 /**
  * Gets all classrooms of a student. This function gets the teacher's ID from the active user
  *    session.

@@ -2,6 +2,7 @@ import React from 'react';
 import firebase from '../utils/firebase';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { getUserOnLogin, getCurrentUserProfilePic, createNewDbUser } from '../utils/api';
+import { hot } from 'react-hot-loader';
 import routes from '../routes/routes';
 import Nav from './Nav';
 import FAQ from './FAQ';
@@ -300,4 +301,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default hot(module)(App);

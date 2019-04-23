@@ -6,6 +6,10 @@ import { createDeckCurrentUser, createConceptListCurrentUser, getClassroomInfo }
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
 
+// image assets
+import trashImg from '../resources/flashcard-img/trash.png';
+import switchImg from '../resources/flashcard-img/switch.png';
+
 function SelectPeriods(props) {
   const { periods, handlePeriodChange } = props;
   return (
@@ -15,7 +19,7 @@ function SelectPeriods(props) {
         {Object.keys(periods).map((period) =>
           <label className =  'filter-prompt check-period period-num' key={period}> Period {period}:
             <input
-             className =  'filter-prompt check-period period-num'
+              className =  'filter-prompt check-period period-num'
               name={period}
               type='checkbox'
               checked={periods[period]}
@@ -85,7 +89,7 @@ class CreateDeckCard extends React.Component {
           onBlur={this.handleSave}
           placeholder='front' />
         <div className = 'side-menu'>
-          <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = '../src/resources/flashcard-img/switch.png' />
+          <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = {switchImg} />
         </div>
         <TextareaAutosize 
           type='text'
@@ -98,7 +102,7 @@ class CreateDeckCard extends React.Component {
           placeholder='back' />
 
         <div className = 'side-menu'>
-          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = {trashImg} />
         </div>
       </div>
     );
@@ -148,7 +152,7 @@ class CreateConceptCard extends React.Component {
           onBlur={this.handleSave}
           placeholder='question or concept' />
         <div className = 'side-menu'>
-          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = '../src/resources/flashcard-img/trash.png' />
+          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = {trashImg} />
         </div>
       </div>
     );

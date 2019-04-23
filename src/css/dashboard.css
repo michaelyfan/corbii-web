@@ -5,7 +5,7 @@
 }
 
 .dashboard-header {
-  background-image: url('/src/resources/triangle.png');
+  background-image: url(../resources/triangle.png);
   background-position: center;
   background-size: cover;
 }

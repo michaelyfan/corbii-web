@@ -9,10 +9,6 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 const storageRef = storage.ref();
 
-// For suppressing a console error
-const settings = {timestampsInSnapshots: true};
-db.settings(settings);
-
 // Begin api functions
 
 /**

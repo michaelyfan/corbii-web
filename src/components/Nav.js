@@ -5,6 +5,9 @@ import routes from '../routes/routes';
 import PropTypes from 'prop-types';
 import LoginModalPersist from './LoginModalPersist';
 
+// image assets
+import logoImg from '../resources/header-logo.png';
+
 class Nav extends React.Component {
 
   constructor(props) {
@@ -50,7 +53,7 @@ class Nav extends React.Component {
         <div className = 'flex-header'>
           <div>
             <Link to={imageLink}>
-              <img id = 'header-logo' src='/src/resources/header-logo.png' />
+              <img id = 'header-logo' src={logoImg} />
             </Link>
           </div>
 

@@ -5,7 +5,11 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from '../utils/firebase';
 
 class Auth extends React.Component {
-
+  static propTypes = {
+    signedIn: PropTypes.bool.isRequired,
+    loginSuccessCallback: PropTypes.func,
+    loginFailureCallback: PropTypes.func
+  };
 
   render() {
     const { signedIn, loginSuccessCallback, loginFailureCallback } = this.props;
@@ -41,11 +45,5 @@ class Auth extends React.Component {
     );
   }
 }
-
-Auth.propTypes = {
-  signedIn: PropTypes.bool.isRequired,
-  loginSuccessCallback: PropTypes.func,
-  loginFailureCallback: PropTypes.func
-};
 
 export default Auth;

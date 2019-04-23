@@ -1,9 +1,9 @@
 # corbii-web
 Corbii's web platform.
 
-Check the Zenhub board for TODOs.
+@maintainers: Check the Zenhub board for TODOs.
 
-## Development Instructions
+## Development instructions
 
 To start a development environment:
 
@@ -11,15 +11,11 @@ To start a development environment:
 1. Install dependencies (`npm i`)
 1. Start the webpack development server with `npm run dev`
 1. Code away
-   * If you need to deploy something to the Firebase dev project (Firestore rules, new Functions, etc), make sure you are deploying to the `corbii-web-dev` Firebase project and run `firebase deploy`
+   * If you need to deploy something to the Firebase dev project (Firestore rules, new Functions, etc), make sure you are deploying to the `corbii-web-dev` Firebase project and run `firebase deploy --only [firebase-service-name-here]`
+      * ex. to deploy new Firestore rules, run `firebase deploy --only firestore`
+      * refer to the [Firebase CLI](https://firebase.google.com/docs/cli/) docs for more info
 
 The webpack development server comes with hot reloading.
-
-For production, the app is built with `npm run build` and then hosted on Firebase Hosting with `firebase deploy` or `firebase deploy --only hosting`. Firebase statically serves the built files. Also, any Firebase assets should be deployed to the production environment with `firebase use default`, then
-`firebase deploy` (this will also do the Hosting step for you, but either way `npm run build` must be run first).
-
-This app used to use Heroku, but that's behind us now.
-
 
 ## Deployment/Production Specifications
 
@@ -31,6 +27,11 @@ The `corbii-web` Firebase project is used for the `master` branch, while any dev
 1. Build the app with `npm run build`
 1. Switch to the correct Firebase alias (either `firebase use dev` or `firebase use default`) to determine whether to push to the development environment or the dev environment
 1. Deploy the app on Firebase Hosting with `firebase deploy`
+
+This app used to use Heroku, but that's behind us now.
+
+## DEVELOPER REFERENCE
+The notes below are for developer reference.
 
 ## HIGH-LEVEL COMPONENT RETRIEVAL RECORDS
 

@@ -11,6 +11,9 @@ import BackButton from './reusables/BackButton';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
+// image assets
+import switchImg from '../resources/flashcard-img/switch.png';
+
 class SelectPeriods extends React.Component {
   constructor(props) {
     super(props);
@@ -299,7 +302,7 @@ class AddCardForm extends React.Component {
               onChange={this.handleChangeAddCardFront} />
             <img className = 'switch-front-and-back'
               style={{cursor: 'pointer'}}
-              src = {require('../resources/flashcard-img/switch.png')}
+              src = {switchImg}
               onClick={this.handleSwitch} />
             <TextareaAutosize
               placeholder='back information'

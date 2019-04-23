@@ -4,6 +4,10 @@ import { getConceptListForStudy, getUserProfileInfo, updateConceptPersonalData }
 import routes from '../routes/routes';
 import Title from './reusables/Title';
 
+// image assets
+import prevArrowImg from '../resources/prev-arrow.png';
+import nextArrowImg from '../resources/next-arrow.png';
+
 
 class SingleConcept extends React.Component {
   constructor(props) {
@@ -166,7 +170,7 @@ class StudyConcept extends React.Component {
           subtitle={`created by ${creatorName}`} />
         <div className = 'disp-inline center-button'>
           { index > 0 && 
-            <img src = '/src/resources/prev-arrow.png'
+            <img src = {prevArrowImg}
               className = 'arrows' 
               onClick={() => {this.changeIndex(true);}} /> }
           { thisConcept
@@ -179,7 +183,7 @@ class StudyConcept extends React.Component {
             : <h2>This list doesn&apos;t have any concepts in it!</h2>}
         
           { index < concepts.length - 1 && 
-            <img src = '/src/resources/next-arrow.png' 
+            <img src = {nextArrowImg}
               className = 'arrows'
               onClick={() => {this.changeIndex(false);}} /> }
         </div>

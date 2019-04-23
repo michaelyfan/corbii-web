@@ -284,7 +284,7 @@ class StudentTeacherView extends React.Component {
                 <CardGraph cards={datapoints} />
                 {/* CARD QUALITY GRAPH -- TODO: replace with something like a React bargraph module, or something else */}
                 {/* The below placeholder image is what used to be here */}
-                {/* <img className='student-graph-individual' src='/src/resources/graph.jpg' /> */}
+                {/* <img className='student-graph-individual' src={require('../../resources/graph.jpg')} /> */}
               </div>
             </div>
 
