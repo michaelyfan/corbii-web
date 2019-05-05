@@ -21,12 +21,14 @@ The webpack development server comes with hot reloading.
 
 The `master` branch of `corbii-web` is the **production branch**. Do not push anything to master that is not ready for production; always use feature branches.
 
-The `corbii-web` Firebase project is used for the `master` branch, while any development branch uses the `corbii-web-dev` Firebase project. The Firebase CLI allows for the `corbii-web` repo to freely switch between both Firebase projects, a feature known as 'aliases'. 
+The `corbii-web` Firebase project is used for the `master` branch, while any development branch should use the `corbii-web-dev` Firebase project. The Firebase CLI allows for the `corbii-web` repo to freely switch between both Firebase projects, a feature known as 'aliases'.
 
 1. Ensure you are on master
 1. Build the app with `npm run build`
 1. Switch to the correct Firebase alias (either `firebase use dev` or `firebase use default`) to determine whether to push to the development environment or the dev environment
 1. Deploy the app on Firebase Hosting with `firebase deploy`
+
+*Note that anything deployed via* `corbii-web-dev`*'s Firebase Hosting will use* `corbii-web`*'s services (ex. users and database) while deployed. This is not ideal, and will be changed in the future (see [#108](https://github.com/michaelyfan/corbii-web/issues/108)).*
 
 This app used to use Heroku, but that's behind us now.
 
