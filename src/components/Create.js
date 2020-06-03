@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { confirmAlert } from 'react-confirm-alert';
-import { createDeckCurrentUser, createConceptListCurrentUser } from '../utils/api';
+import { createDeckCurrentUser } from '../utils/api';
 import routes from '../routes/routes';
 import TextareaAutosize from 'react-autosize-textarea';
 
@@ -80,56 +80,6 @@ class CreateDeckCard extends React.Component {
           onBlur={this.handleSave}
           placeholder='back' />
 
-        <div className = 'side-menu'>
-          <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = {trashImg} />
-        </div>
-      </div>
-    );
-  }
-}
-
-class CreateConceptCard extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      // Below is normally bad practice, but this use case is valid.
-      question: props.initialQuestion,
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-  }
-
-  handleChange(e) {
-    e.persist();
-    this.setState(() => ({
-      question: e.target.value
-    }));
-  }
-
-  handleSave() {
-    this.props.save(this.props.index, this.state.question);
-  }
-
-  handleDelete() {
-    this.props.delete(this.props.index);
-  }
-
-  render() {
-    return (
-      <div className = 'flashcard'>
-        <input type='text' 
-          maxLength='200'
-          className = 'flashcard-text'
-          id = 'create-a-concept'
-          index = 'concept-card'
-          key='question'
-          value={this.state.question}
-          onChange={this.handleChange}
-          onBlur={this.handleSave}
-          placeholder='question or concept' />
         <div className = 'side-menu'>
           <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = {trashImg} />
         </div>
@@ -252,106 +202,16 @@ class CreateDeck extends React.Component {
   }
 }
 
-class CreateList extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      concepts: [{
-        question: '',
-        id: shortid.generate()
-      }]
-    };
-
-    this.handleAddConcept = this.handleAddConcept.bind(this);
-    this.deleteConcept = this.deleteConcept.bind(this);
-    this.save = this.save.bind(this);
-  }
-
-  handleAddConcept() {
-    this.setState((prevState) => {
-      const concepts = prevState.concepts;
-      concepts.push({
-        question: '',
-        id: shortid.generate()
-      });
-      return {
-        concepts: concepts
-      };
-    });
-  }
-
-  deleteConcept(index) {
-    this.setState((prevState) => {
-      let concepts = prevState.concepts;
-      concepts.splice(index, 1);
-      return {
-        concepts: concepts,
-      };
-    });
-  }
-
-  save(index, newQuestion) {
-    this.setState((prevState) => {
-      const concepts = prevState.concepts;
-      const oldConcept = concepts[index];
-      concepts[index] = {
-        id: oldConcept.id,
-        question: newQuestion
-      };
-
-      return {
-        concepts: concepts
-      };
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <div>
-          {this.state.concepts.map((concept, index) => 
-            <CreateConceptCard  
-              delete={this.deleteConcept}
-              initialQuestion={concept.question} 
-              index={index} 
-              key={concept.id}
-              save={this.save} />
-          )};
-          <div className = 'add-more-card' id = 'add-concept'>
-            <button 
-              className = 'secondary-button'
-              id = 'more-concept'
-              onClick={this.handleAddConcept}>
-                add a concept
-            </button>
-          </div>
-          <div className = 'add-more-card'>
-            <button
-              onClick={() => {this.props.handleCreateList(this.state.concepts);}}
-              className = 'primary-button'
-              id = 'finalize-list'>
-                create list
-            </button>
-          </div>
-        </div>        
-      </div>
-    );
-  }
-}
-
 class Create extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      isList: false,
       title: '',
     };
 
     this.handleChangeTitle = this.handleChangeTitle.bind(this);
-    this.handleCreateList = this.handleCreateList.bind(this);
     this.handleCreateDeck = this.handleCreateDeck.bind(this);
     this.handleGoBack = this.handleGoBack.bind(this);
   }
@@ -361,21 +221,6 @@ class Create extends React.Component {
     this.setState(() => ({
       title: e.target.value
     }));
-  }
-
-  handleCreateList(concepts) { 
-    if (this.state.title.trim() === '') {
-      alert('Title cannot be empty.'); 
-    } else if (this.hasEmptyEntries('concepts',concepts)) {
-      alert('One or more of your concepts is empty.');
-    } else {
-      createConceptListCurrentUser(this.state.title, concepts).then(() => {
-        this.props.history.push(routes.dashboard.base);
-      }).catch((err) => {
-        console.error(err);
-        alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
-      });
-    }
   }
 
   handleCreateDeck(cards) {
@@ -398,19 +243,10 @@ class Create extends React.Component {
   }
 
   hasEmptyEntries(type, content) {
-    if (type === 'concepts') {
-      for (let i = 0; i < content.length; i++) {
-        let item = content[i];
-        if (item.question.trim() === '') {
-          return true;
-        }
-      }
-    } else { // type === 'decks'
-      for (let i = 0; i < content.length; i++) {
-        let item = content[i];
-        if (item.front.trim() === '' || item.back.trim() === '') {
-          return true;
-        }
+    for (let i = 0; i < content.length; i++) {
+      let item = content[i];
+      if (item.front.trim() === '' || item.back.trim() === '') {
+        return true;
       }
     }
     return false;
@@ -437,7 +273,7 @@ class Create extends React.Component {
   }
 
   render() {
-    const { title, isList } = this.state;
+    const { title } = this.state;
     return (
       <div id='create-wrapper'>
         <div className = 'deck-info'>
@@ -447,31 +283,13 @@ class Create extends React.Component {
             className = 'deck-title'
             onChange={this.handleChangeTitle}
             value={title}
-            placeholder =
-              { isList 
-                ? 'title your list here'
-                : 'title your deck here'
-              }
+            placeholder='deck title'
           />
-
-          <p className = 'small-caption' id = 'deck-subtitle'>
-            { isList 
-              ? 'concept list title'
-              : 'deck title'
-            } 
-          </p>
         </div>
 
         <div className = 'button-wrapper'>
           <div className = 'create-buttons'>
-            <div>
-              <button className='create-type' onClick={() => { this.setState(() => ({ isList: false })); }}>create a study deck</button>
-              <button className='create-type' onClick={() => { this.setState(() => ({ isList: true })); }}>create a concept list</button>
-            </div>
-            { isList 
-              ? <CreateList handleCreateList={this.handleCreateList} />
-              : <CreateDeck handleCreateDeck={this.handleCreateDeck} />
-            }
+            <CreateDeck handleCreateDeck={this.handleCreateDeck} />
           </div>
         </div>
       </div>
@@ -487,9 +305,6 @@ Create.propTypes = {
 CreateDeck.propTypes = {
   handleCreateDeck: PropTypes.func.isRequired
 };
-CreateList.propTypes = {
-  handleCreateList: PropTypes.func.isRequired
-};
 CreateDeckCard.propTypes = {
   initialFront: PropTypes.string.isRequired,
   initialBack: PropTypes.string.isRequired,
@@ -498,11 +313,4 @@ CreateDeckCard.propTypes = {
   switch: PropTypes.func.isRequired,
   delete: PropTypes.func.isRequired
 };
-CreateConceptCard.propTypes = {
-  initialQuestion: PropTypes.string.isRequired,
-  index: PropTypes.number.isRequired,
-  save: PropTypes.func.isRequired,
-  delete: PropTypes.func.isRequired
-};
-
 export default Create;

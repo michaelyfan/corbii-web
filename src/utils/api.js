@@ -1,6 +1,6 @@
 import firebase from './firebase';
 import 'firebase/firestore';
-import { deckIndex, userIndex, listIndex, algClient } from './algconfig';
+import { deckIndex, userIndex, algClient } from './algconfig';
 import { smAlgorithm } from './algorithms';
 import moment from 'moment';
 
@@ -83,29 +83,6 @@ export function getCardsInfo(cards) {
       };
     });
     return toReturn;
-  });
-}
-
-/**
- * Gets a classroom's information (such as id, name, periods)
- * 
- * @param {String} the ID of the desired classroom
- *
- * @return A promise resolving to a classroom object with the attributes "id",
- *    "name", "periods" (array), and "teacherId"
- */
-export function getClassroomInfo(classroomId) {
-  const docRef = db.collection('classrooms').doc(classroomId);
-  return docRef.get().then((res) => {
-    if (!res.exists) {
-      throw new Error(`This classroom does not exist. Invalid ID ${classroomId}`);
-    }
-    return {
-      id: res.id,
-      name: res.data().name,
-      periods: res.data().periods,
-      teacherId: res.data().teacherId
-    };
   });
 }
 
@@ -244,61 +221,6 @@ function getPercentOverdue(interval, due_date, current_date) {
   }
 }
 
-export function getConceptList(listId) {
-  let listRef = db.collection('lists').doc(listId);
-
-  return Promise.all([
-    listRef.get(), 
-    listRef.collection('concepts').get()
-  ]).then(([ list, concepts ]) => {
-    if (!list.exists) {
-      throw new Error('This list doesn\'t exist.');
-    }
-    let conceptArr = [];
-    concepts.forEach((concept) => {
-      conceptArr.push({
-        id: concept.id,
-        question: concept.data().question
-      });
-    });
-    return {
-      listName: list.data().name,
-      creatorId: list.data().creatorId,
-      concepts: conceptArr
-    };
-  });
-}
-
-export function getConceptListForStudy(listId) {
-  const uid = firebase.auth().currentUser.uid;
-  let dataRef = db.collection('selfExData')
-    .where('userId', '==', uid).where('listId', '==', listId);
-
-  return Promise.all([
-    getConceptList(listId),
-    dataRef.get()
-  ]).then(([ list, dataSnapshot ]) => {
-    let dataRecord = {};
-    dataSnapshot.forEach((datapt) => {
-      let conceptData = datapt.data();
-      conceptData.id = datapt.id;
-      dataRecord[datapt.data().conceptId] = conceptData;
-    });
-
-    let concepts = [];
-    list.concepts.forEach((concept) => {
-      concept.data = dataRecord[concept.id];
-      concepts.push(concept);
-    });
-
-    return {
-      name: list.listName,
-      creatorId: list.creatorId,
-      concepts: concepts
-    };
-  });
-}
-
 export function getUserProfileInfo(uid) {
   return db.collection('users').doc(uid).get().then((res) => {
     if (!res.exists) {
@@ -335,37 +257,20 @@ export function getUserDecks(uid) {
     });
 }
 
-export function getUserConceptLists(uid) {
-  return db.collection('lists').where('creatorId', '==', uid).get()
-    .then((querySnapshot) => {
-      let listsArr = [];
-      querySnapshot.forEach((conceptList) => {
-        listsArr.push({
-          id: conceptList.id,
-          name: conceptList.data().name
-        });
-      });
-      return listsArr;
-    });
-}
-
 export function getUserAll(uid) {
   // get user profile info first to allow error to catch if this user doesn't exist
   return getUserProfileInfo(uid).then((res) => {
     return Promise.all([
       res,
       getUserDecks(uid),
-      getUserConceptLists(uid),
     ]);
   }).then((results) => {
-    const [ user, decks, conceptLists ] = results;
+    const [ user, decks ] = results;
     return {
       name: user.data().name,
       email: user.data().email,
-      isTeacher: user.data().isTeacher || false,
       id: user.id,
       decks: decks,
-      conceptLists: conceptLists,
     };
   });
 }
@@ -380,11 +285,6 @@ export function getCurrentUserDecks() {
   return getUserDecks(uid);
 }
 
-export function getCurrentUserConceptLists() {
-  const uid = firebase.auth().currentUser.uid;
-  return getUserConceptLists(uid);
-}
-
 export function getCurrentUserProfilePic() {
   const uid = firebase.auth().currentUser.uid;
   return getProfilePic(uid);
@@ -393,94 +293,6 @@ export function getCurrentUserProfilePic() {
 export function getCurrentUserProfileInfo() {
   const uid = firebase.auth().currentUser.uid;
   return getUserProfileInfo(uid);
-}
-
-/**
- * Gets all decks that are in a classroom. Should only be used by teachers; a student attempting to
- *   use this function will most likely result in a permission-denied Firebase error.
- * @param  {String} classroomId The ID of the classroom from which to get decks
- * @param  {String} period      (Optional) The period form which to get decks
- * @param  {Boolean} isTeacher  (Optional) Will be used if this function is being used by a teacher.
- * @return {Promise}            A Promise resolving to the result of the Firebase call or an error.
- */      
-export function getDecksInClassroom(classroomId, period, isTeacher) {
-  const uid = firebase.auth().currentUser.uid;
-
-  let colRef;
-  // varies the colRef depending on which Optional params are passed in
-  if (isTeacher && period) { // period and teacher both passed in
-    colRef = db.collection('decks')
-      .where('creatorId', '==', uid) // creatorId necessary for Firebase query security
-      .where('classroomId', '==', classroomId)
-      .where(`periods.${period}`, '==', true);
-  } else if (isTeacher) { // just isTeacher passed in
-    colRef = db.collection('decks')
-      .where('creatorId', '==', uid)
-      .where('classroomId', '==', classroomId);
-  } else if (period) { // just period passed in
-    colRef = db.collection('decks')
-      .where('classroomId', '==', classroomId)
-      .where(`periods.${period}`, '==', true);
-  } else { // classroomId was the only arg passed in
-    colRef = db.collection('decks')
-      .where('classroomId', '==', classroomId);
-  }
-  return colRef.get();
-}
-
-export function getClassroomUser(classroomId, userId) {
-  const docRef = db.collection('classrooms').doc(classroomId)
-    .collection('users').doc(userId);
-
-  return docRef.get();
-}
-
-export function getClassroomCurrentUser(classroomId) {
-  const uid = firebase.auth().currentUser.uid;
-  
-  return getClassroomUser(classroomId, uid);
-}
-
-/*
- * Gets classroom information for the current user, which includes classroom's user doc,
- *    classroom doc, teacher info, and all decks assigned to the current user's period.
- *
- * @param {String} classroomId - the ID of the desired classroom
- *
- * @return -- a Promise resolving to an object with attributes 'data' (Firebase result for
- *    classroom document), 'id' (ID of the classroom), 'period', and 'decks'. An object
- *    in 'decks' is a Firebase result for a deck doc
- *
- */
-export function getClassroomForUser(classroomId) {
-  return Promise.all([
-    getClassroomCurrentUser(classroomId),
-    getClassroomInfo(classroomId)
-  ]).then((result) => {
-    const period = result[0].data().period;
-    const teacherId = result[1].teacherId;
-    return Promise.all([
-      getDecksInClassroom(classroomId, period),
-      db.collection('users').doc(teacherId).get(),
-      result[0],
-      result[1]
-    ]);
-  }).then((result) => {
-    const [ decksRes, teacherRes, classUserRes, classRes ] = result;
-    let decks = [];
-    decksRes.forEach((deck) => {
-      decks.push(deck);
-    });
-    return {
-      teacherId: classRes.teacherId,
-      name: classRes.name,
-      id: classRes.id,
-      teacherName: teacherRes.data().name,
-      period: classUserRes.data().period,
-      decks: decks
-    };
-  });
-
 }
 
 export function getUserOnLogin() {
@@ -503,40 +315,6 @@ export function getUserOnLogin() {
 // end get functions
 
 // begin create functions
-
-export function createClassroomUser(code) {
-  const codeParts = code.split('-&');
-  if (codeParts.length != 2) {
-    return new Promise((resolve, reject) => {
-      reject(new Error('invalid code'));
-    });
-  } else {
-    const [ classroomId, period ] = codeParts;
-    const uid = firebase.auth().currentUser.uid;
-    const userRef = db.collection('users').doc(uid);
-    const classroomRef = db.collection('classrooms').doc(classroomId);
-
-    return Promise.all([
-      db.runTransaction((t) => {
-        return t.get(userRef).then((res) => {
-          let classrooms = res.data().classrooms;
-          if (classrooms) {
-            classrooms.push(classroomId);
-          } else {
-            classrooms = [classroomId];
-          }
-          t.update(userRef, {
-            classrooms: classrooms
-          });
-        });
-      }),
-      classroomRef.collection('users').doc(uid).set({
-        period: period
-      })
-    ]);
-    
-  }
-}
 
 export function createNewDbUser() {
   const { displayName, email, uid } = firebase.auth().currentUser;
@@ -595,39 +373,6 @@ export function createDeckCurrentUser(params) {
   });
 }
 
-export function createConceptListCurrentUser(conceptListName, concepts) {
-  if (conceptListName.length > 1000) {
-    return Promise.reject(new Error('Deck name is too long.'));
-  } else {
-    for (let i = 0; i < concepts.length; i++) {
-      if (concepts[i].question.length > 200) {
-        return Promise.reject(new Error('Concept is too long.'));
-      }
-    }
-  }
-
-  const { uid, displayName } = firebase.auth().currentUser;
-
-  const data = {
-    name: conceptListName,
-    creatorId: uid,
-    creatorName: displayName,
-    count: (concepts && concepts.length) || 0
-  };
-
-  return db.collection('lists').add(data).then((listRef) => {
-    if (concepts) {
-      // consider mixing this batch with the deck creation call
-      const batch = db.batch();
-      concepts.forEach((concept) => {
-        const newCardRef = db.collection('lists').doc(listRef.id).collection('concepts').doc();
-        batch.set(newCardRef, { question: concept.question });
-      });
-      return batch.commit();
-    }
-  });
-}
-
 export function createCard(front, back, deckId) {
   if (front.length > 1000 || back.length > 1000) {
     return Promise.reject(new Error('One of the card inputs is too long.'));
@@ -641,32 +386,6 @@ export function createCard(front, back, deckId) {
   });
 }
 
-export function createConcept(question, listId) {
-  if (question.length > 200) {
-    return Promise.reject(new Error('Concept is too long.'));
-  }
-  const deckRef = db.collection('lists').doc(listId);
-
-  return deckRef.collection('concepts').add({ question: question }).then(() => {
-    return updateListCountByOne(listId, true);
-  });
-}
-
-export function createClassDataPoint(params) {
-  const { quality, time, cardId, deckId, classroomId, period } = params;
-  const uid = firebase.auth().currentUser.uid;
-
-  return db.collection('classSpacedRepData').add({
-    timestamp: new Date(),
-    quality: quality,
-    time: time,
-    cardId: cardId,
-    deckId: deckId,
-    userId: uid,
-    classroomId: classroomId,
-    period: period
-  });
-}
 // end create functions
 
 // begin update functions
@@ -742,37 +461,6 @@ export function updateCard(deckId, cardId, front, back) {
   });
 }
 
-export function updateConcept(listId, conceptId, question) {
-  if (question.length > 200) {
-    return Promise.reject(new Error('Concept is too long.'));
-  }
-
-  const cardRef = `lists/${listId}/concepts/${conceptId}`;
-
-  return db.doc(cardRef).update({ question: question });
-}
-
-export function updateConceptPersonalData(dataId, listId, conceptId, answer) {
-  if (answer.length > 4000) {
-    return Promise.reject(new Error('Answer is too long.'));
-  }
-
-  const uid = firebase.auth().currentUser.uid;
-  let dataRef;
-  if (dataId) {
-    dataRef = db.collection('selfExData').doc(dataId);
-  } else {
-    dataRef = db.collection('selfExData').doc();
-  }
-
-  return dataRef.set({
-    answer: answer,
-    listId: listId,
-    conceptId: conceptId,
-    userId: uid
-  }, {merge: true});
-}
-
 function updateDeckCountByOne(deckId, isIncrement) {
   const deckRef = db.collection('decks').doc(deckId);
   const modifier = isIncrement ? 1 : -1;
@@ -785,25 +473,6 @@ function updateDeckCountByOne(deckId, isIncrement) {
 
       let newCount = res.data().count + modifier;
       t.update(deckRef, {
-        count: newCount
-      });
-
-    });
-  });
-}
-
-function updateListCountByOne(listId, isIncrement) {
-  const listRef = db.collection('lists').doc(listId);
-  const modifier = isIncrement ? 1 : -1;
-
-  return db.runTransaction((t) => {
-    return t.get(listRef).then((res) => {
-      if (!res.exists) {
-        throw new Error('concept list does not exist.');
-      }
-
-      let newCount = res.data().count + modifier;
-      t.update(listRef, {
         count: newCount
       });
 
@@ -840,38 +509,6 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
   });
 }
 
-export function updateCurrentUserList(listId, listName, concepts) {
-  if (listName.length > 150) {
-    return Promise.reject(new Error('Deck name is too long.'));
-  }
-  const listRef = `lists/${listId}`;
-
-  if (listName.length > 150) {
-    return Promise.reject(new Error('Deck name is too long.'));
-  }
-
-  return db.doc(listRef).update({name: listName}).then(() => {
-    if (concepts) {
-      const batch = db.batch();
-      concepts.forEach((concept) => {
-        let conceptRef;
-        if (concept.id) {
-          conceptRef = db.collection('lists').doc(listId)
-            .collection('concepts').doc(concept.id);
-        } else {
-          conceptRef = db.collection('lists').doc(listId)
-            .collection('concepts').doc();
-        }
-        batch.set(conceptRef, {
-          front: concept.front,
-          back: concept.back
-        }, {merge: true});
-        return batch.commit();
-      });
-    }
-  });
-}
-
 export function updateCurrentUserProfilePic(file) {
   const uid = firebase.auth().currentUser.uid;
   return storageRef.child(`profilePics/${uid}`).put(file);
@@ -889,22 +526,9 @@ export function deleteCard(deckId, cardId) {
   });
 }
 
-// removes a concept's content documents from the database.
-export function deleteConcept(listId, conceptId) {
-  const listRef = db.collection('lists').doc(listId);
-  return listRef.collection('concepts').doc(conceptId).delete().then(() => {
-    updateListCountByOne(listId, false);
-  });
-}
-
 export function deleteDeckFromCurrentUser(deckId) {
   const deckRef = db.collection('decks').doc(deckId);
   return deckRef.delete();
-}
-
-export function deleteListFromCurrentUser(listId) {
-  const listRef = db.collection('lists').doc(listId);
-  return listRef.delete();
 }
 // end delete functions
 
@@ -952,26 +576,6 @@ export function searchUsers(query) {
   });
 }
 
-export function searchLists(query) {
-  if (query.length > 1000) {
-    return Promise.reject(new Error('Query is too long.'));
-  }
-  return new Promise((resolve, reject) => {
-    const index = algClient.initIndex(listIndex);
-    index.search(
-      {
-        query: query,
-        hitsPerPage: 50,
-      },
-      (err, content) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(content.hits);
-      }
-    );  
-  });
-}
 // end search functions
 
 // begin auth functions

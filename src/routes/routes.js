@@ -24,17 +24,10 @@ const routes = {
     template: '/deck/:id',
     getRoute: ((id) => `/deck/${id}`)
   },
-  viewConceptList: {
-    base: '/conceptlist',
-    template: '/conceptlist/:id',
-    getRoute: ((id) => `/conceptlist/${id}`)
-  },
   study: {
     base: '/study',
     deckTemplate: '/study/deck/:id',
-    conceptListTemplate: '/study/conceptlist/:id',
     getDeckRoute: ((id) => `/study/deck/${id}`),
-    getConceptListRoute: ((id) => `/study/conceptlist/${id}`)
   },
   viewUser: {
     base: '/user',

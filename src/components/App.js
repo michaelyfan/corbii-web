@@ -8,13 +8,11 @@ import Nav from './Nav';
 import FAQ from './FAQ';
 import Search from './Search';
 import Deck from './Deck';
-import ConceptList from './ConceptList';
 import Footer from './Footer';
 import Homepage from './Homepage';
 import User from './User';
 import NotFound from './NotFound';
 import Profile from './Profile';
-import StudyConcept from './StudyConcept';
 import StudyDeck from './StudyDeck';
 import Dashboard from './Dashboard';
 import Create from './Create';
@@ -133,19 +131,11 @@ class App extends React.Component {
               <Route
                 path={routes.viewDeck.template}
                 component={Deck} />
-              <Route
-                path={routes.viewConceptList.template}
-                component={ConceptList} />
               <PrivateRoute
                 path={routes.study.deckTemplate}
                 signedIn={signedIn}
                 loading={loading}
                 component={StudyDeck} />
-              <PrivateRoute
-                path={routes.study.conceptListTemplate}
-                signedIn={signedIn}
-                loading={loading}
-                component={StudyConcept} />
               <Route
                 path={routes.viewUser.template}
                 component={User} />

@@ -107,17 +107,6 @@
   padding-left: 35px;  
 }
 
-#concept-card {
-  height: 75px;
-  text-align: left;
-  width: 700px;
-  padding-left: 20px;
-}
-
-#concept-card::placeholder {
-  text-align: left;
-}
-
 .flashcard-text {
   width: 400px;
   border: 4px solid #C0CEDE;
@@ -166,18 +155,6 @@
 
 #more-flashcard:hover {
   background-color: #E0E9F5;
-}
-
-#more-concept {
-  background-color: #C0CEDE;
-}
-
-#more-concept:hover {
-  background-color: #E0E9F5;
-}
-
-#add-concept {
-  padding-top: 0;
 }
 
 #finalize-deck {
@@ -229,10 +206,6 @@
   color: #003466;
 }
 
-#concept-title, select, textarea {
-  color: #003466;
-}
-
 .small-caption {
   text-align: center;
   font-family: Nunito;
@@ -262,17 +235,6 @@
 }
 
 #add-a-card {
-  text-align: center;
-  font-family: Print Clearly;
-  font-size: 35px;
-  background: #E9F2FF;
-  padding-top: 15px;
-  color: #003466;
-  width: 100%;
-  margin: 0;
-}
-
-#add-a-concept {
   text-align: center;
   font-family: Print Clearly;
   font-size: 35px;
@@ -355,10 +317,6 @@
   color: #003466;
 }
 
-#create-a-concept {
-  width: 500px;
-}
-
 .change-title {
   padding: 0px 0px 10px 0px;
   background-color: #FFFFFF;
@@ -409,10 +367,6 @@
     padding-top: 15px;
   }
 
-  #create-a-concept {
-    max-width: 300px;
-  }
-
   .back-to-deck {
     font-size: 4vw;
     padding-left: 15px;
@@ -429,10 +383,6 @@
   }
 
   #add-a-card {
-    font-size: 5vw;
-  }
-
-  #add-a-concept {
     font-size: 5vw;
   }
 

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import routes from '../routes/routes';
 import queryString from 'query-string';
-import { searchUsers, searchDecks, searchLists, getProfilePic } from '../utils/api';
+import { searchUsers, searchDecks, getProfilePic } from '../utils/api';
 
 
 function DeckSearchResult(props) {
@@ -64,26 +64,6 @@ class UserSearchResult extends React.Component {
   
 }
 
-function ListSearchResult(props) {
-  const { id, name, creator, count, searchTerm } = props;
-  return (
-    <div className='result-box'>
-      <Link to={{
-        pathname: routes.viewConceptList.getRoute(id),
-        state: {
-          searchTerm,
-          fromSearch: true
-        }
-      }}>
-        <p className = 'deck-text' id = 'deck-name'>{name}</p>
-      </Link>
-      <p className = 'deck-text' id = 'deck-owner'>{creator}</p>
-      <p className = 'deck-text' id = 'num-of-terms'>{count} {count === 1 ? 'concept' : 'concepts'}</p>
-      
-    </div>
-  );
-}
-
 class SearchResults extends React.Component {
 
   constructor(props) {
@@ -116,8 +96,6 @@ class SearchResults extends React.Component {
       try {
         if (mode === 'users') {
           results = await searchUsers(query);
-        } else if (mode === 'lists') {
-          results = await searchLists(query);
         } else { // deck search, even if mode query string isn't 'decks'
           results = await searchDecks(query);
         }
@@ -146,14 +124,6 @@ class SearchResults extends React.Component {
               if (displayedMode === 'users') {
                 return <UserSearchResult
                   name={result.name}
-                  id={result.objectID}
-                  searchTerm={query}
-                  key={result.objectID} />;
-              } else if (displayedMode === 'lists') {
-                return <ListSearchResult
-                  name={result.name}
-                  creator={result.creatorName}
-                  count={result.count}
                   id={result.objectID}
                   searchTerm={query}
                   key={result.objectID} />;
@@ -280,13 +250,6 @@ class Search extends React.Component {
                   }}>
                   <button className = 'filter-button' id = 'show-users'> show users </button>
                 </Link>
-                <Link
-                  to={{
-                    pathname: routes.search.base,
-                    search: routes.search.getQueryString('lists', q)
-                  }}>
-                  <button className = 'filter-button' id = 'show-decks'> show lists </button>
-                </Link>
               </div>
             </div>
           </form>
@@ -310,13 +273,6 @@ Search.propTypes = {
 SearchResults.propTypes = {
   mode: PropTypes.string.isRequired,
   query: PropTypes.string.isRequired
-};
-ListSearchResult.propTypes = {
-  name: PropTypes.string.isRequired,
-  creator: PropTypes.string.isRequired,
-  count: PropTypes.number.isRequired,
-  id: PropTypes.string.isRequired,
-  searchTerm: PropTypes.string.isRequired
 };
 UserSearchResult.propTypes = {
   name: PropTypes.string.isRequired,

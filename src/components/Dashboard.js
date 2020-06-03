@@ -1,7 +1,5 @@
 import React from 'react';
 import DeckList from './DeckList';
-import ConceptListList from './ConceptListList';
-import Profile from './Profile';
 import { Link } from 'react-router-dom';
 import firebase from '../utils/firebase';
 import routes from '../routes/routes';
@@ -29,15 +27,6 @@ class Dashboard extends React.Component {
     }
   }
 
-  renderSwitch() {
-    switch(this.state.active) {
-    case 0:
-      return <DeckList />;
-    case 1:
-      return <ConceptListList />;
-    }
-  }
-
   render() {
     return ( 
       <div className = 'dashboard'>
@@ -51,18 +40,16 @@ class Dashboard extends React.Component {
           <div className = 'dashboard-menu' id = 'no-margin'>
             <div className ='navigation'>
               <Link to={routes.create.base}>
-                <button className = 'dash-nav'>create deck or concept list</button>
+                <button className = 'dash-nav'>create deck</button>
               </Link>
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 0}));}}>my decks</button>
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 1}));}}>my concept lists</button>
-              <Link to={routes.profile.base} id = 'profile-settings-link'>
-                <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
+              <Link to={routes.profile.base}>
+                <button className = 'dash-nav'>profile settings</button>
               </Link>
             </div>
           </div>
 
           <div className = 'active-view'>
-            {this.renderSwitch(this.state.active)}
+            <DeckList />
           </div>
         </div>
       </div>
