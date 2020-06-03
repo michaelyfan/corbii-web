@@ -1,7 +1,6 @@
 import React from 'react';
 import DeckList from './DeckList';
 import ConceptListList from './ConceptListList';
-import ClassroomList from './teacher-student/ClassroomList';
 import Profile from './Profile';
 import { Link } from 'react-router-dom';
 import firebase from '../utils/firebase';
@@ -25,6 +24,7 @@ class Dashboard extends React.Component {
     if (user) {
       this.setState(() => ({name: firebase.auth().currentUser.displayName}));
     } else {
+      // eslint-disable-next-line
       console.log(sassyMessage);
     }
   }
@@ -35,10 +35,6 @@ class Dashboard extends React.Component {
       return <DeckList />;
     case 1:
       return <ConceptListList />;
-    case 2:
-      return <ClassroomList />;
-    case 3:
-      return <Profile />;
     }
   }
 
@@ -59,7 +55,6 @@ class Dashboard extends React.Component {
               </Link>
               <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 0}));}}>my decks</button>
               <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 1}));}}>my concept lists</button>
-              <button className = 'dash-nav' onClick={() => {this.setState(() => ({active: 2}));}}>my classrooms</button>
               <Link to={routes.profile.base} id = 'profile-settings-link'>
                 <button className = 'dash-nav' id = 'profile-settings'>profile settings</button>
               </Link>

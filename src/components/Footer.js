@@ -9,14 +9,12 @@ import fbImage from '../resources/footer/fb.png';
 import twitterImage from '../resources/footer/twitter.png';
 
 function Footer(props) {
-  const { signedIn, isTeacher } = props;
+  const { signedIn } = props;
   return (
     <div className = 'footer'>
       <div><Link to={
         signedIn
-          ? isTeacher
-            ? routes.teacher.dashboard
-            : routes.dashboard.base
+          ? routes.dashboard.base
           : routes.home.base
       } className = 'footer-link'>home</Link></div>
       <div><Link to={routes.faq.base} className = 'footer-link'> faq</Link></div>
@@ -42,7 +40,6 @@ function Footer(props) {
 
 Footer.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  isTeacher: PropTypes.bool.isRequired
 };
 
 export default Footer;

@@ -1,6 +1,5 @@
 import React from 'react';
-import { getDeck, getUserProfileInfo, createCard, updateCard, updateCurrentUserDeck, deleteDeckFromCurrentUser, deleteCard, getClassroomInfo } from '../utils/api';
-import { updateDeckPeriods } from '../utils/teacherapi';
+import { getDeck, getUserProfileInfo, createCard, updateCard, updateCurrentUserDeck, deleteDeckFromCurrentUser, deleteCard } from '../utils/api';
 import firebase from '../utils/firebase';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -13,52 +12,6 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 
 // image assets
 import switchImg from '../resources/flashcard-img/switch.png';
-
-class SelectPeriods extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false
-    };
-    this.handleUpdateDeckPeriods = this.handleUpdateDeckPeriods.bind(this);
-  }
-
-  handleUpdateDeckPeriods(e) {
-    e.preventDefault();
-    const { deckId, periods } = this.props;
-    this.setState(() => ({
-      loading: true
-    }), () => {
-      updateDeckPeriods(deckId, periods).then(() => {
-        this.setState(() => ({
-          loading: false
-        }));
-      });
-    });
-  }
-
-  render() {
-    const { loading } = this.state;
-    const { periods, handlePeriodChange } = this.props;
-    return (
-      <div>
-        <p>Select the periods you&apos;d like to assign this deck to.</p>
-        <form onSubmit={this.handleUpdateDeckPeriods}>
-          {Object.keys(periods).map((period) =>
-            <label key={period}> Period {period}:
-              <input
-                name={period}
-                type='checkbox'
-                checked={periods[period]}
-                onChange={handlePeriodChange} />
-            </label>
-          )}
-          <input type='submit' value={loading ? 'Loading...' : 'Submit'} />
-        </form>
-      </div>
-    );
-  }
-}
 
 class Card extends React.Component {
   constructor(props) {
@@ -330,7 +283,6 @@ class Deck extends React.Component {
       creatorName: '',
       userIsOwner: false,
       isLoading: true,
-      periods: {}
     };
 
     this.handleDeleteCard = this.handleDeleteCard.bind(this);
@@ -338,7 +290,6 @@ class Deck extends React.Component {
     this.updateDeck = this.updateDeck.bind(this);
     this.submitDelete = this.submitDelete.bind(this);
     this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
-    this.handlePeriodChange = this.handlePeriodChange.bind(this);
   }
 
   componentDidMount() {
@@ -347,50 +298,20 @@ class Deck extends React.Component {
 
   async updateDeck() {
     const { id } = this.props.match.params;
-    const { state, pathname } = this.props.location;
 
     try {
-      // determine if this is a classroom deck
-      let periodsState = {};
-      if (pathname.includes(routes.teacher.viewDeckEditBase)) {
-        if (state
-            && state.isForClassroom
-            && state.classroomId != null) {
-          // get classroom info if location state for classroom is there
-          const classroomInfo = await getClassroomInfo(state.classroomId);
-          classroomInfo.periods.forEach((pd) => {
-            periodsState[pd] = false;
-          });
-        } else {
-          // redirect to teacher dashboard if user is at a teacher route, but location state is
-          //    missing
-          this.props.history.push(routes.teacher.dashboard);
-          return;
-        }
-
-      }
-
       let deck = await getDeck(id);
-      const { deckName, creatorId, cards, periods } = deck;
+      const { deckName, creatorId, cards } = deck;
       let profileInfo = await getUserProfileInfo(creatorId);
       let creatorName = profileInfo.data().name;
       const currentUser = firebase.auth().currentUser;
 
-      // set periods in this deck's periods to be true in periodsState
-      if (periods != null) {
-        Object.keys(periods).forEach((pdkey) => {
-          if (periods[pdkey]) {
-            periodsState[pdkey] = true;
-          }
-        });
-      }
       this.setState(() => ({
         deckName: deckName,
         creatorName: creatorName,
         userIsOwner: currentUser != null && creatorId === currentUser.uid,
         cards: cards,
         isLoading: false,
-        periods: periodsState
       }));
     } catch(err) {
       if (err.code === 'permission-denied') {
@@ -425,38 +346,16 @@ class Deck extends React.Component {
 
   handleDeleteDeck() {
     const { id } = this.props.match.params;
-    const { state, pathname } = this.props.location;
 
     this.setState(() => ({
       isLoading: true
     }), () => {
       deleteDeckFromCurrentUser(id).then(() => {
-        // determine if this was a classroom deck
-        if (pathname.includes(routes.teacher.viewDeckEditBase)
-            && state
-            && state.isForClassroom
-            && state.classroomId != null) {
-          // push to view classroom page if this was a classroom deck
-          this.props.history.push(routes.teacher.getViewDecksRoute(state.classroomId));
-        } else {
-          // push to normal non-teacher dashboard if wasn't a classroom deck
-          this.props.history.push(routes.dashboard.base);
-        }
+        this.props.history.push(routes.dashboard.base);
       }).catch((err) => {
         console.log(err);
         alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
-    });
-  }
-
-  handlePeriodChange(e) {
-    e.persist();
-    this.setState((prevState) => {
-      const newPeriods = prevState.periods;
-      newPeriods[e.target.name] = e.target.checked;
-      return {
-        periods: newPeriods
-      };
     });
   }
 
@@ -481,22 +380,18 @@ class Deck extends React.Component {
   }
 
   render() {
-    const { isLoading, deckName, creatorName, cards, userIsOwner, periods } = this.state;
+    const { isLoading, deckName, creatorName, cards, userIsOwner } = this.state;
     const { id } = this.props.match.params;
-    let isForClassroom;
-    let classroomId;
     let fromSearch;
     let searchTerm;
     if (this.props.location.state) {
-      ({ isForClassroom, classroomId, fromSearch, searchTerm } = this.props.location.state);
+      ({ fromSearch, searchTerm } = this.props.location.state);
     }
     const numberOfCards = cards.length;
 
     // determine back button to render
     let backButton;
-    if (isForClassroom) {
-      backButton = <BackButton redirectTo={routes.teacher.getViewClassroomRoute(classroomId)} destination='classroom' />;
-    } else if (fromSearch) {
+    if (fromSearch) {
       backButton = <BackButton
         redirectTo={routes.search.base}
         destination='search'
@@ -521,13 +416,11 @@ class Deck extends React.Component {
           </div>
 
           <div className='soft-blue-background cards-wrapper'>
-            { isForClassroom
-              ? null
-              : <Link id = 'study-deck' to={routes.study.getDeckRoute(id)}>
-                <button className = 'primary-button'>study this deck</button>
-              </Link>}
+            <Link id='study-deck' to={routes.study.getDeckRoute(id)}>
+              <button className='primary-button'>study this deck</button>
+            </Link>
             { userIsOwner && <AddCardForm deckId={id} updateDeck={this.updateDeck} /> }
-          
+
             {cards.map((card) => 
               <Card 
                 userIsOwner={userIsOwner}
@@ -538,9 +431,6 @@ class Deck extends React.Component {
                 handleDeleteCard={this.handleDeleteCard} 
                 key={card.id} />
             )}
-
-            {isForClassroom
-              && <SelectPeriods deckId={id} periods={periods} handlePeriodChange={this.handlePeriodChange} /> }
 
             { userIsOwner
             && <div className = 'inline-display center-subtitle'>
@@ -594,9 +484,4 @@ DeckTitle.propTypes = {
   deckId: PropTypes.string.isRequired,
   userIsOwner: PropTypes.bool.isRequired,
   numberOfCards: PropTypes.number.isRequired,
-};
-SelectPeriods.propTypes = {
-  periods: PropTypes.object.isRequired,
-  deckId: PropTypes.string.isRequired,
-  handlePeriodChange: PropTypes.func.isRequired
 };

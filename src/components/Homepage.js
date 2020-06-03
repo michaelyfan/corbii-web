@@ -30,12 +30,11 @@ class Slideshow extends React.Component {
 class Homepage extends React.Component {
 
   render() {
-    const { signedIn, isTeacher, handleStudentClickRegister, handleTeacherClickRegister } = this.props;
-    const redirectLink = isTeacher ? routes.teacher.dashboard : routes.dashboard.base;
+    const { signedIn } = this.props;
+    const redirectLink = routes.dashboard.base;
 
     return (
       <div>
-
         <div className = "account-block">
           <h1 className = "header-title" id = "slogan">learning as smart as &nbsp;
             <span className = "emphasized-words" id = "you">you</span> 
@@ -48,26 +47,16 @@ class Homepage extends React.Component {
           <div style={{visibility: signedIn ? 'hidden' : 'visible'}}>
             <LoginModal 
               header = 'sign up'
-              signedIn = {signedIn}
-              isTeacher={isTeacher}>
-              <button className = "primary-button" type = "button" onClick={handleStudentClickRegister}> i am a student</button>
-            </LoginModal>
-            <br /><br />
-            <LoginModal 
-              header = 'sign up'
-              signedIn = {signedIn}
-              isTeacher={isTeacher}>
-              <button className = "secondary-button" type = "button" onClick={handleTeacherClickRegister}>i am an educator</button>
+              signedIn = {signedIn}>
+              <button className = "primary-button" type = "button">i am a student</button>
             </LoginModal>
             <h3 id = 'log-in-subheader'> 
-
               Already have an account?&nbsp; 
               <LoginModal 
                 header = "log in" 
                 signedIn = {signedIn}
-                isTeacher={isTeacher}
               >
-                <button className = 'log-in' onClick={handleStudentClickRegister}>Log in.</button>
+                <button className = 'log-in'>Log in.</button>
               </LoginModal>
             
             </h3>
@@ -107,9 +96,6 @@ class Homepage extends React.Component {
 
 Homepage.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  isTeacher: PropTypes.bool.isRequired,
-  handleStudentClickRegister: PropTypes.func.isRequired,
-  handleTeacherClickRegister: PropTypes.func.isRequired
 };
 
 export default Homepage;

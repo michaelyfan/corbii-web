@@ -46,8 +46,8 @@ class Nav extends React.Component {
   }
 
   render() {
-    const { signedIn, photoURL, isTeacher, handleStudentClickRegister } = this.props;
-    const imageLink = signedIn ? (isTeacher ? routes.teacher.dashboard : routes.dashboard.base) : routes.home.base;
+    const { signedIn, photoURL } = this.props;
+    const imageLink = signedIn ? routes.dashboard.base : routes.home.base;
     return (
       <div className = "header"> 
         <div className = 'flex-header'>
@@ -85,9 +85,8 @@ class Nav extends React.Component {
 
           <LoginModalPersist 
             header = "log in"
-            signedIn = {signedIn}
-            isTeacher = {isTeacher} >
-            <button className = 'log-in' id = 'header-login' onClick={handleStudentClickRegister}>log in </button>
+            signedIn = {signedIn} >
+            <button className = 'log-in' id = 'header-login'>log in </button>
           </LoginModalPersist>
 
           <div>
@@ -105,8 +104,6 @@ class Nav extends React.Component {
 
 Nav.propTypes = {
   signedIn: PropTypes.bool.isRequired,
-  isTeacher: PropTypes.bool.isRequired,
-  handleStudentClickRegister: PropTypes.func.isRequired,
   photoURL: PropTypes.string,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired

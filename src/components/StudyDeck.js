@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner, createClassDataPoint } from '../utils/api';
+import { getDeckForStudy, getUserProfileInfo, updateCardPersonalData, updateCardPersonalDataLearner } from '../utils/api';
 import { shiftInArray } from '../utils/tools';
 import routes from '../routes/routes';
 import {HotKeys} from 'react-hotkeys';
@@ -228,7 +228,6 @@ class CardWrapper extends React.Component {
 
     this.submitCard = this.submitCard.bind(this);
     this.flip = this.flip.bind(this);
-    this.addClassDataPoint = this.addClassDataPoint.bind(this);
     this.learnerSubmit = this.learnerSubmit.bind(this);
   }
 
@@ -249,7 +248,7 @@ class CardWrapper extends React.Component {
   }
 
   submitCard(quality, isLearner) {
-    const { card, learner, isForClassroom, deckId, incrementIndex } = this.props;
+    const { card, learner, deckId, incrementIndex } = this.props;
     const { seconds } = this.state;
 
     // sets this card's lowest selected quality
@@ -309,9 +308,6 @@ class CardWrapper extends React.Component {
         ({ interval, easinessFactor, id } = card.data);
       }
       updateCardPersonalData(id, deckId, card.id, easinessFactor, interval, quality);
-      if (isForClassroom) {
-        this.addClassDataPoint(quality, card.id, seconds);
-      }
 
       // flips back to front, resets time count, and moves onto the next card
       this.setState(() => ({
@@ -322,36 +318,16 @@ class CardWrapper extends React.Component {
   }
 
   learnerSubmit(cardId, quality, easinessFactor, time) {
-    const { card, deckId, isForClassroom } = this.props;
+    const { card, deckId } = this.props;
 
     // submit card to personal data
     const dataId = card.data ? card.data.id : null;
-
-    // submit card to class data points if applicable
-    if (isForClassroom) {
-      this.addClassDataPoint(card.lowestSelectedQuality, cardId, time);
-    }
 
     updateCardPersonalDataLearner(dataId, deckId, cardId, quality, easinessFactor)
       .catch((err) => {
         console.error(err);
         alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
       });
-  }
-
-  addClassDataPoint(quality, cardId, time) {
-    const { deckId, classroomId, period } = this.props;
-    createClassDataPoint({
-      quality: quality,
-      time: time,
-      cardId: cardId,
-      deckId: deckId,
-      classroomId: classroomId,
-      period: period
-    }).catch((err) => {
-      console.error(err);
-      alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
-    });
   }
 
   render() {
@@ -411,7 +387,6 @@ class StudyDeck extends React.Component {
       index: 0,
       arrayTodo: [],
       arrayLeft: [],
-      isForClassroom: false
     };
 
     this.incrementIndex = this.incrementIndex.bind(this);
@@ -447,18 +422,6 @@ class StudyDeck extends React.Component {
       arrayTodo: arrayDue.concat(arrayNew),
       arrayLeft: arrayLeft
     };
-
-    // determines isForClassroom state property
-    if (this.props.location.pathname.includes(routes.classroomStudy.base)) {
-      const routeState = this.props.location.state;
-      if (routeState && routeState.fromClassroom) {
-        newState.isForClassroom = routeState.fromClassroom;
-      } else {
-        alert('There was an error. Please go back to the dashboard.');
-        console.error('No location state found despite classstudy route.');
-        return;
-      }
-    }
 
     this.setState(() => newState);
   }
@@ -533,11 +496,7 @@ class StudyDeck extends React.Component {
 
   render() {
     const { id } = this.props.match.params;
-    const { name, creatorName, arrayTodo, index, isForClassroom } = this.state;
-    let classroomId, period;
-    if (this.props.location.state) {
-      ({ classroomId, period } = this.props.location.state);
-    }
+    const { name, creatorName, arrayTodo, index } = this.state;
 
     const card = arrayTodo[index] || {};
     const isDone = (index >= arrayTodo.length);
@@ -551,7 +510,6 @@ class StudyDeck extends React.Component {
             titleLink={routes.viewDeck.getRoute(id)}
             subtitle={`created by ${creatorName}`} />
 
-          { isForClassroom && <p className = 'small-caption'>Classroom: {classroomId}</p>}
           <Line
             className = 'progress-bar' 
             percent={percentage} 
@@ -571,10 +529,8 @@ class StudyDeck extends React.Component {
                 deckId={id}
                 card={card}
                 incrementIndex={this.incrementIndex}
-                learner={this.learner}
-                isForClassroom={isForClassroom}
-                classroomId={classroomId}
-                period={period} />
+                learner={this.learner} 
+              />
             </div>
           }
         </div>
@@ -591,23 +547,13 @@ StudyDeck.propTypes = {
       id: PropTypes.string.isRequired
     })
   }),
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired,
-    state: PropTypes.shape({
-      classroomId: PropTypes.string,
-      period: PropTypes.string
-    })
-  }),
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
   })
 };
 CardWrapper.propTypes = {
-  classroomId: PropTypes.string,
-  period: PropTypes.string,
   card: PropTypes.object, 
   deckId: PropTypes.string.isRequired,
-  isForClassroom: PropTypes.bool.isRequired,
   incrementIndex: PropTypes.func.isRequired,
   learner: PropTypes.func.isRequired
 };

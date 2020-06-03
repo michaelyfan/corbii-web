@@ -143,7 +143,6 @@ export function getDeck(deckId) {
     return {
       deckName: deck.data().name,
       creatorId: deck.data().creatorId,
-      periods: deck.data().periods,
       cards: cardsArr
     };
   });
@@ -539,14 +538,13 @@ export function createClassroomUser(code) {
   }
 }
 
-export function createNewDbUser(isTeacher) {
+export function createNewDbUser() {
   const { displayName, email, uid } = firebase.auth().currentUser;
 
   return Promise.all([
     db.collection('users').doc(uid).set({
       name: displayName,
       email: email,
-      isTeacher: isTeacher
     }),
     fetch('https://i.imgur.com/nYDMVCK.jpg')
   ]).then((res) => res[1].blob()).then((res) => {
@@ -996,6 +994,7 @@ export function sendPasswordResetEmail() {
 
 // end auth functions
 
+/* eslint-disable-next-line */
 async function main() {
 
   // sendPasswordResetEmail();

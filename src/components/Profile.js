@@ -69,7 +69,6 @@ class Profile extends React.Component {
   }
 
   render() {
-    const { isTeacher } = this.props;
     const { name, email, passwordEmailSent } = this.state;
     return (
       <div className='profile'>
@@ -98,7 +97,7 @@ class Profile extends React.Component {
               <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
             </form>
             <div className = 'dashboard-link'>
-              <Link to={isTeacher ? routes.teacher.dashboard : routes.dashboard.base}>
+              <Link to={routes.dashboard.base}>
                 <button className = 'dashboard-button'>go to dashboard</button>
               </Link>
             </div>
@@ -112,7 +111,6 @@ class Profile extends React.Component {
 Profile.propTypes = {
   doGetProfilePic: PropTypes.func.isRequired,
   photoURL: PropTypes.string.isRequired,
-  isTeacher: PropTypes.bool.isRequired
 };
 
 export default Profile;

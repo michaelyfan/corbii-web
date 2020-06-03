@@ -1,7 +1,7 @@
 import algoliasearch from 'algoliasearch';
 
-const id = 'QDG0CXLZ92';
-const publicKey = '3e029bef7a3de0ecab02de865ef701f9';
+const id = 'PE6JJWU79O';
+const publicKey = 'fa463270b72eea28d9e00a818f67ffda';
 let deckIndex;
 let userIndex;
 let listIndex;
