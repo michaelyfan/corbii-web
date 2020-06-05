@@ -3,6 +3,7 @@ import 'firebase/firestore';
 import { deckIndex, userIndex, algClient } from './algconfig';
 import { smAlgorithm } from './algorithms';
 import moment from 'moment';
+import imageCompression from 'browser-image-compression';
 
 // tool initializations
 const db = firebase.firestore();
@@ -509,9 +510,23 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
   });
 }
 
+/**
+ * Updates the profile picture of a user. The file will be compressed before being sent to Firebase
+ *   Storage for storage.
+ * @param  {File} file The file, of type image, to make as the profile picture.
+ * @return {Promise}      A Promise with the result of the Firebase call.
+ */
 export function updateCurrentUserProfilePic(file) {
   const uid = firebase.auth().currentUser.uid;
-  return storageRef.child(`profilePics/${uid}`).put(file);
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+    maxIteration: 10
+  };
+  return imageCompression(file, options).then((compressedFile) => {
+    return storageRef.child(`profilePics/${uid}`).put(compressedFile);
+  });
 }
 
 // end update functions

@@ -12,7 +12,8 @@ class Profile extends React.Component {
     this.state = {
       name: '',
       email: '',
-      passwordEmailSent: false
+      passwordEmailSent: false,
+      uploadLoading: false
     };
 
     this.inputFile = React.createRef();
@@ -20,10 +21,19 @@ class Profile extends React.Component {
     this.handleChangePassword = this.handleChangePassword.bind(this);
   }
 
+  /**
+   * An asynchronous wrapper around setState that returns a Promise. Can be used with
+   *   async/await syntax.
+   */
+  setStateAsync(newState) {
+    return new Promise((resolve) => {
+      this.setState(newState, resolve);
+    });
+  }
+
   componentDidMount() {
     this.getUser();
   }
-
 
   getUser() {
     getCurrentUserProfileInfo().then((result) => {
@@ -37,22 +47,30 @@ class Profile extends React.Component {
     });
   }
 
-  handleChangeProfilePic(e) {
+  async handleChangeProfilePic(e) {
     e.preventDefault();
+
+    await this.setStateAsync({uploadLoading: true});
+
     const files = this.inputFile.current.files;
     const file = files[0];
     if (files == null || files.length <= 0) {
       alert('You haven\'t chosen any files!');
+      this.setStateAsync({ uploadLoading: false });
     } else if (!file.name.match(/.(jpg|jpeg|png|gif)$/i)) {
       alert('File type must be a JPG, PNG, or GIF image.');
-    } else if (file.size > 100 * 1024) {
-      alert('File size must be under 100 KB.');
+      this.setStateAsync({ uploadLoading: false });
+    } else if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be under 5 MB.');
+      this.setStateAsync({ uploadLoading: false });
     } else {
-      updateCurrentUserProfilePic(file).then(() => {
+      updateCurrentUserProfilePic(file).then(async () => {
         this.props.doGetProfilePic();
-      }).catch((err) => {
+        this.setStateAsync({ uploadLoading: false });
+      }).catch(async (err) => {
         console.log(err);
         alert(`There was an error - sorry!\nTry refreshing the page, or try later.\n${err}`);
+        this.setStateAsync({ uploadLoading: false });
       });
     } 
   }
@@ -69,7 +87,7 @@ class Profile extends React.Component {
   }
 
   render() {
-    const { name, email, passwordEmailSent } = this.state;
+    const { name, email, passwordEmailSent, uploadLoading } = this.state;
     return (
       <div className='profile'>
         <div id='profile-inner-wrapper'>
@@ -93,8 +111,11 @@ class Profile extends React.Component {
             <div className = 'profile-padding'>{this.props.photoURL && <img className='profile-img' src={this.props.photoURL} />}</div>
             <form className = 'upload-photo' onSubmit={this.handleChangeProfilePic}>
               <span id = 'change-pic'>change profile pic: &nbsp;</span>
-              <input ref={this.inputFile} type='file' accept="image/*" text='Change profile pic' /><br /><br />
-              <button className = 'primary-button' id = 'upload-button' type='submit'>upload</button>
+              <input ref={this.inputFile} type='file' accept="image/png, image/jpg, image/jpeg, image/gif" text='Change profile pic' /><br /><br />
+              {uploadLoading
+                ? <button className='primary-button' id='upload-button-disabled' type='submit' disabled>loading...</button>
+                : <button className='primary-button' id='upload-button' type='submit'>upload</button>
+              }
             </form>
             <div className = 'dashboard-link'>
               <Link to={routes.dashboard.base}>

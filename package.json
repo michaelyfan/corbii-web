@@ -17,6 +17,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
     "algoliasearch": "^3.29.0",
+    "browser-image-compression": "^1.0.12",
     "firebase": "^5.1.0",
     "firebase-admin": "^6.0.0",
     "firebaseui": "^3.1.1",

@@ -74,6 +74,13 @@
 	padding: 10px;
 }
 
+#upload-button-disabled {
+	font-size: 25px;
+	padding: 10px;
+	cursor: default;
+	background-color: #b8c0c9;
+}
+
 .dashboard-link {
 	display: flex;
 	justify-content: center;
