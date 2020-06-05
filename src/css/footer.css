@@ -19,13 +19,6 @@
   padding-right: 24px;
 }
 
-.footer-social img {
-  width: 30px;
-  height: 30px;
-  padding-right: 3px;
-  padding-left: 3px;
-}
-
 @media screen and (max-width: 850px) {
   .footer-link {
     font-size: 3.5vw;

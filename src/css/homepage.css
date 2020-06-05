@@ -176,6 +176,13 @@
   color: #A8B4C2;
 }
 
+.faq-pic-link img {
+  width: 30px;
+  height: 30px;
+  padding-right: 3px;
+  padding-left: 3px;
+  color: #003466;
+}
 
 @media screen and (max-width: 800px) {
   #slogan {

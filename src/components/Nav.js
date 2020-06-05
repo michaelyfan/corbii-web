@@ -84,9 +84,9 @@ class Nav extends React.Component {
             </Link>}
 
           <LoginModalPersist 
-            header = "log in"
+            header= "log in or register"
             signedIn = {signedIn} >
-            <button className = 'log-in' id = 'header-login'>log in </button>
+            <button className = 'log-in' id = 'header-login'>log in</button>
           </LoginModalPersist>
 
           <div>
