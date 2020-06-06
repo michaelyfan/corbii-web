@@ -94,8 +94,7 @@ export function getCardsInfo(cards) {
  *
  * @return a Promise that resolves with an object containing the deck's content. The
  *    object's attributes are deckName (the deck's name), creatorId (the ID of the
- *    deck's creator), periods (the deck's periods if this is a classroom deck, null otherwise),
- *    and cards (an array of card objects). A card object's attributes
+ *    deck's creator), and cards (an array of card objects). A card object's attributes
  *    are id (the ID of the card in the deck), front (the card's front content), and
  *    back (the card's back content).
  */
@@ -245,7 +244,6 @@ export function getProfilePic(uid) {
 export function getUserDecks(uid) {
   return db.collection('decks')
     .where('creatorId', '==', uid)
-    .where('isClassroomPrivate', '==', false)
     .get().then((querySnapshot) => {
       let decksArr = [];
       querySnapshot.forEach((deck) => {
@@ -302,7 +300,6 @@ export function getUserOnLogin() {
   return userRef.get().then((userDocSnapshot) => {
     if (userDocSnapshot.exists) {
       return {
-        isTeacher: userDocSnapshot.data().isTeacher,
         exists: true
       };
     } else {
@@ -332,7 +329,7 @@ export function createNewDbUser() {
 }
 
 export function createDeckCurrentUser(params) {
-  const { deckName, cards, isForClassroom, classroomId, periods } = params;
+  const { deckName, cards } = params;
   if (deckName.length > 150) {
     return Promise.reject(new Error('Deck name is too long.'));
   } else {
@@ -348,18 +345,7 @@ export function createDeckCurrentUser(params) {
     creatorId: uid,
     creatorName: displayName,
     count: (cards && cards.length) || 0,
-    isClassroomPrivate: false,
-    classroomId: null
   };
-  if (isForClassroom) {
-    let periodObject = {};
-    periods.forEach((period) => {
-      periodObject[period] = true;
-    });
-    data.isClassroomPrivate = true;
-    data.periods = periodObject;
-    data.classroomId = classroomId;
-  }
 
   return db.collection('decks').add(data).then((deckRef) => {
     if (cards) {

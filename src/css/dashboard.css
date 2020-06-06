@@ -132,47 +132,8 @@ button.modify-stuff:hover {
   margin-bottom: 15px;
 }
 
-.student-classroom-button{
-  background-color: #E9F2FF;
-  margin: 0 auto;
-  color: #003466;
-  justify-content: center;
-  font-size: 30px;
-}
-
-.student-classroom-button:hover{
-  background-color: #E9F2FF;
-  color: #C0CEDE;
-  margin: 0 auto;
-  justify-content: center;
-  font-size: 30px;
-}
-
-
-.classroom-headers {
-    font-family: Nunito Bold;
-    color: #003466;
-    text-align: center;
-    font-size: 40px;
-}
-
-#classroom-add {
-  font-size: 40px;
-  color: #003466;
-  border: 3px solid #003466;
-  text-decoration: none;
-  font-family: Print Clearly;
-  padding-left: 15px;
-  padding-right: 150px;
-}
-
 .center-items {
   margin: 0 auto;
-}
-
-
-#classroom-add::placeholder {
-  color: #003466;
 }
 
 .submit-button {
@@ -185,44 +146,6 @@ button.modify-stuff:hover {
   padding: 10px;
   margin-left: 10px;
   padding-top: 10px;
-}
-
-.add-to-period {
-  background-color: #E9F2FF;
-}
-
-.classroom-title {
-  text-align: center;
-  font-family: Nunito Bold;
-  color: #003466;
-  font-size: 70px;
-  margin-bottom: 0;
-}
-
-.classroom-subtitle {
-  text-align: center;
-  font-family: Nunito;
-  color: #003466;
-  font-size: 25px;
-  margin:0;
-}
-
-.classroom-body {
-  border-top: 5px double #003466;
-  background-color: #E9F2FF; 
-}
-
-.study-classroom-deck {
-  background-color: #E9F2FF; 
-  margin: 0 auto;
-  font-family: Print Clearly Bold;
-  color: #003466;
-  margin-bottom: 10px;
-  margin-top: 0;
-}
-
-.study-classroom-deck:hover {
-  color: #A8B4C2;
 }
 
 @media screen and (max-width: 800px) {
@@ -259,6 +182,4 @@ button.modify-stuff:hover {
     font-size: 9vw;
     padding-left: 20px;
   }
-
-
 }

@@ -1,6 +1,5 @@
 {
   "projects": {
-    "default": "corbii-web",
-    "dev": "corbii-web-dev"
+    "default": "corbii-web"
   }
 }

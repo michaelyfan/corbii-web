@@ -455,8 +455,6 @@ Deck.propTypes = {
   }),
   location: PropTypes.shape({
     state: PropTypes.shape({
-      classroomId: PropTypes.string,
-      isForClassroom: PropTypes.bool,
       searchTerm: PropTypes.string,
       fromSearch: PropTypes.bool
     }),

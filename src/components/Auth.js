@@ -18,7 +18,6 @@ class Auth extends React.Component {
       signInOptions: [
         firebase.auth.EmailAuthProvider.PROVIDER_ID,
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.FacebookAuthProvider.PROVIDER_ID
       ],
       credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
       callbacks: {

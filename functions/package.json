@@ -13,5 +13,8 @@
     "firebase-admin": "~5.12.1",
     "firebase-functions": "^2.2.0"
   },
-  "private": true
+  "private": true,
+  "engines": {
+    "node": "8"
+  }
 }
