@@ -1,55 +1,27 @@
 .account-block {
   text-align: center;
   background-image: url(../resources/triangle.png);
-  background-position: center;
+  background-position: center top;
   background-size: cover;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 #slogan {
-  font-size: 100px;
-  color: #C0CEDE;
-  padding-top: 20px;
-}
-
-#you {
+  margin: 0;
   font-size: 70px;
-}
-
-.header-title {
-  color: #A8B4C2;
-  font-size: 67px;
+  color: #afc1d5;
+  padding-top: 20px;
+  font-family: Nunito;
 }
 
 .emphasized-words {
-  font-family: Nunito;
-  color: #003466;
-  font-size: 50px;
-}
-
-.primary-button {
-  background-color: #003466;
-  color: #E0E9F5;
-  padding-right: 45px;
-  padding-left: 45px;
-}
-
-.primary-button:hover {
-  background-color: #002140;
-}
-
-.secondary-button {
-  background-color: #E0E9F5;
-  color: #003466;
-  padding-right:29px;
-  padding-left: 29px;
-}
-
-.secondary-button:hover {
-  background-color: #E8EEF8;
-}
-
-#log-in-subheader {
-  font-size: 22px;
+  font-family: Nunito Bold;
   color: #003466;
 }
 
@@ -64,54 +36,38 @@
   color: #003466; 
 }
 
+#home-info-wrapper {
+  background-color: #E9F2FF;
+}
+
 .home-info {
   display: flex;
   justify-content: center;
-  background-color: #E9F2FF;
-  padding-bottom: 20px;
-  padding-top: 20px;
+  align-items: center;
+  padding: 20px 20px 20px 20px;
 }
 
-.answer-text {
-  font-size: 27px;
-  color: #003466;
-  width: 50%;
-  text-align: justify;
-}
-
-#answer-text-right {
-  padding-left: 50px;
-  padding-right: 5px;
-}
-
-#answer-text-left {
-  padding-right: 50px;
-  padding-left: 5px;
-}
-
-#info2 {
-  padding-top: 0px;
-}
-
-#our-techniques {
-  color: #C0CEDE;
-  font-size: 85px;
-  margin-top: 27px;
-  margin-bottom: 0;
-}
-
-.slideshow-carousel {
-  width: 85%;
-  height: 85%;
-  margin: 0 auto;
-}
-
-.cogsci-techniques {
+.header-title {
+  color: #A8B4C2;
+  font-family: Nunito;
+  font-size: 40px;
+  width: 40%;
   text-align: center;
 }
 
+.answer-text-wrapper {
+  width: 60%;
+  padding-left: 30px;
+  padding-right: 30px;
+}
 
-.learn-button { 
+.answer-text {
+  color: #003466;
+  font-size: 27px;
+  text-align: justify;
+}
+
+.learn-button-wrapper { 
   padding-bottom: 40px;
   text-align: center;
 }
@@ -119,8 +75,8 @@
 #start-learning {
   padding-top: 25px;
   padding-bottom: 25px;
-  padding-left: 80px;
-  padding-right: 80px;
+  padding-left: 40px;
+  padding-right: 40px;
 }
 
 .denied {
@@ -185,55 +141,23 @@
 }
 
 @media screen and (max-width: 800px) {
-  #slogan {
-    font-size: 17vw;
-  }
-
-  #you {
-    font-size: 11vw;
+  .home-info {
+    display: block;
   }
 
   .header-title {
-    font-size: 6.5vw;
+    width: auto;
   }
 
-  .emphasized-words {
-    font-size: 4.5vw;
-    padding-right: 10px;
+  .answer-text-wrapper {
+    width: auto;
   }
 
-  .answer-text {
-    font-size: 4vw;
-  }
-
-  #answer-text-left {
-    padding-right: 30px;
-    padding-left: 10px;
-  }
-
-  #our-techniques {
-    font-size: 17vw;
-  }
-
-  .slideshow-carousel {
-    max-width: 100%;
-    padding-bottom: 20px;
-    padding-top: 20px;
-  }
-
-  #start-learning {
-    padding-top: 15px;
-    padding-bottom: 15px;
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-
-  .primary-button {
-    font-size: 7vw;
+  /* .primary-button {
+    font-size: 9vw;
   }
 
   .secondary-button {
-    font-size: 7vw;
-  }
-
+    font-size: 9vw;
+  } */
 }

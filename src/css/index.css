@@ -88,6 +88,28 @@ div.hr {
   display: flex;
   justify-content: center;
 }
+
+.primary-button {
+  background-color: #003466;
+  color: #E0E9F5;
+  padding-right: 45px;
+  padding-left: 45px;
+}
+
+.primary-button:hover {
+  background-color: #002140;
+}
+
+.secondary-button {
+  background-color: #E0E9F5;
+  color: #003466;
+  padding-right:29px;
+  padding-left: 29px;
+}
+
+.secondary-button:hover {
+  background-color: #E8EEF8;
+}
 /* End general things */
 
 /* Homepage stuff */
