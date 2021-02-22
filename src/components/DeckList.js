@@ -46,13 +46,20 @@ class DeckList extends React.Component {
     return (
       <div>
         <div>
-          <h3 className = 'your-stuff'>your decks</h3>
-          {this.state.deckArr.map((deck) => (
-            <DeckRow 
-              name={deck.name} 
-              key={deck.id} 
-              id={deck.id} />
-          ))}
+          <div className='your-stuff'>
+            <span className='your-stuff-text'>your decks</span>
+          </div>
+          <div id='deck-row-wrapper'>
+            {this.state.deckArr.map((deck) => (
+              <DeckRow
+                name={deck.name}
+                key={deck.id}
+                id={deck.id} />
+            ))}
+            <Link to={routes.create.base}>
+              <button className='button-alt'>create deck</button>
+            </Link>
+          </div>
         </div>
       </div>
     );

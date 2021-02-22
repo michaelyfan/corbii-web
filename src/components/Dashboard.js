@@ -37,17 +37,6 @@ class Dashboard extends React.Component {
         </div>
 
         <div className = 'inline-display'>
-          <div className = 'dashboard-menu' id = 'no-margin'>
-            <div className ='navigation'>
-              <Link to={routes.create.base}>
-                <button className = 'dash-nav'>create deck</button>
-              </Link>
-              <Link to={routes.profile.base}>
-                <button className = 'dash-nav'>profile settings</button>
-              </Link>
-            </div>
-          </div>
-
           <div className = 'active-view'>
             <DeckList />
           </div>

@@ -57,6 +57,11 @@ button {
   cursor: pointer;
 }
 
+.button-alt {
+  color: white;
+  background-color: #003466;
+}
+
 input:focus {
   outline: none;
 }
@@ -214,3 +219,9 @@ div.hr {
   height: 200px;
 }
 /* End 404 */
+
+@media screen and (max-width: 800px) {
+  button {
+    font-size: 8vw;
+  }
+}
