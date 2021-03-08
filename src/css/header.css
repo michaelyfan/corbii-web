@@ -5,17 +5,17 @@
   background-color: #003466;
   padding-top: 10px;
   padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
   color: white;
 }
 
 .flex-header {
-  display: flex;}
+  display: flex;
+}
 
 #header-logo {
-  width: 200px;
-  max-width: 100%;
+  width: 150px;
   height: auto;
 }
 
@@ -36,7 +36,6 @@
 
 #navbar-usercard {
   text-align: center;
-  padding-right: 10px;
 }
 
 #navbar-usercard p {
@@ -63,13 +62,33 @@
   background: #033466;
 }
 
+.log-in {
+  font-family: Nunito Bold;
+  font-size: 17px;
+  cursor: pointer;
+  padding-bottom: 25px;
+  background: none;
+  border: none;
+  padding-left: 0;
+  color: #003466; 
+}
+
 #header-login {
   color: #FFFFFF;
-  margin-right: 30px;
 }
 
 
 @media screen and (max-width: 800px) {
+  .header {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #header-logo {
+    width: 100px;
+    height: auto;
+  }
+
   #navbar-usercard img {
     border-radius: 50%;
     width: 50px;
@@ -77,12 +96,8 @@
     object-fit: cover;
   }
 
-  #navbar-usercard button {
-    font-size: 1.5vw;
-  }
-
   #searchbar {
-    font-size: 4.5vw;
+    font-size: 1.5rem;
     max-width: 100%;
   }
 }

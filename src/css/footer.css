@@ -15,18 +15,8 @@
   padding-right: 17px;
 }
 
-#footer-search {
-  padding-right: 24px;
-}
-
 @media screen and (max-width: 850px) {
   .footer-link {
-    font-size: 3.5vw;
+    font-size: 1.5rem;
   }
-}
-
-@media screen and (max-width: 600px) {
-  .footer-link {
-      font-size: 3vw;
-    }
 }
