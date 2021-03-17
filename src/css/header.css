@@ -10,24 +10,25 @@
   color: white;
 }
 
-.flex-header {
-  display: flex;
-}
-
 #header-logo {
   width: 150px;
   height: auto;
 }
 
+#searchbar-wrapper {
+  margin-left: 50px;
+  margin-right: 50px;
+  flex-grow: 1;
+}
+
 #searchbar {
   font-family: 'Print Clearly';
   font-size: 40px;
-  width: 200px;
   border: none;
   background-color: #003466;
   caret-color: white;
   color: white;
-  padding-top: 10px;
+  width: 100%;
 }
 
 #searchbar::placeholder {
@@ -42,11 +43,6 @@
   margin: 2px;
 }
 
-#navbar-usercard button {
-  padding: 5px;
-  font-size: 22px;
-}
-
 #navbar-usercard img {
   border-radius: 50%;
   width: 85px;
@@ -54,12 +50,13 @@
   object-fit: cover;
 }
 
-
 .nav-signin {
   font-family: Nunito Bold;
   color: #FFFFFF;
   font-size: 10px;
   background: #033466;
+  padding: 5px;
+  font-size: 22px;
 }
 
 .log-in {
@@ -91,13 +88,24 @@
 
   #navbar-usercard img {
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
+  }
+
+  .nav-signin {
+    white-space: nowrap;
+    font-size: 1rem;
+  }
+
+  #searchbar-wrapper {
+    margin-left: 25px;
+    margin-right: 25px;
+    flex-grow: 1;
   }
 
   #searchbar {
     font-size: 1.5rem;
-    max-width: 100%;
   }
+
 }

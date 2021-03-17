@@ -166,6 +166,7 @@
 }
 
 .deck-title {
+  padding: 0;
   font-family: Nunito;
   font-size: 60pt;
   width: 100%;

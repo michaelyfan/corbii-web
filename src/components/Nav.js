@@ -50,31 +50,29 @@ class Nav extends React.Component {
     const imageLink = signedIn ? routes.dashboard.base : routes.home.base;
     return (
       <div className = "header"> 
-        <div className = 'flex-header'>
-          <div>
-            <Link to={imageLink}>
-              <img id = 'header-logo' src={logoImg} />
-            </Link>
-          </div>
+        <div>
+          <Link to={imageLink}>
+            <img id='header-logo' src={logoImg} />
+          </Link>
+        </div>
 
-          <div>
-            <form onSubmit={this.enterActivator}>
-              <input 
-                id = "searchbar" 
-                maxLength='1000'
-                type = "text" 
-                placeholder = "search . . ." 
-                onChange={this.handleChangeSearch} 
-                value={this.state.searchQuery} />
-              <Link
-                to={{
-                  pathname: routes.search.base,
-                  search: routes.search.getQueryString('decks', this.state.searchQuery)
-                }}>
-                <button style={{display: 'none'}} type='submit'>Search</button>
-              </Link>
-            </form>
-          </div>
+        <div id= "searchbar-wrapper">
+          <form onSubmit={this.enterActivator}>
+            <input
+              id="searchbar"
+              maxLength='1000'
+              type="text"
+              placeholder="search . . ."
+              onChange={this.handleChangeSearch}
+              value={this.state.searchQuery} />
+            <Link
+              to={{
+                pathname: routes.search.base,
+                search: routes.search.getQueryString('decks', this.state.searchQuery)
+              }}>
+              <button style={{ display: 'none' }} type='submit'>Search</button>
+            </Link>
+          </form>
         </div>
 
         <div id= 'navbar-usercard'>
