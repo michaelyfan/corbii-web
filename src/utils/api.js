@@ -10,6 +10,12 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 const storageRef = storage.ref();
 
+// corbii server paths
+const syncSearchIndexesPath = '/syncSearchIndexes';
+const deleteCardSpacedRepDataPath = '/deleteCardSpacedRepData/:id';
+const deleteDeckSpacedRepDataPath = '/deleteDeckSpacedRepData/:id';
+const deleteDeckSubcollectionsPath = '/deleteDeckSubcollections:/:id';
+
 // Begin api functions
 
 /**
@@ -324,6 +330,7 @@ export function createNewDbUser() {
     }),
     fetch('https://i.imgur.com/nYDMVCK.jpg')
   ]).then((res) => res[1].blob()).then((res) => {
+    requestSearchIndexSync();
     return updateCurrentUserProfilePic(res);
   });
 }
@@ -348,6 +355,7 @@ export function createDeckCurrentUser(params) {
   };
 
   return db.collection('decks').add(data).then((deckRef) => {
+    requestSearchIndexSync();
     if (cards) {
       // consider mixing this batch with the deck creation call
       const batch = db.batch();
@@ -474,6 +482,7 @@ export function updateCurrentUserDeck(deckId, deckName, cards) {
   const deckRef = `decks/${deckId}`;
 
   return db.doc(deckRef).update({name: deckName}).then(() => {
+    requestSearchIndexSync();
     if (cards) {
       const batch = db.batch();
       cards.forEach((card) => {
@@ -520,16 +529,42 @@ export function updateCurrentUserProfilePic(file) {
 // begin delete functions
 
 // removes a card's content documents from the database.
-export function deleteCard(deckId, cardId) {
+export async function deleteCard(deckId, cardId) {
   const deckRef = db.collection('decks').doc(deckId);
+  const token = await firebase.auth().currentUser.getIdToken();
+  
+  // don't wait for Corbii server and accept possibility of errors
+  fetch(deleteCardSpacedRepDataPath.replace(/:id/g, cardId), {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }).catch((e) => { console.log('Error in deleteCard deleteCardSpacedRepDataPath fetch:', e) });
+
   return deckRef.collection('cards').doc(cardId).delete().then(() => {
     updateDeckCountByOne(deckId, false);
   });
 }
 
-export function deleteDeckFromCurrentUser(deckId) {
+export async function deleteDeckFromCurrentUser(deckId) {
   const deckRef = db.collection('decks').doc(deckId);
-  return deckRef.delete();
+  const token = await firebase.auth().currentUser.getIdToken();
+
+  // don't wait for Corbii server and accept possibility of errors
+  fetch(deleteDeckSubcollectionsPath.replace(/:id/g, deckId), {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }).catch((e) => { console.log('Error in deleteDeckFromCurrentUser deleteDeckSubcollectionsPath fetch:', e) });
+  fetch(deleteDeckSpacedRepDataPath.replace(/:id/g, deckId), {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }).catch((e) => { console.log('Error in deleteDeckFromCurrentUser deleteDeckSpacedRepDataPath fetch:', e) });
+
+  return deckRef.delete().then(() => { requestSearchIndexSync() });
 }
 // end delete functions
 
@@ -598,6 +633,26 @@ export function sendPasswordResetEmail() {
 }
 
 // end auth functions
+
+// begin corbii-server functions
+
+export async function requestSearchIndexSync() {
+  try {
+    const token = await firebase.auth().currentUser.getIdToken();
+
+    // don't wait for Corbii server and accept possibility of errors
+    await fetch(syncSearchIndexesPath, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  } catch (e) {
+    console.log(`Error in requestSearchIndexSync ${syncSearchIndexesPath}:`, e)
+  }
+}
+
+// end corbii-server functions
 
 /* eslint-disable-next-line */
 async function main() {
