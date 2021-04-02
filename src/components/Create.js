@@ -179,7 +179,7 @@ class CreateDeck extends React.Component {
               save={this.save}
               switch={this.switch}
               delete={this.deleteCard} />
-          )};
+          )}
           <div className = 'add-more-card'>
             <button 
               className = 'secondary-button'

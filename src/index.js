@@ -1,6 +1,6 @@
 import React from'react';
 import ReactDOM from'react-dom';
-import './css/index.css';
+import './css/index.css'; // import base styles first; defining a style again in below stylesheets will override the corresponding style in index.css
 import './css/dashboard.css';
 import './css/flashcard.css';
 import './css/footer.css';
