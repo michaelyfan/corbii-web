@@ -80,7 +80,7 @@ class Card extends React.Component {
         </div>
 
 
-        <div className='side-menu'>
+        <div className='menu-options-create'>
           { 
             this.props.userIsOwner
               && <div>
