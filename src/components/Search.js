@@ -142,9 +142,7 @@ class SearchResults extends React.Component {
       );
     } else {
       return (
-        <div>
-          <p className = 'no-results' style={{ margin: '0', padding: '16px' }}>Enter a search term.</p>
-        </div>
+        <div></div>
       );
     }
   }
@@ -218,9 +216,9 @@ class Search extends React.Component {
 
     return (
       <div>
-        <div className = 'main-searchbar'>
+        <div>
           <form onSubmit={this.enterActivator}>
-            <div className = 'disp-inline'>
+            <div id='search-form-content-wrapper'>
               <input 
                 id = "big-search"
                 maxLength='1000'
@@ -235,20 +233,20 @@ class Search extends React.Component {
                 <button type='submit' className='no-display'></button>
               </Link>
 
-              <div className = 'push-over'>
+              <div id='search-button-wrapper'>
                 <Link
                   to={{
                     pathname: routes.search.base,
                     search: routes.search.getQueryString('decks', q)
                   }}>
-                  <button className = 'filter-button' id = 'show-decks'> show decks </button>
+                  <button className = 'filter-button' id = 'show-decks'> search decks </button>
                 </Link>
                 <Link
                   to={{
                     pathname: routes.search.base,
                     search: routes.search.getQueryString('users', q)
                   }}>
-                  <button className = 'filter-button' id = 'show-users'> show users </button>
+                  <button className = 'filter-button' id = 'show-users'> search users </button>
                 </Link>
               </div>
             </div>

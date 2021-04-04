@@ -109,7 +109,6 @@
   flex-wrap: wrap;
   margin-top: 10px;
   margin-bottom: 10px;
-  /* padding-left: 30px; */
 }
 
 .flashcard {
@@ -376,6 +375,10 @@
     font-size: 3rem;
   }
 
+  .flashcard-row {
+    margin-bottom: 20px;
+  }
+
   .flashcard-text {
     border: 2px solid #C0CEDE;
     font-family: Print Clearly;
@@ -447,7 +450,7 @@
   }
 
   .update-card {
-    font-size: 4vw;
+    font-size: 1.25rem;
     margin-top: 10px;
     margin-bottom: 10px;
   }
