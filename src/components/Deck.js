@@ -49,8 +49,8 @@ class Card extends React.Component {
     const { id, front, back, handleDeleteCard } = this.props;
 
     return (
-      <div className='flashcard'>
-        <div className='flashcard' id = 'less-padding'>
+      <div className='flashcard-row'>
+        <div className='flashcard'>
           <div className='flashcard-text edit-card'>
             <p className='low'>front</p>
             {
@@ -80,7 +80,7 @@ class Card extends React.Component {
         </div>
 
 
-        <div className='side-menu'>
+        <div className='menu-options-create'>
           { 
             this.props.userIsOwner
               && <div>
@@ -89,12 +89,12 @@ class Card extends React.Component {
                     <button className = 'modify-stuff editing' onClick={this.handleUpdateCard}>update</button>
                     <button className = 'modify-stuff editing' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}));}}>cancel</button>
                   </span>     
-                  : <span className = 'edit-button'>
+                  : <span>
                     <button className = 'modify-stuff' onClick={() => {this.setState((prevState) => ({isUpdate: !prevState.isUpdate}));}}>edit</button>
                   </span>
                 }
                 <span className = 'modify-stuff' id = 'line'>&nbsp;|&nbsp;</span>
-                <button className = 'modify-stuff delete-button' onClick={() => {handleDeleteCard(id);}}>delete</button>
+                <button className = 'modify-stuff' onClick={() => {handleDeleteCard(id);}}>delete</button>
               </div>
           }
         </div>
@@ -159,9 +159,9 @@ class DeckTitle extends React.Component {
           />
           : <p className = 'deck-title edit-title'>{originalDeckName}</p>}
         <div className = 'inline-display center-subtitle'>
-          <p className = 'small-caption'>created by {creatorName} | 
+          <p className = 'small-caption'>created by {creatorName} | &nbsp;
             {numberOfCards} {numberOfCards === 1 ? 'card' : 'cards'} 
-            {userIsOwner && <span>|</span>}</p>
+            {userIsOwner && <span>&nbsp;|</span>}</p>
           {userIsOwner && (
             isUpdate
               ? <span>
@@ -243,8 +243,8 @@ class AddCardForm extends React.Component {
     return (
       <form onSubmit={this.handleAddCard}>
         <p id = 'add-a-card'>add a card:</p>
-        <div className = 'needs-padding'>
-          <div className = 'flashcard add-card'>
+        <div className = 'add-card-wrapper'>
+          <div className = 'add-card'>
             <TextareaAutosize
               placeholder='front information'
               className = 'flashcard-text'
@@ -265,7 +265,9 @@ class AddCardForm extends React.Component {
               autoComplete='off'
               value={addCardBackName}
               onChange={this.handleChangeAddCardBack} />
-            <button type='submit' className = 'add'>add</button>
+          </div>
+          <div id='add-button-wrapper'>
+            <button type='submit' className='add'>add</button>
           </div>
         </div>
       </form>

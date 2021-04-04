@@ -57,7 +57,7 @@ class CreateDeckCard extends React.Component {
   render() {  
 
     return (
-      <div className = 'flashcard'>
+      <div className = 'flashcard-create'>
         <TextareaAutosize 
           type='text'
           maxLength='1000'
@@ -67,7 +67,7 @@ class CreateDeckCard extends React.Component {
           onChange={(e) => {this.handleChange('front', e);}}
           onBlur={this.handleSave}
           placeholder='front' />
-        <div className = 'side-menu'>
+        <div className= 'menu-options-create'>
           <img style={{cursor: 'pointer'}} onClick={this.handleSwitch} className = 'switch-front-and-back' src = {switchImg} />
         </div>
         <TextareaAutosize 
@@ -80,7 +80,7 @@ class CreateDeckCard extends React.Component {
           onBlur={this.handleSave}
           placeholder='back' />
 
-        <div className = 'side-menu'>
+        <div className= 'menu-options-create'>
           <img style={{cursor: 'pointer'}} onClick={this.handleDelete} className = 'side-options' src = {trashImg} />
         </div>
       </div>
@@ -169,33 +169,31 @@ class CreateDeck extends React.Component {
   render() {
     return (
       <div>
-        <div>
-          {this.state.cards.map((card, index) => 
-            <CreateDeckCard  
-              initialFront={card.front} 
-              initialBack={card.back} 
-              index={index} 
-              key={card.id}
-              save={this.save}
-              switch={this.switch}
-              delete={this.deleteCard} />
-          )};
-          <div className = 'add-more-card'>
-            <button 
-              className = 'secondary-button'
-              id = 'more-flashcard'
-              onClick={this.handleAddCard}>
-                add a card
-            </button>
-          </div>
-          <div className = 'add-more-card'>
-            <button
-              onClick={() => {this.props.handleCreateDeck(this.state.cards);}}
-              className = 'primary-button'
-              id = 'finalize-deck'>
-                create deck
-            </button>
-          </div>
+        {this.state.cards.map((card, index) => 
+          <CreateDeckCard  
+            initialFront={card.front} 
+            initialBack={card.back} 
+            index={index} 
+            key={card.id}
+            save={this.save}
+            switch={this.switch}
+            delete={this.deleteCard} />
+        )}
+        <div className = 'add-more-card'>
+          <button 
+            className = 'secondary-button'
+            id = 'more-flashcard'
+            onClick={this.handleAddCard}>
+              add a card
+          </button>
+        </div>
+        <div className = 'add-more-card'>
+          <button
+            onClick={() => {this.props.handleCreateDeck(this.state.cards);}}
+            className = 'primary-button'
+            id = 'finalize-deck'>
+              create deck
+          </button>
         </div>
       </div>
     );
@@ -280,7 +278,7 @@ class Create extends React.Component {
           <button className = 'back-to-deck' onClick = {this.handleGoBack}>back to dashboard</button>
           <input type='text'
             maxLength='150'
-            className = 'deck-title'
+            className = 'deck-title create-deck-title'
             onChange={this.handleChangeTitle}
             value={title}
             placeholder='deck title'
