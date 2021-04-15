@@ -80,6 +80,13 @@
   padding-top: -10px;
 }
 
+.no-results {
+  text-align: center;
+  font-size: 20px;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
 @media screen and (max-width: 850px) {
   #search-form-content-wrapper {
     flex-direction: column;
