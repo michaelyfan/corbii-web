@@ -95,10 +95,6 @@ class LoginModalPersist extends React.Component {
 
           <div className = 'modal-content'>
             <h3 className= 'header-title' id = 'log-in-header'>{header}</h3>
-            {/*            <input className = 'login-text' id = "email-login" type = "text" placeholder = "email" />
-            <input className = 'login-text' id = "password-login" type = "password" placeholder = "password" />
-            <button className = 'primary-button' id = 'submit-email'>{header}</button>     
-*/}
             <Auth
               signedIn={signedIn}
               loginSuccessCallback = {this.loginCallback} />
