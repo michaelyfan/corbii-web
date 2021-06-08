@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - run: npm ci
+      - name: Security audit
+        run: npm run security
+      - name: Linting source code
+        run: npm run lint
+      - name: Linting functions
+        run: npm run lint-functions
+  
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - run: npm ci
+      - name: Build application
+        run: npm run build
+    
+  deploy:
+    needs: [quality, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - run: npm ci
+      - name: Deploy to Firebase
+        run: firebase deploy
