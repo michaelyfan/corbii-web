@@ -10,7 +10,8 @@
     "build-windows": "SET NODE_ENV=production&& webpack",
     "lint": "node node_modules/eslint/bin/eslint.js ./src",
     "lint-functions": "node node_modules/eslint/bin/eslint.js ./functions/index.js",
-    "prod-test": "node server-dev.js"
+    "prod-test": "node server-dev.js",
+    "security": "npm audit --registry=https://registry.npmjs.org"
   },
   "author": "",
   "license": "ISC",
