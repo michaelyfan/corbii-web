@@ -68,14 +68,11 @@ const config = {
 
     // uses copy-webpack-plugin to copy the favicon to the /dist directory
     // favicon isn't able to be bundled by any of the other loaders or plugins
-    new CopyWebpackPlugin(
-      [
-        {
-          from: 'src/favicon.ico',
-          to: 'favicon.ico'
-        }
-      ]
-    ),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "src/favicon.ico", to: "favicon.ico" },
+      ],
+    }),
 
     // exposes NODE_ENV environment variable to clientside files
     //   used for selecting algolia/firebase configs
