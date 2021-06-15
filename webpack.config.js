@@ -8,9 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const config = {
   // tell webpack where the application starts
   //   in this case, index.js is the file that imports all the other files
-  //   also include a babel polyfill that emulates a full ES6 environment (giving us
-  //   promises, Object.assign, etc...)
-  entry:  ['@babel/polyfill', './src/index.js'],
+  entry:  ['./src/index.js'],
 
   module: {
     rules: [
