@@ -1,8 +1,8 @@
 // Used to polyfill some latest JS features
 // See https://babeljs.io/docs/en/babel-polyfill
 // See https://babeljs.io/docs/en/babel-preset-env#usebuiltins
-import "core-js/stable";
-import "regenerator-runtime/runtime";
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 import React from'react';
 import ReactDOM from'react-dom';

@@ -44,7 +44,7 @@ class Homepage extends React.Component {
               <span className="emphasized-words"> spaced rep?</span>
             </h1>
             <div className="answer-text-wrapper">
-              <p className="answer-text">Spaced repetition means you don't study something until just before you forget it. This saves you time, and is more effective because it makes your brain work harder. Corbii is able to determine this scheduling automatically for you!</p>
+              <p className="answer-text">Spaced repetition means you don&apos;t study something until just before you forget it. This saves you time, and is more effective because it makes your brain work harder. Corbii is able to determine this scheduling automatically for you!</p>
             </div>
           </div>
 

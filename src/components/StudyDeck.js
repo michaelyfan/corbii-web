@@ -317,6 +317,7 @@ class CardWrapper extends React.Component {
     }
   }
 
+  // eslint-disable-next-line
   learnerSubmit(cardId, quality, easinessFactor, time) {
     const { card, deckId } = this.props;
 
