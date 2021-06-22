@@ -1,5 +1,6 @@
 import firebase from './firebase';
 import 'firebase/firestore';
+import 'firebase/storage';
 import { deckIndex, userIndex, algClient } from './algconfig';
 import { smAlgorithm } from './algorithms';
 import moment from 'moment';

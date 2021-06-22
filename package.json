@@ -18,6 +18,7 @@
   "dependencies": {
     "algoliasearch": "^4.9.1",
     "browser-image-compression": "^1.0.14",
+    "core-js": "^3.15.0",
     "firebase": "^8.6.5",
     "firebaseui": "^4.8.0",
     "moment": "^2.29.1",
@@ -35,6 +36,7 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-tag-input": "^6.6.1",
+    "regenerator-runtime": "^0.13.7",
     "shortid": "^2.2.16"
   },
   "devDependencies": {

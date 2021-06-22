@@ -71,12 +71,6 @@ const config = {
         { from: "src/favicon.ico", to: "favicon.ico" },
       ],
     }),
-
-    // exposes NODE_ENV environment variable to clientside files
-    //   used for selecting algolia/firebase configs
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-    })
   ],
 
   // sets the mode depending on environment variable
