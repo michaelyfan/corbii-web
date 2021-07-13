@@ -14,6 +14,7 @@ function Footer(props) {
       } className = 'footer-link'>home</Link></div>
       <div><Link to={routes.faq.base} className = 'footer-link'> faq</Link></div>
       <div><Link to={routes.search.base} className = 'footer-link' id = 'footer-search'>search</Link></div>
+      <div><Link to={routes.privacypolicy.base} className='footer-link'>privacy policy</Link></div>
     </div>
   );
 }

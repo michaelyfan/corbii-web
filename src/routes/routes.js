@@ -6,6 +6,9 @@ const routes = {
   faq: {
     base: '/FAQ'
   },
+  privacypolicy: {
+    base: '/privacypolicy'
+  },
   search: {
     base: '/search',
     getQueryString: ((mode, query) => `?mode=${mode}&q=${query}`)

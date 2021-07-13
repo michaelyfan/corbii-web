@@ -128,6 +128,10 @@
   color: #003466;
 }
 
+.privacypolicy {
+  all: initial;
+}
+
 @media screen and (max-width: 800px) {
   .home-info {
     display: block;

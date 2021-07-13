@@ -6,6 +6,7 @@ import { hot } from 'react-hot-loader';
 import routes from '../routes/routes';
 import Nav from './Nav';
 import FAQ from './FAQ';
+import PrivacyPolicy from './PrivacyPolicy';
 import Search from './Search';
 import Deck from './Deck';
 import Footer from './Footer';
@@ -107,6 +108,9 @@ class App extends React.Component {
               <Route
                 path={routes.faq.base}
                 component={FAQ} />
+              <Route
+                path={routes.privacypolicy.base}
+                component={PrivacyPolicy} />
               <Route
                 path={routes.search.base}
                 component={Search} />

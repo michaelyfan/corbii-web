@@ -61,7 +61,7 @@ class LoginModal extends React.Component {
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
           style={customStyles}
-          contentLabel="log in"
+          contentLabel="log in / register"
         >
 
           {signedIn && <Redirect to={redirectTo} />}

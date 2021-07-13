@@ -16,10 +16,11 @@ class Auth extends React.Component {
     const firebaseUiConfig = {
       signInFlow: 'popup',
       signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        {
+          provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          fullLabel: 'Log in or register'
+        }
       ],
-      credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
       callbacks: {
         signInSuccessWithAuthResult: ()  => {
           if (loginSuccessCallback) {
