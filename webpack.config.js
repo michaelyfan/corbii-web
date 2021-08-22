@@ -1,5 +1,6 @@
 /*eslint-env node*/
 
+// eslint-disable-next-line
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -70,7 +71,7 @@ const config = {
     // favicon isn't able to be bundled by any of the other loaders or plugins
     new CopyWebpackPlugin({
       patterns: [
-        { from: "src/favicon.ico", to: "favicon.ico" },
+        { from: 'src/favicon.ico', to: 'favicon.ico' },
       ],
     }),
   ],

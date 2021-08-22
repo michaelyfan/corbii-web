@@ -1,4 +1,5 @@
 import firebase from './firebase';
+import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { deckIndex, userIndex, algClient } from './algconfig';
