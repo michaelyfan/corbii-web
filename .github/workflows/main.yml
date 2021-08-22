@@ -23,8 +23,6 @@ jobs:
         run: npm run security
       - name: Linting source code
         run: npm run lint
-      - name: Linting functions
-        run: npm run lint-functions
   
   build:
     runs-on: ubuntu-latest
