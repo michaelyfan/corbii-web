@@ -26,20 +26,9 @@ jobs:
         run: npm run security
       - name: Linting source code
         run: npm run lint
-  
-  build:
-    needs: [quality]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: npm ci
-      - name: Build application
-        run: npm run build
     
   deploy:
-    needs: [quality, build]
+    needs: [quality]
     runs-on: ubuntu-latest
     # only run this job on master branch -- prevents a deploy from happening every time a PR's branch is updated
     if: github.ref == 'refs/heads/master'
@@ -47,6 +36,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: npm ci
+      - name: Build application
+        run: npm run build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
