@@ -8,9 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const config = {
   // tell webpack where the application starts
   //   in this case, index.js is the file that imports all the other files
-  //   also include a babel polyfill that emulates a full ES6 environment (giving us
-  //   promises, Object.assign, etc...)
-  entry:  ['@babel/polyfill', './src/index.js'],
+  entry:  ['./src/index.js'],
 
   module: {
     rules: [
@@ -52,36 +50,29 @@ const config = {
 
   devServer: {
     port: 8080,
-    hotOnly: true,
-    publicPath: '/',
+    hot: 'only',
     historyApiFallback: true,
 
     // opens a browser window at http://localhost:8080 upon running the dev server
-    open: true
+    open: true,
+
+    devMiddleware: {
+      publicPath: '/',
+    }
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }),
 
     // uses copy-webpack-plugin to copy the favicon to the /dist directory
     // favicon isn't able to be bundled by any of the other loaders or plugins
-    new CopyWebpackPlugin(
-      [
-        {
-          from: 'src/favicon.ico',
-          to: 'favicon.ico'
-        }
-      ]
-    ),
-
-    // exposes NODE_ENV environment variable to clientside files
-    //   used for selecting algolia/firebase configs
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-    })
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "src/favicon.ico", to: "favicon.ico" },
+      ],
+    }),
   ],
 
   // sets the mode depending on environment variable

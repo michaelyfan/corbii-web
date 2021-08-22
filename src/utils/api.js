@@ -1,5 +1,6 @@
 import firebase from './firebase';
 import 'firebase/firestore';
+import 'firebase/storage';
 import { deckIndex, userIndex, algClient } from './algconfig';
 import { smAlgorithm } from './algorithms';
 import moment from 'moment';
@@ -539,7 +540,7 @@ export async function deleteCard(deckId, cardId) {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  }).catch((e) => { console.log('Error in deleteCard deleteCardSpacedRepDataPath fetch:', e) });
+  }).catch((e) => { console.log('Error in deleteCard deleteCardSpacedRepDataPath fetch:', e); });
 
   return deckRef.collection('cards').doc(cardId).delete().then(() => {
     updateDeckCountByOne(deckId, false);
@@ -556,15 +557,15 @@ export async function deleteDeckFromCurrentUser(deckId) {
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  }).catch((e) => { console.log('Error in deleteDeckFromCurrentUser deleteDeckSubcollectionsPath fetch:', e) });
+  }).catch((e) => { console.log('Error in deleteDeckFromCurrentUser deleteDeckSubcollectionsPath fetch:', e); });
   fetch(deleteDeckSpacedRepDataPath.replace(/:id/g, deckId), {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`
     }
-  }).catch((e) => { console.log('Error in deleteDeckFromCurrentUser deleteDeckSpacedRepDataPath fetch:', e) });
+  }).catch((e) => { console.log('Error in deleteDeckFromCurrentUser deleteDeckSpacedRepDataPath fetch:', e); });
 
-  return deckRef.delete().then(() => { requestSearchIndexSync() });
+  return deckRef.delete().then(() => { requestSearchIndexSync(); });
 }
 // end delete functions
 
@@ -648,7 +649,7 @@ export async function requestSearchIndexSync() {
       }
     });
   } catch (e) {
-    console.log(`Error in requestSearchIndexSync ${syncSearchIndexesPath}:`, e)
+    console.log(`Error in requestSearchIndexSync ${syncSearchIndexesPath}:`, e);
   }
 }
 

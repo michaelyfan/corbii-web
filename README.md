@@ -1,6 +1,8 @@
 # corbii-web
 A study app that schedules your flashcards for you. Schedules are determined with scientifically-backed spaced repetition algorithms, making studying more effective and efficient.
 
+https://corbii-web.web.app/
+
 ## Development 
 
 1. Clone this repo
