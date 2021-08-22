@@ -50,16 +50,18 @@ const config = {
 
   devServer: {
     port: 8080,
-    hotOnly: true,
-    publicPath: '/',
+    hot: 'only',
     historyApiFallback: true,
 
     // opens a browser window at http://localhost:8080 upon running the dev server
-    open: true
+    open: true,
+
+    devMiddleware: {
+      publicPath: '/',
+    }
   },
 
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       template: 'src/index.html'
     }),
